@@ -22,6 +22,8 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
+    data class OnUpdateTanggalPemeriksaan(val value: String) : HomeEvent()
+
     data class OnUpdateClearTrigger(val value: Boolean) : HomeEvent()
 
     data class OnUpdateSelectedVehicle(val value: String) : HomeEvent()

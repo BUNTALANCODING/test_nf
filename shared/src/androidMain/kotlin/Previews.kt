@@ -1,13 +1,11 @@
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import presentation.component.AlertDialog
 import presentation.theme.AppTheme
-import presentation.ui.main.auth.RegisterScreen
-import presentation.ui.main.auth.view_model.LoginState
-import presentation.ui.main.home.HomeScreen
-import presentation.ui.main.home.news.NewsScreen
 import presentation.ui.main.home.view_model.HomeState
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.ConditionCard
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
 
 /*@Composable
 @androidx.compose.ui.tooling.preview.Preview
@@ -99,22 +97,24 @@ fun HomeScreen() {
 
 @Composable
 @Preview
-fun HomeScreenPreview() {
+fun Previews() {
     AppTheme {
-        HomeScreen(
+        HasilPemeriksaanKartuUjiScreen(
             state = HomeState(),
             events = {},
             errors = MutableSharedFlow(),
-            navigateToNotifications = {},
-            navigateToSaldo = {},
-            navigateToLogin = {},
-            navigateToNews = {},
-            navigateToMilikOrangLain = {},
-            navigateToDaftarKendaraan = {},
-            navigateToDaftarKendaraanSaya = {},
-            navigateToRiwayatPembayaran = {},
-            navigateToEtbpkp = {  },
-            navigateToEPengesahan = {},
+            popup = {},
+        ) { }
+    }
+}
+
+@Composable
+@Preview
+fun Previewsa() {
+    AppTheme {
+        ConditionCard(
+            title = "Kartu Uji/STUK : Berlaku",
+            state = HomeState(),
         ) { }
     }
 }

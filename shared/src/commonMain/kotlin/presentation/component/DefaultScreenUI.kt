@@ -49,6 +49,7 @@ import business.core.ViewSingleAction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import logger.Logger
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import presentation.theme.BackgroundCustom
 import presentation.theme.BgHeaderHome
@@ -56,6 +57,7 @@ import presentation.theme.PrimaryColor
 import rampcheck.shared.generated.resources.blur_red
 import rampcheck.shared.generated.resources.blur_yellow
 import rampcheck.shared.generated.resources.ecllipse_decor
+import rampcheck.shared.generated.resources.ic_kemenhub
 
 @Composable
 fun DefaultScreenUI(
@@ -65,7 +67,7 @@ fun DefaultScreenUI(
     onTryAgain: () -> Unit = {},
     titleToolbar: String? = null,
     startIconToolbar: ImageVector? = null,
-    endIconToolbar: ImageVector? = null,
+    endIconToolbar: DrawableResource? = null,
     onClickStartIconToolbar: () -> Unit = {},
     onClickEndIconToolbar: () -> Unit = {},
     parent: Boolean = false,
@@ -122,10 +124,10 @@ fun DefaultScreenUI(
                         }
 
                         if (endIconToolbar != null) {
-                            CircleButton(
+                            Image(
                                 modifier = Modifier.size(32.dp),
-                                imageVector = endIconToolbar,
-                                onClick = onClickEndIconToolbar
+                                painter = painterResource(endIconToolbar),
+                                contentDescription = null
                             )
                         } else {
                             Spacer_32dp()

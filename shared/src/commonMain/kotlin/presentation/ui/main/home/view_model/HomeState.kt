@@ -36,6 +36,7 @@ data class HomeState(
     val selectedOption: Int = 1,
     val nikValue: String = "",
     val namaLengkap: String = "",
+    val tanggalPemeriksaan : String = "",
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,
     val searchValue : String = "",

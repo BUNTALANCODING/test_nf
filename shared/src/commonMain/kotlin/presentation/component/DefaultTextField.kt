@@ -32,6 +32,7 @@ fun DefaultTextField(
     onValueChange: (String) -> Unit,
     enabled: Boolean = true,
     placeholder: String,
+    iconEnd: @Composable (() -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(
         fontWeight = FontWeight.Normal,
         color = Color.Gray
@@ -51,6 +52,7 @@ fun DefaultTextField(
                 style = textStyle
             )
         },
+        trailingIcon = iconEnd,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))

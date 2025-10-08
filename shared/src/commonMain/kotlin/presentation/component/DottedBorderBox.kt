@@ -11,9 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import presentation.theme.PrimaryColor
 
 @Composable
-fun DottedBorderBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun DottedBorderBackground(bgColor: Color = Color(0xFFF3E9FF),modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp)) // Clipping for rounded corners
@@ -26,13 +27,13 @@ fun DottedBorderBackground(modifier: Modifier = Modifier, content: @Composable (
 
             // Draw background
             drawRoundRect(
-                color = Color.White, // Background color
+                color = bgColor, // Background color
                 cornerRadius = CornerRadius(cornerRadius, cornerRadius)
             )
 
             // Draw dotted border
             drawRoundRect(
-                color = Color.Gray.copy(alpha = 0.08F), // Border color
+                color = PrimaryColor.copy(0.8f), // Border color
                 style = Stroke(
                     width = strokeWidth,
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashWidth, dashGap), 0f)

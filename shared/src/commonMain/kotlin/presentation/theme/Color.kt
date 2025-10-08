@@ -40,7 +40,7 @@ val DeepOrangeA700 = Color( 0xffdd2c00)
 val OrangeBorderText = Color(0xFFFFE2D0)
 
 //val PrimaryColor = Color(0xFFFF4747)
-val PrimaryColor = Color(0xFF161872)
+val PrimaryColor = Color(0XFF29005E)
 val PrimaryVariantColor = Color(0xFFCA3D49)
 val PrimaryLighterColor = Color(0xFFFFF4ED) //Background Login Screen
 val PrimaryLightColor = Color(0xFFF06E1F) //Background Login Screen
@@ -55,7 +55,7 @@ val YellowColor = Color(0XFFFFCC00)
 val DarkPrimaryColor = Color(0XFF090B57)
 val SuccessColor = Color(0XFF00A838)
 
-val LightPurpleColor = Color(0xFFE3E3FF)
+val LightPurpleColor = Color(0xFFEEE0FF)
 
 val IconBgColor = Color(0XFFEDEDFF)
 
@@ -100,6 +100,8 @@ val gradientBackground = Brush.verticalGradient(
         Color(0xFFD9DAFF)
     )
 )
+
+val yellowBackground = Color(0XFFFFAF01)
 val BgHeaderHome = Brush.linearGradient(
     colors = listOf(
         Color(0xFF161872),

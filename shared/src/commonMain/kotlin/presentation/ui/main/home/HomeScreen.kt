@@ -73,6 +73,7 @@ import presentation.component.Spacer_8dp
 import presentation.component.noRippleClickable
 import presentation.theme.PrimaryColor
 import presentation.theme.gradientSamsatCeriaVertical
+import presentation.theme.yellowBackground
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
@@ -85,6 +86,9 @@ import rampcheck.shared.generated.resources.ic_ekd
 import rampcheck.shared.generated.resources.ic_epengesahan
 import rampcheck.shared.generated.resources.ic_etbpkp
 import rampcheck.shared.generated.resources.ic_isi_saldo
+import rampcheck.shared.generated.resources.ic_kemenhub
+import rampcheck.shared.generated.resources.ic_pemeriksaan
+import rampcheck.shared.generated.resources.ic_riwayat_pemeriksaan
 import rampcheck.shared.generated.resources.ic_riwayatpembayaran_samsat
 import rampcheck.shared.generated.resources.ic_thorn
 import rampcheck.shared.generated.resources.ic_transfer
@@ -185,7 +189,7 @@ private fun HomeContent(
         )
     )
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             HeaderSection(
@@ -200,16 +204,9 @@ private fun HomeContent(
             )
         }
         item {
-            DokumenSection(
-                navigateToEtbpkp = navigateToEtbpkp,
-                navigateToEKD = navigateToEKD,
-                navigateToEPengesahan = navigateToEPengesahan
-            )
+            PemeriksaanSection(navigateToSaldo)
         }
-        item {
-            PengaduanSection()
-        }
-        item { BeritaSection(newsItems = newsItems, onClick = navigateToNews) }
+        item { RiwayatPemeriksaanSection() }
         item { }
     }
 }
@@ -242,96 +239,7 @@ private fun HeaderSection(
                 onClick = navigateToLogin
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            NotificationButton(onClick = navigateToNotifications)
         }
-        Spacer_16dp()
-
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-            navigateToSaldo()
-        }) {
-            Column {
-                Text(
-                    "Saldo Samsat Ceria",
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal
-                    )
-                )
-                Spacer_4dp()
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Text(
-
-                        "Rp",
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    Spacer_4dp()
-                    Text(
-                        "• • • • •",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        ),
-                    )
-                    Spacer_8dp()
-                    Image(
-                        painter = painterResource(Res.drawable.ic_visibillity_off_home),
-                        contentDescription = "Hide Saldo"
-                    )
-                }
-
-            }
-            Spacer(modifier = Modifier.weight(1f))
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_isi_saldo),
-                    contentDescription = null
-                )
-                Spacer_8dp()
-                Text(
-                    "Isi Saldo",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
-                )
-            }
-            Spacer_8dp()
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_transfer),
-                    contentDescription = null
-                )
-                Spacer_8dp()
-                Text(
-                    "Transfer",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
-                )
-            }
-
-        }
-
-        HomeMenu(
-            events = events,
-            navigateToDaftarKendaraanSaya = navigateToDaftarKendaraanSaya,
-            navigateToRiwayatPembayaran = navigateToRiwayatPembayaran
-        )
     }
 }
 
@@ -354,385 +262,97 @@ private fun ProfileButton(
                 .size(45.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.profile),
-                contentDescription = "Profile",
-                tint = MaterialTheme.colorScheme.background,
+            Image(
+                painter = painterResource(Res.drawable.ic_kemenhub),
+                contentDescription = "ic_rampcheck",
             )
         }
 
         Spacer(modifier = Modifier.width(8.dp))
 
         Logger.d("isTokenValid: ${state.isTokenValid}")
-        if (!state.isTokenValid) {
-            Text(
-                text = "Masuk/Daftar",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.background,
-                fontFamily = FontFamily.SansSerif
-            )
-        } else {
-            AnimatedVisibility(visible = state.progressBarState == ProgressBarState.LoadingWithLogo) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(25.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.background,
-                )
-            }
-            Text(
-                text = profileName,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.background,
-                fontFamily = FontFamily.SansSerif
-            )
-        }
-    }
-}
-
-@Composable
-private fun HomeMenu(
-    events: (HomeEvent) -> Unit,
-    navigateToDaftarKendaraanSaya: () -> Unit,
-    navigateToRiwayatPembayaran: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            HomeItem(
-                iconRes = Res.drawable.ic_cekpajak_samsat,
-                label = "Cek Pajak\nKendaraan",
-                onClick = {
-                    events(HomeEvent.OnShowDialogPajak(UIComponentState.Show))
-                }
-            )
-            Spacer_4dp()
-            HomeItem(
-                iconRes = Res.drawable.ic_daftarkendaraan_samsat,
-                label = "Daftar\nKendaraan",
-                onClick = {
-                    navigateToDaftarKendaraanSaya()
-                },
-            )
-            Spacer_4dp()
-            HomeItem(
-                iconRes = Res.drawable.ic_riwayatpembayaran_samsat,
-                label = "Riwayat\nPembayaran",
-                onClick = {
-                    navigateToRiwayatPembayaran()
-                },
-            )
-
-        }
-
-    }
-
-
-}
-
-@Composable
-private fun NotificationButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .background(
-                MaterialTheme.colorScheme.background.copy(.2f),
-                CircleShape
-            )
-            .size(45.dp)
-            .noRippleClickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.bell),
-            contentDescription = "Notifications",
-            tint = MaterialTheme.colorScheme.background
-        )
-    }
-}
-
-@Composable
-fun HomeItem(iconRes: DrawableResource, label: String, onClick: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .clickable { onClick() }
-                .size(64.dp)
-                .clip(CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(iconRes),
-                contentDescription = null,
-            )
-        }
-        Spacer_8dp()
         Text(
-            label,
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-data class GridItemData(val icon: DrawableResource, val text: String, val onClick: () -> Unit)
-
-
-@Composable
-private fun DokumenSection(
-    navigateToEtbpkp: () -> Unit,
-    navigateToEKD: () -> Unit,
-    navigateToEPengesahan: () -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
-    ) {
-        Text(
-            "Dokumen Digital",
-            style = MaterialTheme.typography.labelLarge.copy(
-                fontWeight = FontWeight.Bold
+            text = "RAMPCHECK KEMENHUB",
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold,
             )
         )
-        Text(
-            "Akses dan Unduh Dokumen Digital Kendaraan Anda",
-            style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
-        )
-
-        Spacer_16dp()
-
-
-        Row {
-            DocumentCard(
-                iconRes = Res.drawable.ic_etbpkp,
-                title = "E-TBPKP",
-                subtitle = "STNK Digital\nKendaraan",
-            ) {
-                navigateToEtbpkp()
-            }
-            Spacer_4dp()
-            DocumentCard(
-                iconRes = Res.drawable.ic_epengesahan,
-                title = "E-Pengesahan",
-                subtitle = "Bukti\nPengesahan STNK",
-            ) {
-                navigateToEPengesahan()
-            }
-            Spacer_4dp()
-            DocumentCard(
-                iconRes = Res.drawable.ic_ekd,
-                title = "E-KD",
-                subtitle = "Asuransi\nJasa Raharja",
-            ) {
-                navigateToEKD()
-            }
-        }
-
     }
 }
 
 @Composable
-fun DocumentCard(
-    iconRes: DrawableResource,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .width(114.dp)
-            .height(116.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(gradientSamsatCeriaVertical)
-            .padding(8.dp)
-            .clickable { onClick() },
-    ) {
-        Image(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(32.dp)
-        )
-        Spacer_16dp()
-        Text(
-            title,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
-        Spacer_4dp()
-        Text(
-            subtitle,
-            style = MaterialTheme.typography.labelSmall.copy(color = Color.DarkGray)
-        )
-    }
-}
-
-@Composable
-fun PengaduanSection() {
+fun PemeriksaanSection(navigateToSaldo: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = yellowBackground),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(74.dp)) {
-            Image(
-                painter = painterResource(Res.drawable.ic_decor_pengaduan),
-                contentDescription = null,
+        Box(modifier = Modifier.fillMaxWidth().height(96.dp)) {
+
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-            )
-            // Teks dengan padding
-            Column(
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .noRippleClickable {
+                        navigateToSaldo()
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_pemeriksaan),
+                    contentDescription = null
+                )
+                Spacer_8dp()
+                Text(
+                    "PEMERIKSAAN",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun RiwayatPemeriksaanSection() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = yellowBackground),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(96.dp)) {
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    "Ada Kendala ?",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = PrimaryColor
-                )
-                Text(
-                    "Sampaikan keluhan Anda dengan mudah disini",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Normal
-                    )
-                )
-            }
-
-
-            Image(
-                painter = painterResource(Res.drawable.ic_thorn),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun BeritaSection(newsItems: List<NewsItem>, onClick: () -> Unit) {
-
-
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // Teks dengan padding
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer_8dp()
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        "Berita & Informasi",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                    Text(
-                        "Temukan Informasi menarik dan berita terkini!",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Normal
-                        )
-                    )
-                }
-                Text(
-                    "Lihat Semua",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryColor
-                    ),
-                    modifier = Modifier.clickable {
-                        onClick()
-                    }
-                )
-            }
-
-            Spacer_16dp()
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(newsItems) { item ->
-                    NewsItemCard(item = item)
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-fun NewsItemCard(item: NewsItem) {
-    Card(
-        modifier = Modifier
-            .width(280.dp) // Adjust width as needed for your layout (e.g., in a LazyRow)
-            .padding(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White // Set the background color of the card
-        ),
-
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-            ) {
                 Image(
-                    painter = painterResource(item.imageUrl), // Replace with your image ID
-                    contentDescription = "Image for ${item.title}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    painter = painterResource(Res.drawable.ic_riwayat_pemeriksaan),
+                    contentDescription = null
+                )
+                Spacer_8dp()
+                Text(
+                    "RIWAYAT PEMERIKSAAN",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Date
-            Text(
-                text = item.date,
-                style = MaterialTheme.typography.bodySmall, // Smaller text for date
-                color = Color.Gray, // Greyish color for the date
-                modifier = Modifier.padding(horizontal = 12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Title
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), // Bolder, medium size for the title
-                color = Color.Black,
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp
-                ) // Padding for the title
-            )
         }
     }
 }
-
 
 @Composable
 private fun InitializePermissions(events: (HomeEvent) -> Unit) {

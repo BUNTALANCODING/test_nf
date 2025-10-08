@@ -183,10 +183,3 @@ fun ListNewsSection(newsItem: List<NewsItem>) {
         }
     }
 }
-
-
-
-
-
-
-

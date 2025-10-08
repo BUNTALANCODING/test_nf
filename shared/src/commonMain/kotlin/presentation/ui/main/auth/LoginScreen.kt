@@ -12,15 +12,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -29,7 +36,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -57,6 +66,7 @@ import org.jetbrains.compose.resources.stringResource
 import presentation.component.DEFAULT__BUTTON_SIZE_EXTRA
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
+import presentation.component.DefaultTextField
 import presentation.component.PasswordTextField
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_32dp
@@ -65,9 +75,11 @@ import presentation.component.Spacer_8dp
 import presentation.component.ValidationState
 import presentation.component.noRippleClickable
 import presentation.theme.PrimaryColor
+import presentation.theme.yellowBackground
 import presentation.ui.main.auth.view_model.LoginEvent
 import presentation.ui.main.auth.view_model.LoginState
 import presentation.util.ValidationResult
+import rampcheck.shared.generated.resources.ic_kemenhub
 import rampcheck.shared.generated.resources.ic_logo
 
 @Composable
@@ -127,7 +139,7 @@ private fun LoginContent(
     navigateToRegister: () -> Unit,
     navigateToForgot: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.White)){
+    Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
 //        Image(
 //            painter = painterResource(Res.drawable.ic_frame_decor),
 //            contentDescription = "decoration",
@@ -148,34 +160,9 @@ private fun LoginContent(
                 events = events,
                 validationState = validationState,
                 navigateToRegister = navigateToRegister,
-                navigateToForgot = navigateToForgot
-            )
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle()) {
-                        append("Dengan masuk dan daftar akun Banten Ceria, anda menyetujui\n")
-
-                    }
-                    withStyle(style = SpanStyle(color = PrimaryColor, fontWeight = FontWeight.Bold)) {
-                        append("Syarat & Ketentuan ")
-                    }
-                    withStyle(style = SpanStyle()) {
-                        append("serta ")
-                    }
-                    withStyle(style = SpanStyle(color = PrimaryColor, fontWeight = FontWeight.Bold)) {
-                        append("Kebijakan Privasi ")
-                    }
-                    withStyle(style = SpanStyle()) {
-                        append("yang berlaku")
-                    }
-                },
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                navigateToForgot = navigateToForgot,
+                modifier = Modifier.weight(1f)
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             )
         }
     }
@@ -185,15 +172,23 @@ private fun LoginContent(
 @Composable
 private fun LoginHeader() {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(16.dp).size(239.dp, 125.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer_16dp()
-        val painter = painterResource(Res.drawable.ic_logo)
+        val painter = painterResource(Res.drawable.ic_kemenhub)
         Image(
             painter = painter,
             contentDescription = "Login Header",
             contentScale = ContentScale.Fit,
+            modifier = Modifier.width(121.dp).height(140.dp)
+        )
+        Spacer_16dp()
+        Text(
+            text = "RAMPCHECK KEMENHUB",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold,
+            )
         )
     }
 
@@ -205,67 +200,50 @@ private fun LoginFormCard(
     events: (LoginEvent) -> Unit,
     validationState: LoginValidationState,
     navigateToRegister: () -> Unit,
-    navigateToForgot: () -> Unit
+    navigateToForgot: () -> Unit,
+    modifier: Modifier
 ) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top
+    Spacer_32dp()
+    Surface(
+        modifier = modifier
+            .fillMaxWidth(),
+        color = PrimaryColor
     ) {
-        Spacer_16dp()
+        Column(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer_16dp()
+                Text(
+                    "Masuk Dengan Akun Anda",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    ),
+                )
+                Spacer_16dp()
+                // Input Fields
+                LoginInputFields(
+                    state = state,
+                    events = events,
+                    validationState = validationState
+                )
 
-        // Welcome Section
-        WelcomeSection()
+                Spacer_16dp()
 
-        Spacer_32dp()
 
-        // Input Fields
-        LoginInputFields(
-            state = state,
-            events = events,
-            validationState = validationState
-        )
+                Spacer_16dp()
 
-        Spacer_16dp()
+                // Login Button
+                LoginButton(
+                    state = state,
+                    events = events,
+                    isEnabled = validationState.isAllValid
+                )
 
-        // Forgot Password Link
-        ForgotPasswordLink(onClick = navigateToForgot)
+                Spacer_16dp()
+            }
 
-        Spacer_16dp()
-
-        // Login Button
-        LoginButton(
-            state = state,
-            events = events,
-            isEnabled = validationState.isAllValid
-        )
-
-        Spacer_16dp()
-
-        // Register Prompt
-        RegisterPrompt(onClick = navigateToRegister)
-
-        Spacer_32dp()
+        }
     }
-}
-
-@Composable
-private fun WelcomeSection() {
-    Text(
-        stringResource(Res.string.selamat_datang),
-        style = MaterialTheme.typography.headlineSmall.copy(
-            textAlign = TextAlign.Start
-        )
-    )
-    Spacer_8dp()
-    Text(
-        stringResource(Res.string.label_welcome),
-        style = MaterialTheme.typography.labelMedium.copy(
-            fontWeight = FontWeight.Normal
-        )
-    )
 }
 
 @Composable
@@ -305,7 +283,7 @@ private fun ValidatedEmailField(
 ) {
     Column {
         Text(
-            "Nomor Telepon",
+            "Email",
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -314,7 +292,7 @@ private fun ValidatedEmailField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text("Email") },
+            placeholder = { Text("Masukkan Email") },
             modifier = Modifier
                 .fillMaxWidth(),
             shape = MaterialTheme.shapes.small,
@@ -324,7 +302,14 @@ private fun ValidatedEmailField(
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email,
             ),
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+                unfocusedIndicatorColor = Color.White,
+                focusedIndicatorColor = Color.White
+            )
         )
+
 
         AnimatedVisibility(visible = !validation.isValid && value.isNotEmpty()) {
             Text(
@@ -361,24 +346,6 @@ private fun ValidatedPasswordField(
 }
 
 @Composable
-private fun ForgotPasswordLink(onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .noRippleClickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
-    ) {
-        Text(
-            stringResource(Res.string.forget_password),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = PrimaryColor,
-        )
-    }
-}
-
-@Composable
 private fun LoginButton(
     state: LoginState,
     events: (LoginEvent) -> Unit,
@@ -396,7 +363,10 @@ private fun LoginButton(
             }
         },
         enabled = isEnabled,
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(10.dp),
+        colors =  ButtonDefaults.buttonColors(
+            containerColor = yellowBackground
+        )
     )
 }
 
@@ -422,6 +392,7 @@ private fun RegisterPrompt(onClick: () -> Unit) {
     }
 
 }
+
 //
 @Stable
 private data class LoginValidationState(

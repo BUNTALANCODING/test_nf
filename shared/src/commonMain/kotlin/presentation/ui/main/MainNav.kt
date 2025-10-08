@@ -48,8 +48,8 @@ import presentation.ui.main.auth.forgot.ForgotPasswordScreen
 import presentation.ui.main.auth.pin.SuccessPinScreen
 import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.datapemeriksaan.fotopetugas.CameraPetugasScreen
 import presentation.ui.main.home.HomeScreen
-import presentation.ui.main.home.NotificationScreen
 import presentation.ui.main.home.news.DetailNewsScreen
 import presentation.ui.main.home.news.NewsScreen
 import presentation.ui.main.home.view_model.HomeAction
@@ -140,7 +140,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                             navigator.navigate(HomeNavigation.Login)
                         },
                         navigateToSaldo = {
-                            navigator.navigate(HomeNavigation.DashboardSaldo)
+                            navigator.navigate(HomeNavigation.CameraKTP)
                         },
                         navigateToNews = {
                             navigator.navigate(HomeNavigation.News)
@@ -266,15 +266,15 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 }
 
                 composable<HomeNavigation.CameraKTP> {
-//                    CameraKTPScreen(
-//                        state = viewModel.state.value,
-//                        events = viewModel::onTriggerEvent,
-//                        errors = viewModel.errors,
-//                        popup = { navigator.popBackStack() },
-//                        navigateToVerifyPhotoKTP = {
-//                            navigator.navigate(HomeNavigation.VerifyPhotoKTP)
-//                        }
-//                    )
+                    CameraPetugasScreen(
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        errors = viewModel.errors,
+                        popup = { navigator.popBackStack() },
+                        navigateToVerifyPhotoKTP = {
+                            navigator.navigate(HomeNavigation.VerifyPhotoKTP)
+                        }
+                    )
                 }
 
                 composable<HomeNavigation.VerifyPhotoKTP> {

@@ -103,6 +103,10 @@ class HomeViewModel(
                 onUpdateClearTrigger(event.value)
             }
 
+            is HomeEvent.OnUpdateTanggalPemeriksaan -> {
+                onUpdateTanggalPemeriksaan(event.value)
+            }
+
             is HomeEvent.OnUpdateSelectedVehicle -> {
                 onUpdateSelectedVehicle(event.value)
             }
@@ -126,6 +130,9 @@ class HomeViewModel(
     }
     private fun onUpdateSelectedTab(value: Int) {
         setState { copy(selectedTab = value) }
+    }
+    private fun onUpdateTanggalPemeriksaan(value: String) {
+        setState { copy(tanggalPemeriksaan = value) }
     }
     private fun onUpdateSelectedTabListrik(value: Int) {
         setState { copy(selectedTabListrik = value) }
