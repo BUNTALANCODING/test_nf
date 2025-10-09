@@ -1,5 +1,8 @@
 package presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,11 +10,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -25,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,8 +42,11 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import presentation.theme.PrimaryColor
 import presentation.theme.TextGray
+import presentation.ui.main.home.view_model.HomeEvent
+import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.arrow_right
+import rampcheck.shared.generated.resources.ic_camera
 
 
 @Composable
@@ -196,6 +206,100 @@ fun EDokumenItem(
         }
     }
 }
+data class ConditionItem(
+    val id: String,
+    val title: String,
+    val section: String,
+    val selection: Int = 0
+)
+@Composable
+fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(16.dp),
+    ) {
+        Text(
+            item.title,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer_8dp()
+        Divider(thickness = 1.dp, color = Color.Gray)
+        Spacer_8dp()
+
+        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+            RadioButton(
+                selected = item.selection == 1,
+                onClick = { events(HomeEvent.OnUpdateConditionSelection(item.id, 1)) }
+            )
+            Text(
+                "Ya, Sesuai",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
+            )
+            Spacer_16dp()
+            RadioButton(
+                selected = item.selection == 2,
+                onClick = {
+                    events(HomeEvent.OnUpdateConditionSelection(item.id, 2))
+
+                }
+            )
+            Text(
+                "Tidak Sesuai",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
+            )
+        }
+        AnimatedVisibility(
+            visible = item.selection == 2,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+
+            Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+
+
+                DefaultTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "",
+                    onValueChange = {},
+                    placeholder = "Masukkan Kondisi Sebenarnya"
+                )
+
+                Spacer_8dp()
+
+                DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        androidx.compose.material.Icon(
+                            imageVector = vectorResource(Res.drawable.ic_camera),
+                            modifier = Modifier.size(24.dp)
+                                .align(Alignment.CenterHorizontally),
+                            contentDescription = null,
+                            tint = Color.Black
+                        )
+                        Spacer_8dp()
+                        Text(
+                            "Foto",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = Color.Black
+                            ),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ListNewsCard(item: NewsItem) {

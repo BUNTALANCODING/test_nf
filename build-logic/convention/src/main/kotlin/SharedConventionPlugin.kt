@@ -117,6 +117,10 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("com.google.mlkit:face-detection:16.1.6")
                         implementation("com.google.android.gms:play-services-mlkit-face-detection:16.1.7")
                         implementation ("com.google.mlkit:vision-common:17.3.0")    //
+                        implementation("androidx.camera:camera-core:1.3.1")
+                        implementation("androidx.camera:camera-lifecycle:1.3.1")
+                        implementation("androidx.camera:camera-video:1.3.1")
+                        implementation("androidx.camera:camera-view:1.3.1")
                     }
                 }
 

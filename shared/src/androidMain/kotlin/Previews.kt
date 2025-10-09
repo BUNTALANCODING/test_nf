@@ -1,11 +1,14 @@
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import presentation.component.ConditionCard
 import presentation.theme.AppTheme
+import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
 import presentation.ui.main.home.view_model.HomeState
-import presentation.ui.main.pemeriksaanadministrasi.kartuuji.ConditionCard
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
+import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
 
 /*@Composable
 @androidx.compose.ui.tooling.preview.Preview
@@ -99,7 +102,7 @@ fun HomeScreen() {
 @Preview
 fun Previews() {
     AppTheme {
-        HasilPemeriksaanKartuUjiScreen(
+        FormBeritaAcaraScreen(
             state = HomeState(),
             events = {},
             errors = MutableSharedFlow(),
@@ -108,16 +111,16 @@ fun Previews() {
     }
 }
 
-@Composable
-@Preview
-fun Previewsa() {
-    AppTheme {
-        ConditionCard(
-            title = "Kartu Uji/STUK : Berlaku",
-            state = HomeState(),
-        ) { }
-    }
-}
+//@Composable
+//@Preview
+//fun Previewsa() {
+//    AppTheme {
+//        ConditionCard(
+//            title = "Kartu Uji/STUK : Berlaku",
+//            state = HomeState(),
+//        ) { }
+//    }
+//}
 
 //@Composable
 //@Preview

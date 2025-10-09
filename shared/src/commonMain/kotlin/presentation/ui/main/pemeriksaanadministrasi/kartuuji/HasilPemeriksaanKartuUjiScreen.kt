@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,9 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.SECTION_KARTU_UJI
 import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
+import presentation.component.ConditionCard
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
@@ -39,6 +42,7 @@ import presentation.component.Spacer_16dp
 import presentation.component.Spacer_48dp
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
+import presentation.ui.main.datapemeriksaan.kir.ButtonNextSection
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
@@ -82,12 +86,16 @@ private fun PemeriksaanKartuUjiContent(
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             CardSection(state, events)
+            Spacer(Modifier.weight(1f))
+            ButtonNextSection("LANJUT")
         }
     }
 }
 
 @Composable
 private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
+
+    val items = state.technicalConditions.filter { it.section == SECTION_KARTU_UJI }
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
         Text(
             "Hasil Pemeriksaan",
@@ -96,7 +104,10 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_16dp()
-        ConditionCard("Kartu Uji/STUK : Berlaku", state = state, events = events)
+        items.forEach { item ->
+            ConditionCard(item = item, events = events)
+            Spacer_8dp()
+        }
 
     }
 }
@@ -112,7 +123,7 @@ private fun HeaderSection() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-            Spacer_48dp()
+            Spacer_16dp()
             Column(modifier = Modifier.fillMaxWidth().height(120.dp).background(Color(0xFFE5E5E5)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                 Image(
                     painter = painterResource(Res.drawable.kartu_uji),
@@ -129,47 +140,6 @@ private fun HeaderSection() {
                 )
             )
         }
-    }
-}
-@Composable
-fun ConditionCard(title: String, state: HomeState, events: (HomeEvent) -> Unit){
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(Color.White)
-            .padding(16.dp),
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
-        Spacer_8dp()
-        Divider(thickness = 1.dp, color = Color.Gray)
-        Spacer_8dp()
-
-        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
-            androidx.compose.material3.RadioButton(
-                selected = state.selectedOption == 1,
-                onClick = { events(HomeEvent.OnUpdateSelectedOption(1)) }
-            )
-            Text(
-                "Ya, Sesuai",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
-            )
-            Spacer_16dp()
-            androidx.compose.material3.RadioButton(
-                selected = state.selectedOption == 2,
-                onClick = { events(HomeEvent.OnUpdateSelectedOption(2))  }
-            )
-            Text(
-                "Tidak Sesuai",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
-            )
-        }
-
     }
 }
 

@@ -36,6 +36,8 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateSelectedOption(val value: Int) : HomeEvent()
 
+    data class OnUpdateConditionSelection(val cardId: String, val selection: Int) : HomeEvent()
+
     data class OnUpdateSelectedTab(val value: Int) : HomeEvent()
 
     data class OnUpdateSelectedTabListrik(val value: Int) : HomeEvent()

@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -229,6 +232,33 @@ fun IconDrawableButton(
         Text(
             text = text,
             style = style,
+        )
+    }
+}
+
+@Composable
+fun ButtonVerticalSection(positiveButtonLabel: String, negativeButtonLabel: String) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        DefaultButton(
+            modifier = Modifier.width(258.dp).height(DEFAULT__BUTTON_SIZE),
+            enabled = true,
+            text = positiveButtonLabel,
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryColor,
+                contentColor = Color.White
+            ),
+        )
+        Spacer_16dp()
+        DefaultButton(
+            modifier = Modifier.width(258.dp).height(DEFAULT__BUTTON_SIZE),
+            enabled = true,
+            text = negativeButtonLabel,
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = Color.White
+            ),
         )
     }
 }

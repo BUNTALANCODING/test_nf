@@ -6,6 +6,7 @@ import business.core.UIComponentState
 import business.core.ViewState
 import business.datasource.network.common.JAlertResponse
 import business.datasource.network.main.request.DataPassengerCO
+import business.datasource.network.main.request.Passenger
 import business.datasource.network.main.request.PassengerCheckout
 import business.datasource.network.main.responses.CargoCategoryDTO
 import business.datasource.network.main.responses.CheckStatusDTO
@@ -25,24 +26,26 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import presentation.component.ConditionItem
 
 data class HomeState(
 
-    val cityCodeValue : String = "",
-    val middleCodeValue : String = "",
-    val lastCodeValue : String = "",
-    val noRangka : String = "",
+    val technicalConditions: List<ConditionItem> = initialTechnicalConditionsList(),
+    val cityCodeValue: String = "",
+    val middleCodeValue: String = "",
+    val lastCodeValue: String = "",
+    val noRangka: String = "",
     val clearTrigger: Boolean = false,
-    val selectedOption: Int = 1,
+    val selectedOption: Int = 0,
     val nikValue: String = "",
     val namaLengkap: String = "",
-    val tanggalPemeriksaan : String = "",
+    val tanggalPemeriksaan: String = "",
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,
-    val searchValue : String = "",
-    val selectedFilter : String = "",
+    val searchValue: String = "",
+    val selectedFilter: String = "",
     val selectedVehicle: String = "",
-    val selectedMethod: Pair<Int, Int> = Pair(0,0),
+    val selectedMethod: Pair<Int, Int> = Pair(0, 0),
     val pin: String = "",
     val showDialogPajak: UIComponentState = UIComponentState.Hide,
 
@@ -58,7 +61,7 @@ data class HomeState(
     val selectedTime: String = "",
     val selectedTicketType: CargoCategoryDTO = CargoCategoryDTO(),
     val selectedPassenger: PassengerCategory = PassengerCategory(),
-    val selectedPassengerList: List<business.datasource.network.main.request.Passenger> = listOf(),
+    val selectedPassengerList: List<Passenger> = listOf(),
     val selectedPassengerList2: List<PassengerCategory> = listOf(),
     val selectedRoute: Route = Route(),
     val typeRoute: String = "",
@@ -119,3 +122,132 @@ data class HomeState(
     val progressBarState: ProgressBarState = ProgressBarState.Idle,
     val networkState: NetworkState = NetworkState.Good,
 ) : ViewState
+
+fun initialTechnicalConditionsList(): List<ConditionItem> {
+    return listOf(
+        ConditionItem(
+            id = "lampu_dekat",
+            title = "Lampu Utama Dekat : Semua Menyala",
+            section = "Sistem Penerangan",
+        ),
+        ConditionItem(
+            id = "lampu_jauh",
+            title = "Lampu Utama Jauh : Semua Menyala",
+            section = "Sistem Penerangan"
+        ),
+        ConditionItem(
+            id = "sein_depan",
+            title = "Lampu Sein Depan : Semua Menyala",
+            section = "Sistem Penerangan"
+        ),
+        ConditionItem(
+            id = "sein_belakang",
+            title = "Lampu Sein Belakang : Tidak Menyala",
+            section = "Sistem Penerangan"
+        ),
+        ConditionItem(
+            id = "lampu_rem",
+            title = "Lampu Rem : Semua Menyala",
+            section = "Sistem Penerangan"
+        ),
+        ConditionItem(
+            id = "lampu_mundur",
+            title = "Lampu Mundur : Semua Menyala",
+            section = "Sistem Penerangan"
+        ),
+        // === SISTEM PENGEREMAN SECTION ===
+        ConditionItem(
+            id = "rem_utama",
+            title = "Kondisi Rem Utama : Berfungsi",
+            section = "Sistem Pengereman"
+        ),
+        ConditionItem(
+            id = "rem_parkir",
+            title = "Kondisi Rem Parkir : Berfungsi",
+            section = "Sistem Pengereman"
+        ),
+
+        // === BADAN KENDARAAN SECTION ===
+        ConditionItem(
+            id = "kaca_depan",
+            title = "Kondisi Kaca Depan : Baik",
+            section = "Badan Kendaraan"
+        ),
+        ConditionItem(
+            id = "pintu_utama",
+            title = "Kondisi Pintu Utama : Tidak Berfungsi",
+            section = "Badan Kendaraan"
+        ),
+
+        // === KONDISI BAN SECTION ===
+        ConditionItem(
+            id = "ban_depan",
+            title = "Kondisi Ban Depan : Semua Laik",
+            section = "Kondisi Ban"
+        ),
+        ConditionItem(
+            id = "ban_belakang",
+            title = "Kondisi Ban Belakang : Tidak Laik",
+            section = "Kondisi Ban"
+        ),
+
+        // === PERLENGKAPAN SECTION ===
+        ConditionItem(
+            id = "sabuk",
+            title = "Sabuk Keselamatan Pengemudi: Ada dan Berfungsi",
+            section = "Perlengkapan"
+        ),
+
+        // === PENGUKUR KECEPATAN SECTION ===
+        ConditionItem(
+            id = "speedometer",
+            title = "Pengukur Kecepatan : Ada dan Berfungsi",
+            section = "Pengukur Kecepatan"
+        ),
+
+        // === WIPER SECTION ===
+        ConditionItem(
+            id = "wiper",
+            title = "Penghapus Kaca: Ada dan Berfungsi",
+            section = "Wiper"
+        ),
+
+        // === TANGGAP DARURAT SECTION ===
+        ConditionItem(
+            id = "pintu_darurat",
+            title = "Pintu Darurat: Ada",
+            section = "Tanggap Darurat"
+        ),
+        ConditionItem(
+            id = "pemukul_kaca",
+            title = "Alat Pemukul/Pemecah Kaca: Tidak Ada",
+            section = "Tanggap Darurat"
+        ),
+
+        // === KARTU UJI SECTION ===
+        ConditionItem(
+            id = "kartu_uji",
+            title = "Kartu Uji/STUK : Berlaku",
+            section = "Kartu Uji"
+        ),
+        // === KP REGULER ===
+        ConditionItem(
+            id = "kp_reguler",
+            title = "KP Reguler : Berlaku",
+            section = "KP Reguler"
+        ),
+        // === KP Cadangan SECTION ===
+        ConditionItem(
+            id = "kp_cadangan",
+            title = "KP Cadangan : Berlaku",
+            section = "KP Cadangan"
+        ),
+        // === SIM PENGEMUDI SECTION ===
+        ConditionItem(
+            id = "sim_pengemudi",
+            title = "SIM Pengemudi: SIM A Umum",
+            section = "SIM Pengemudi"
+        ),
+
+        )
+}

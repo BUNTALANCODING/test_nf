@@ -48,12 +48,15 @@ import presentation.ui.main.auth.forgot.ForgotPasswordScreen
 import presentation.ui.main.auth.pin.SuccessPinScreen
 import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.CameraPetugasScreen
 import presentation.ui.main.home.HomeScreen
 import presentation.ui.main.home.news.DetailNewsScreen
 import presentation.ui.main.home.news.NewsScreen
 import presentation.ui.main.home.view_model.HomeAction
 import presentation.ui.main.home.view_model.HomeViewModel
+import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -266,14 +269,12 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 }
 
                 composable<HomeNavigation.CameraKTP> {
-                    CameraPetugasScreen(
+                    FormBeritaAcaraScreen(
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         errors = viewModel.errors,
                         popup = { navigator.popBackStack() },
-                        navigateToVerifyPhotoKTP = {
-                            navigator.navigate(HomeNavigation.VerifyPhotoKTP)
-                        }
+                        navigateToCameraFace = {},
                     )
                 }
 

@@ -61,6 +61,9 @@ class HomeViewModel(
             is HomeEvent.OnUpdateMiddleCode -> {
                 onUpdateMiddleCode(event.value)
             }
+            is HomeEvent.OnUpdateConditionSelection -> {
+                onUpdateConditionSelection(event.cardId, event.selection)
+            }
             is HomeEvent.OnUpdateNoRangka -> {
                 onUpdateNoRangka(event.value)
             }
@@ -118,6 +121,20 @@ class HomeViewModel(
     }
     private fun onUpdateMiddleCode(value: String) {
         setState { copy(middleCodeValue = value) }
+    }
+    private fun onUpdateConditionSelection(cardId: String, selection: Int) {
+        setState {
+            val currentList = technicalConditions
+
+            val updatedList = currentList.map { item ->
+                if (item.id == cardId) {
+                    item.copy(selection = selection)
+                } else {
+                    item
+                }
+            }
+            copy(technicalConditions = updatedList)
+        }
     }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }

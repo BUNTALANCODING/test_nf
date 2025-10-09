@@ -108,7 +108,7 @@ fun DefaultScreenUI(
                                 )
                             } else {
 
-                                Spacer(modifier = Modifier.size(32.dp))
+                                Spacer_16dp()
                             }
 
                             Text(
