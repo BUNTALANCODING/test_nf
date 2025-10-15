@@ -43,7 +43,7 @@ fun VerifyFotoPetugasScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToGuideFace: () -> Unit
+    navigateToDataKIR: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -57,7 +57,7 @@ fun VerifyFotoPetugasScreen(
         VerifyFotoPetugasContent(
             state = state,
             events = events,
-            navigateToGuideFace = navigateToGuideFace,
+            navigateToDataKIR = navigateToDataKIR,
             popup = popup
 
         )
@@ -69,7 +69,7 @@ fun VerifyFotoPetugasScreen(
 private fun VerifyFotoPetugasContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToGuideFace: () -> Unit,
+    navigateToDataKIR: () -> Unit,
     popup: () -> Unit
 ) {
     Column(
@@ -82,7 +82,7 @@ private fun VerifyFotoPetugasContent(
         ) {
             HeaderSection()
             PhotoKTPSection()
-            ButtonSectionVerify(popup = popup, navigateToGuideFace = navigateToGuideFace)
+            ButtonSectionVerify(popup = popup, navigateToDataKIR = navigateToDataKIR)
         }
 
     }
@@ -141,7 +141,7 @@ private fun PhotoKTPSection() {
 
 
 @Composable
-private fun ButtonSectionVerify(popup: () -> Unit, navigateToGuideFace: () -> Unit) {
+private fun ButtonSectionVerify(popup: () -> Unit, navigateToDataKIR: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer_32dp()
@@ -161,7 +161,7 @@ private fun ButtonSectionVerify(popup: () -> Unit, navigateToGuideFace: () -> Un
 
         DefaultButton(
             onClick = {
-                navigateToGuideFace()
+                navigateToDataKIR()
             },
             modifier = Modifier.width(240.dp).height(DEFAULT__BUTTON_SIZE),
             colors = ButtonDefaults.buttonColors(

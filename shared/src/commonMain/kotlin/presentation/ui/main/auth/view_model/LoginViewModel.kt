@@ -4,7 +4,6 @@ import business.core.BaseViewModel
 import business.core.NetworkState
 import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
 import business.interactors.main.ForgotPasswordUseCase
-import business.interactors.main.UpdateDeviceTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
@@ -16,8 +15,12 @@ class LoginViewModel(
     private val registerUseCase: RegisterUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
+//    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
 ) : BaseViewModel<LoginEvent, LoginState, LoginAction>() {
+
+    init {
+        checkToken()
+    }
 
     override fun setInitialState() = LoginState()
 
@@ -96,23 +99,23 @@ class LoginViewModel(
         }
     }
 
-    private fun updateTokenFCM(token: String) {
-        executeUseCase(
-            updateDeviceTokenUseCase.execute(
-                UpdateDeviceTokenRequestDTO(
-                    token = token
-                )
-            ), onSuccess = { data, status ->
-                /*data?.let {
-                    setState { copy(fcmToken = it) }
-                }*/
-            }, onLoading = {
-                setState { copy(progressBarState = it) }
-            }, onNetworkStatus = {
-                setEvent(LoginEvent.OnUpdateNetworkState(it))
-            }
-        )
-    }
+//    private fun updateTokenFCM(token: String) {
+//        executeUseCase(
+//            updateDeviceTokenUseCase.execute(
+//                UpdateDeviceTokenRequestDTO(
+//                    token = token
+//                )
+//            ), onSuccess = { data, status ->
+//                /*data?.let {
+//                    setState { copy(fcmToken = it) }
+//                }*/
+//            }, onLoading = {
+//                setState { copy(progressBarState = it) }
+//            }, onNetworkStatus = {
+//                setEvent(LoginEvent.OnUpdateNetworkState(it))
+//            }
+//        )
+//    }
 
     private fun forgotPassword(email: String) {
         executeUseCase(
@@ -180,7 +183,7 @@ class LoginViewModel(
         executeUseCase(
             loginUseCase.execute(
                 LoginUseCase.Params(
-                    email = state.value.usernameLogin,
+                    username = state.value.usernameLogin,
                     password = state.value.passwordLogin,
                 )
             ),
@@ -188,7 +191,7 @@ class LoginViewModel(
                 data?.let {
                     setAction {
                         if (it.token.toString().isNotEmpty()) {
-                            state.value.fcmToken.let { t -> updateTokenFCM(t) }
+//                            state.value.fcmToken.let { t -> updateTokenFCM(t) }
                             LoginAction.Navigation.NavigateToMain
                         } else {
                             LoginAction.Navigation.NavigateToLogin

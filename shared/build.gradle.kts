@@ -65,7 +65,7 @@ buildkonfig {
     defaultConfigs("dev") {
         buildConfigField(STRING, "version", "2.3.1-DEV")
         buildConfigField(BOOLEAN, "debug", "true")
-        buildConfigField(STRING, "base_url", "")
+        buildConfigField(STRING, "base_url", "https://dashboard-ramcek.net2software.net/api/v1/frontend/")
     }
 
     targetConfigs("prod") {
@@ -78,7 +78,7 @@ buildkonfig {
     targetConfigs("dev") {
         defaultConfigs {
             buildConfigField(BOOLEAN, "debug", "true")
-            buildConfigField(STRING, "base_url", "")
+            buildConfigField(STRING, "base_url", "https://dashboard-ramcek.net2software.net/api/v1/frontend/")
         }
     }
 }

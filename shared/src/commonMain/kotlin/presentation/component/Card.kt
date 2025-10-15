@@ -21,6 +21,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
@@ -295,6 +296,65 @@ fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
                     }
                 }
 
+            }
+        }
+    }
+}
+
+data class ExaminationItem(
+    val vehicleNumber: String,
+    val examinationDate: String
+)
+
+@Composable
+fun ExaminationCard(item: ExaminationItem) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            // Left Column: Nomor Kendaraan
+            Column {
+                Text(
+                    text = "Nomor Kendaraan",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = Color.Gray
+                    )
+                )
+                Spacer_4dp()
+                Text(
+                    text = item.vehicleNumber,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+            // Right Column: Tanggal Pemeriksaan
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "Tanggal Pemeriksaan",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = Color.Gray
+                    )
+                )
+                Spacer_4dp()
+                Text(
+                    text = item.examinationDate,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
         }
     }

@@ -95,10 +95,10 @@ interface MainService {
         requestDTO: NotificationRequestDTO
     ): MainGenericResponse<String>
 
-    suspend fun updateDeviceToken(
-        token: String,
-        requestDTO: UpdateDeviceTokenRequestDTO
-    ): MainGenericResponse<String>
+//    suspend fun updateDeviceToken(
+//        token: String,
+//        requestDTO: UpdateDeviceTokenRequestDTO
+//    ): MainGenericResponse<String>
 
     suspend fun payment(
         token: String,

@@ -101,7 +101,7 @@ fun LoginScreen(
     val validationState by remember(state.usernameLogin, state.passwordLogin) {
         derivedStateOf {
             LoginValidationState(
-                email = validateEmail(state.usernameLogin),
+                username = validateEmail(state.usernameLogin),
                 password = validatePassword(state.passwordLogin)
             )
         }
@@ -261,7 +261,7 @@ private fun LoginInputFields(
                     events(LoginEvent.OnUpdateUsernameLogin(it))
                 }
             },
-            validation = validationState.email,
+            validation = validationState.username,
         )
 
         Spacer_8dp()
@@ -370,45 +370,22 @@ private fun LoginButton(
     )
 }
 
-@Composable
-private fun RegisterPrompt(onClick: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(Res.string.belum_punya_akun),
-                style = MaterialTheme.typography.labelMedium
-            )
-            Spacer_4dp()
-            Text(
-                modifier = Modifier.clickable { onClick() },
-                text = stringResource(Res.string.daftar_disini),
-                style = MaterialTheme.typography.labelMedium,
-                color = PrimaryColor,
-            )
-        }
-    }
 
-}
 
 //
 @Stable
 private data class LoginValidationState(
-    val email: ValidationResult,
+    val username: ValidationResult,
     val password: ValidationResult
 ) {
     val isAllValid: Boolean
-        get() = email.isValid && password.isValid
+        get() = username.isValid && password.isValid
 }
 
 // Validation functions
-private fun validateEmail(email: String): ValidationResult {
+private fun validateEmail(username: String): ValidationResult {
     return when {
-        email.isBlank() -> ValidationResult(false, "Email tidak boleh kosong")
-        !email.matches(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) ->
-            ValidationResult(false, "Email tidak valid")
+        username.isBlank() -> ValidationResult(false, "Username tidak boleh kosong")
 
         else -> ValidationResult(true)
     }

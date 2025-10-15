@@ -48,15 +48,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.ic_background_bottom_rounded
-import rampcheck.shared.generated.resources.ic_bg_rectangle
 import rampcheck.shared.generated.resources.ic_edit
 import rampcheck.shared.generated.resources.ic_pencil_edit
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.theme.PrimaryLighterColor
-import rampcheck.shared.generated.resources.ic_bg_boarding
 
+/*
 @Composable
 fun CustomTopBarOld(
     title: String,
@@ -365,7 +363,8 @@ fun CircleButton(
     iconColor: Color = MaterialTheme.colorScheme.onPrimary,
     enabled: Boolean = true
 ) {
-    /*IconButton(
+    */
+/*IconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier
@@ -380,7 +379,8 @@ fun CircleButton(
             tint = iconColor,
             modifier = Modifier.size(16.dp)
         )
-    }*/
+    }*//*
+
 }
 
 // Extension for responsive spacing
@@ -448,3 +448,4 @@ fun HeaderView(
 }
 
 
+*/

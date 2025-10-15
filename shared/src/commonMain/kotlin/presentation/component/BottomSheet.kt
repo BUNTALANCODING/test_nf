@@ -77,79 +77,77 @@ import presentation.theme.ButtonPrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.ic_car_milik_orang_lain
-import rampcheck.shared.generated.resources.ic_car_milik_pribadi
 import rampcheck.shared.generated.resources.ic_checked_figma
 import rampcheck.shared.generated.resources.ic_jne
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CekPajakBottomDialog(
-    onDismiss: () -> Unit,
-    navigateToDaftarKendaraan: () -> Unit,
-    navigateToMilikOrangLain: () -> Unit
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.background,
-        sheetState = sheetState,
-        dragHandle = null
-    ) {
-
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "Cek Pajak Kendaraan",
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            IconButton(onClick = onDismiss) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-
-
-        Spacer_8dp()
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-        ) {
-            DialogItem(
-                iconRes = Res.drawable.ic_car_milik_pribadi,
-                title = "Milik Pribadi",
-                subtitle = "Lihat detail pajak dan perpanjang STNK milik Anda",
-                onClick = {
-                    onDismiss()
-                    navigateToDaftarKendaraan()
-                }
-            )
-
-            Spacer_12dp()
-
-            DialogItem(
-                iconRes = Res.drawable.ic_car_milik_orang_lain,
-                title = "Milik Orang Lain",
-                subtitle = "Bantu cek pajak kendaraan milik orang lain",
-                onClick = {
-                    onDismiss()
-                    navigateToMilikOrangLain()
-                }
-            )
-            Spacer_16dp()
-
-        }
-
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun CekPajakBottomDialog(
+//    onDismiss: () -> Unit,
+//    navigateToDaftarKendaraan: () -> Unit,
+//    navigateToMilikOrangLain: () -> Unit
+//) {
+//    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+//
+//    ModalBottomSheet(
+//        onDismissRequest = onDismiss,
+//        containerColor = MaterialTheme.colorScheme.background,
+//        sheetState = sheetState,
+//        dragHandle = null
+//    ) {
+//
+//        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+//            Text(
+//                "Cek Pajak Kendaraan",
+//                style = MaterialTheme.typography.labelLarge.copy(
+//                    fontWeight = FontWeight.Bold
+//                )
+//            )
+//            IconButton(onClick = onDismiss) {
+//                Icon(
+//                    imageVector = Icons.Default.Close,
+//                    contentDescription = "Close",
+//                    tint = MaterialTheme.colorScheme.onSurface
+//                )
+//            }
+//        }
+//
+//
+//        Spacer_8dp()
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .verticalScroll(rememberScrollState())
+//                .padding(horizontal = 16.dp)
+//        ) {
+//            DialogItem(
+//                iconRes = Res.drawable.ic_car_milik_pribadi,
+//                title = "Milik Pribadi",
+//                subtitle = "Lihat detail pajak dan perpanjang STNK milik Anda",
+//                onClick = {
+//                    onDismiss()
+//                    navigateToDaftarKendaraan()
+//                }
+//            )
+//
+//            Spacer_12dp()
+//
+//            DialogItem(
+//                iconRes = Res.drawable.ic_car_milik_orang_lain,
+//                title = "Milik Orang Lain",
+//                subtitle = "Bantu cek pajak kendaraan milik orang lain",
+//                onClick = {
+//                    onDismiss()
+//                    navigateToMilikOrangLain()
+//                }
+//            )
+//            Spacer_16dp()
+//
+//        }
+//
+//    }
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

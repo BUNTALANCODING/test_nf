@@ -73,7 +73,7 @@ fun CameraPetugasScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToVerifyFoto: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -88,7 +88,7 @@ fun CameraPetugasScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToVerifyFoto = navigateToVerifyFoto
         )
 
     }
@@ -99,7 +99,7 @@ private fun CameraKTPContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToVerifyFoto: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -199,7 +199,7 @@ private fun CameraKTPContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToVerifyPhotoKTP()
+                                navigateToVerifyFoto()
                                 imageBitmap = null
                             }
                         }

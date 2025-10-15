@@ -195,11 +195,12 @@ fun IconButton(
     shape: Shape = MaterialTheme.shapes.extraLarge,
     icon: ImageVector,
     text: String,
+    color: ButtonColors = DefaultButtonTheme(),
     onClick: () -> Unit
 ) {
     Button(
         modifier = modifier,
-        colors = DefaultButtonTheme(),
+        colors = color,
         shape = shape,
         onClick = onClick
     ) {

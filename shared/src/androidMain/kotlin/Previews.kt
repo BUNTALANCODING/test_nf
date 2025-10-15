@@ -2,6 +2,7 @@ import androidx.compose.runtime.Composable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.component.ConditionCard
+import presentation.component.SendEmailDialog
 import presentation.theme.AppTheme
 import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
 import presentation.ui.main.home.view_model.HomeState
@@ -9,6 +10,10 @@ import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKar
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
 import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
+import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
+import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_bus_guide
+import rampcheck.shared.generated.resources.ic_email
 
 /*@Composable
 @androidx.compose.ui.tooling.preview.Preview
@@ -102,11 +107,25 @@ fun HomeScreen() {
 @Preview
 fun Previews() {
     AppTheme {
-        FormBeritaAcaraScreen(
+        ListRiwayatPemeriksaanScreen(
             state = HomeState(),
             events = {},
             errors = MutableSharedFlow(),
             popup = {},
+        ) { }
+    }
+}
+
+@Composable
+@Preview
+fun SendEmail() {
+    AppTheme {
+        SendEmailDialog(
+            iconRes = Res.drawable.ic_email,
+            title = "Kirim Berita Acara ke Email",
+            subtitle = "pppp",
+            isButtonVertical = false,
+            isButtonVisible = true
         ) { }
     }
 }

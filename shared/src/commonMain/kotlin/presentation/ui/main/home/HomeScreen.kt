@@ -1,13 +1,10 @@
 package presentation.ui.main.home
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,15 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,21 +28,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import business.core.ProgressBarState
 import business.core.UIComponent
-import business.core.UIComponentState
 import business.datasource.network.main.responses.ProfileDTO
-import business.domain.main.NewsItem
 import common.AndroidQOrBelow
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
@@ -62,38 +49,23 @@ import dev.icerock.moko.permissions.storage.WRITE_STORAGE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import logger.Logger
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import presentation.component.CekPajakBottomDialog
+import org.jetbrains.compose.resources.vectorResource
+import presentation.component.DEFAULT__BUTTON_SIZE
+import presentation.component.DEFAULT__BUTTON_SIZE_EXTRA
+import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
-import presentation.component.Spacer_16dp
-import presentation.component.Spacer_48dp
-import presentation.component.Spacer_4dp
+import presentation.component.IconButton
 import presentation.component.Spacer_8dp
 import presentation.component.noRippleClickable
-import presentation.theme.PrimaryColor
-import presentation.theme.gradientSamsatCeriaVertical
 import presentation.theme.yellowBackground
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.bell
-import rampcheck.shared.generated.resources.ic_article_img
-import rampcheck.shared.generated.resources.ic_cekpajak_samsat
-import rampcheck.shared.generated.resources.ic_daftarkendaraan_samsat
-import rampcheck.shared.generated.resources.ic_decor_pengaduan
-import rampcheck.shared.generated.resources.ic_ekd
-import rampcheck.shared.generated.resources.ic_epengesahan
-import rampcheck.shared.generated.resources.ic_etbpkp
-import rampcheck.shared.generated.resources.ic_isi_saldo
 import rampcheck.shared.generated.resources.ic_kemenhub
+import rampcheck.shared.generated.resources.ic_logout
 import rampcheck.shared.generated.resources.ic_pemeriksaan
 import rampcheck.shared.generated.resources.ic_riwayat_pemeriksaan
-import rampcheck.shared.generated.resources.ic_riwayatpembayaran_samsat
-import rampcheck.shared.generated.resources.ic_thorn
-import rampcheck.shared.generated.resources.ic_transfer
-import rampcheck.shared.generated.resources.ic_visibillity_off_home
-import rampcheck.shared.generated.resources.profile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,17 +73,8 @@ fun HomeScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit = {},
     errors: Flow<UIComponent>,
-    navigateToNotifications: () -> Unit = {},
-    navigateToSaldo: () -> Unit,
+    navigateToPemeriksaan: () -> Unit,
     navigateToLogin: () -> Unit,
-    navigateToNews: () -> Unit,
-    navigateToMilikOrangLain: () -> Unit,
-    navigateToDaftarKendaraan: () -> Unit,
-    navigateToDaftarKendaraanSaya: () -> Unit,
-    navigateToRiwayatPembayaran: () -> Unit,
-    navigateToEtbpkp: () -> Unit,
-    navigateToEPengesahan: () -> Unit,
-    navigateToEKD: () -> Unit
 ) {
 //    val homeState = rememberHomeScreenState(state)
 
@@ -132,17 +95,8 @@ fun HomeScreen(
             state = state,
 //            homeState = homeState,
             events = events,
-            navigateToNotifications = navigateToNotifications,
             navigateToLogin = navigateToLogin,
-            navigateToSaldo = navigateToSaldo,
-            navigateToNews = navigateToNews,
-            navigateToMilikOrangLain = navigateToMilikOrangLain,
-            navigateToDaftarKendaraan = navigateToDaftarKendaraan,
-            navigateToDaftarKendaraanSaya = navigateToDaftarKendaraanSaya,
-            navigateToRiwayatPembayaran = navigateToRiwayatPembayaran,
-            navigateToEtbpkp = navigateToEtbpkp,
-            navigateToEPengesahan = navigateToEPengesahan,
-            navigateToEKD = navigateToEKD
+            navigateToPemeriksaan = navigateToPemeriksaan,
         )
     }
 }
@@ -151,64 +105,31 @@ fun HomeScreen(
 private fun HomeContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToNotifications: () -> Unit,
     navigateToLogin: () -> Unit,
-    navigateToSaldo: () -> Unit,
-    navigateToNews: () -> Unit,
-    navigateToMilikOrangLain: () -> Unit,
-    navigateToDaftarKendaraan: () -> Unit,
-    navigateToDaftarKendaraanSaya: () -> Unit,
-    navigateToRiwayatPembayaran: () -> Unit,
-    navigateToEtbpkp: () -> Unit,
-    navigateToEPengesahan: () -> Unit,
-    navigateToEKD: () -> Unit
-) {
+    navigateToPemeriksaan: () -> Unit,
 
-    if (state.showDialogPajak == UIComponentState.Show) {
-        CekPajakBottomDialog(
-            onDismiss = { events(HomeEvent.OnShowDialogPajak(UIComponentState.Hide)) },
-            navigateToDaftarKendaraan = navigateToDaftarKendaraan,
-            navigateToMilikOrangLain = navigateToMilikOrangLain
-        )
-    }
-    val newsItems = listOf(
-        NewsItem(
-            date = "23 September 2025",
-            title = "Program Pemutihan Pajak Kendaraan Pemprov Banten",
-            imageUrl = Res.drawable.ic_article_img
-        ),
-        NewsItem(
-            date = "24 September 2025",
-            title = "7 Spot Wisata Pantai Eksotis di Pandeglang",
-            imageUrl = Res.drawable.ic_article_img
-        ),
-        NewsItem(
-            date = "25 September 2025",
-            title = "Kuliner Legendaris Serang Wajib Coba",
-            imageUrl = Res.drawable.ic_article_img
-        )
-    )
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        item {
+
+    Column(modifier = Modifier.fillMaxSize()){
+        Column(
+            modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+
             HeaderSection(
                 state = state,
                 profile = state.profile,
                 navigateToLogin = navigateToLogin,
-                navigateToNotifications = navigateToNotifications,
-                navigateToSaldo = navigateToSaldo,
                 events = events,
-                navigateToDaftarKendaraanSaya = navigateToDaftarKendaraanSaya,
-                navigateToRiwayatPembayaran = navigateToRiwayatPembayaran
             )
+
+            PemeriksaanSection(navigateToPemeriksaan)
+
+            RiwayatPemeriksaanSection()
+            Spacer(modifier = Modifier.weight(1f))
+            ButtonSection()
         }
-        item {
-            PemeriksaanSection(navigateToSaldo)
-        }
-        item { RiwayatPemeriksaanSection() }
-        item { }
     }
+
 }
 
 @Composable
@@ -217,10 +138,6 @@ private fun HeaderSection(
     events: (HomeEvent) -> Unit,
     profile: ProfileDTO,
     navigateToLogin: () -> Unit,
-    navigateToNotifications: () -> Unit,
-    navigateToSaldo: () -> Unit,
-    navigateToDaftarKendaraanSaya: () -> Unit,
-    navigateToRiwayatPembayaran: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -281,7 +198,7 @@ private fun ProfileButton(
 }
 
 @Composable
-fun PemeriksaanSection(navigateToSaldo: () -> Unit) {
+fun PemeriksaanSection(navigateToPemeriksaan: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -297,7 +214,7 @@ fun PemeriksaanSection(navigateToSaldo: () -> Unit) {
                     .fillMaxWidth()
                     .padding(16.dp)
                     .noRippleClickable {
-                        navigateToSaldo()
+                        navigateToPemeriksaan()
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -351,6 +268,23 @@ fun RiwayatPemeriksaanSection() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ButtonSection() {
+
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 64.dp, start = 16.dp, end = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        IconButton(
+            modifier = Modifier.width(158.dp).height(DEFAULT__BUTTON_SIZE_EXTRA),
+            text = "KELUAR",
+            onClick = { },
+            shape = MaterialTheme.shapes.small,
+            icon = vectorResource(Res.drawable.ic_logout),
+            color = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
+        )
     }
 }
 

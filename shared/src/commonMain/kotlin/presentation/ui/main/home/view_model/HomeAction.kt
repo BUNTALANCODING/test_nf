@@ -10,14 +10,6 @@ sealed class HomeAction : ViewSingleAction {
 
         data object NavigateToLogin : Navigation()
 
-        data object NavigateToFerry : Navigation()
-
-        data object NavigateToCheckout : Navigation()
-
-        data object NavigateToBooking : Navigation()
-
-        data object NavigateToDetailPayment : Navigation()
-
     }
 
 }

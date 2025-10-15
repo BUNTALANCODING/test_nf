@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_success_pin_figma
 import rampcheck.shared.generated.resources.ic_tax_figma
-import rampcheck.shared.generated.resources.image_auth
 import business.core.ProgressBarState
 import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
@@ -150,17 +149,17 @@ private fun SuccessPinContent(
     }
 }
 
-@Composable
-private fun HeaderImage() {
-    Image(
-        painter = painterResource(Res.drawable.image_auth),
-        contentDescription = "Success Registration Background",
-        contentScale = ContentScale.FillBounds,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(450.dp)
-    )
-}
+//@Composable
+//private fun HeaderImage() {
+//    Image(
+//        painter = painterResource(Res.drawable.image_auth),
+//        contentDescription = "Success Registration Background",
+//        contentScale = ContentScale.FillBounds,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(450.dp)
+//    )
+//}
 
 @Composable
 private fun OverlaidContent(

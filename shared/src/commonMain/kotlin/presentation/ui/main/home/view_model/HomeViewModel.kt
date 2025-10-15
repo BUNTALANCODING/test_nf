@@ -9,7 +9,6 @@ import business.interactors.main.GetAvailableFerryUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.HomeUseCase
 import business.interactors.main.PaymentUseCase
-import business.interactors.main.UpdateDeviceTokenUseCase
 import business.interactors.main.UpdateProfileUseCase
 import business.interactors.splash.CheckTokenUseCase
 import common.ImageSaveShare
@@ -23,7 +22,7 @@ class HomeViewModel(
     private val paymentUseCase: PaymentUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
     private val checkStatusUseCase: CheckStatusUseCase,
-    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
+//    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
     private val imageSaver: ImageSaveShare
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -48,7 +47,7 @@ class HomeViewModel(
 
 
             is HomeEvent.OnUpdateTokenFCM -> {
-                updateTokenFCM(event.value)
+//                updateTokenFCM(event.value)
             }
 
             is HomeEvent.OnUpdateNetworkState -> {
@@ -179,23 +178,23 @@ class HomeViewModel(
         setState { copy(selectedVehicle = value) }
     }
 
-    private fun updateTokenFCM(token: String) {
-        executeUseCase(
-            updateDeviceTokenUseCase.execute(
-                UpdateDeviceTokenRequestDTO(
-                    token = token
-                )
-            ), onSuccess = { data, status ->
-                data?.let {
-                    //setState { copy(updateTokenFCM = it) }
-                }
-            }, onLoading = {
-                setState { copy(progressBarState = it) }
-            }, onNetworkStatus = {
-                setEvent(HomeEvent.OnUpdateNetworkState(it))
-            }
-        )
-    }
+//    private fun updateTokenFCM(token: String) {
+//        executeUseCase(
+//            updateDeviceTokenUseCase.execute(
+//                UpdateDeviceTokenRequestDTO(
+//                    token = token
+//                )
+//            ), onSuccess = { data, status ->
+//                data?.let {
+//                    //setState { copy(updateTokenFCM = it) }
+//                }
+//            }, onLoading = {
+//                setState { copy(progressBarState = it) }
+//            }, onNetworkStatus = {
+//                setEvent(HomeEvent.OnUpdateNetworkState(it))
+//            }
+//        )
+//    }
 
 
 

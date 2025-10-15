@@ -23,7 +23,6 @@ import business.interactors.main.UpdateProfileUseCase
 import business.interactors.main.PaymentUseCase
 import business.interactors.main.ReadNotificationUseCase
 import business.interactors.main.TransactionUseCase
-import business.interactors.main.UpdateDeviceTokenUseCase
 import business.interactors.main.UploadFileUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
@@ -47,8 +46,8 @@ fun appModule(context: Context?) = module {
     single<MainService> { MainServiceImpl(get()) }
     single<AppDataStore> { AppDataStoreManager(context) }
     factory { SharedViewModel(get()) }
-    factory { LoginViewModel(get(), get(), get(), get(), get()) }
-    factory { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), getImageSaveShare()) }
+    factory { LoginViewModel(get(), get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), getImageSaveShare()) }
     single { GetProfileUseCase(get(), get()) }
     single { UpdateProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
@@ -62,7 +61,7 @@ fun appModule(context: Context?) = module {
     single { HomeUseCase(get(), get()) }
     single { GetNotificationUseCase(get(), get()) }
     single { ReadNotificationUseCase(get(), get()) }
-    single { UpdateDeviceTokenUseCase(get(), get()) }
+//    single { UpdateDeviceTokenUseCase(get(), get()) }
     single { CheckoutUseCase(get(), get()) }
     single { GetAvailableFerryUseCase(get(), get()) }
     single { CheckStatusUseCase(get(), get()) }

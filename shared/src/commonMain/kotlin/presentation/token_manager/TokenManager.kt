@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import business.core.DataState
 import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
 import business.interactors.main.LogoutUseCase
-import business.interactors.main.UpdateDeviceTokenUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
 import kotlinx.coroutines.CoroutineScope

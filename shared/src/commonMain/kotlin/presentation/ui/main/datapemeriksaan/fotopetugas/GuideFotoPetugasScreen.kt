@@ -45,7 +45,7 @@ fun GuideFotoPetugasScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraPetugas: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -59,7 +59,7 @@ fun GuideFotoPetugasScreen(
         GuideFotoPetugasContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToCameraPetugas = navigateToCameraPetugas
         )
 
     }
@@ -69,14 +69,14 @@ fun GuideFotoPetugasScreen(
 private fun GuideFotoPetugasContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraPetugas: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             InformasiFaceContent()
             Spacer(modifier = Modifier.weight(1f))
-            ButtonSection(navigateToCameraFace = navigateToCameraFace)
+            ButtonSection(navigateToCameraPetugas = navigateToCameraPetugas)
         }
     }
 }
@@ -159,7 +159,7 @@ fun GuideRow(
 }
 
 @Composable
-private fun ButtonSection(navigateToCameraFace: () -> Unit) {
+private fun ButtonSection(navigateToCameraPetugas: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
@@ -167,7 +167,7 @@ private fun ButtonSection(navigateToCameraFace: () -> Unit) {
             enabled = true,
             enableElevation = false,
             text = "AMBIL FOTO",
-            onClick = { navigateToCameraFace() }
+            onClick = { navigateToCameraPetugas() }
         )
     }
 }

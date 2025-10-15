@@ -248,22 +248,6 @@ class MainServiceImpl(
         }.body()
     }
 
-    override suspend fun updateDeviceToken(
-        token: String,
-        requestDTO: UpdateDeviceTokenRequestDTO
-    ): MainGenericResponse<String> {
-        return httpClient.post {
-            url {
-                headers {
-                    append(HttpHeaders.Authorization, token)
-                }
-                takeFrom(BASE_URL)
-                encodedPath += MainService.UPDATE_DEVICE_TOKEN
-            }
-            contentType(ContentType.Application.Json)
-            setBody(requestDTO)
-        }.body()
-    }
 
     override suspend fun payment(
         token: String,

@@ -47,7 +47,7 @@ fun FormDataPemeriksaanScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToGuideFoto: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -61,7 +61,7 @@ fun FormDataPemeriksaanScreen(
         FormDataPemeriksaanContent(
             state = state,
             events = events,
-            navigateToDetail = navigateToDetail
+            navigateToGuideFoto = navigateToGuideFoto
         )
 
     }
@@ -71,7 +71,7 @@ fun FormDataPemeriksaanScreen(
 private fun FormDataPemeriksaanContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToGuideFoto: () -> Unit
 ) {
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -80,7 +80,7 @@ private fun FormDataPemeriksaanContent(
             TextFieldSection(state,events)
             ButtonLocationSection()
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection()
+            ButtonNextSection(navigateToGuideFoto)
         }
     }
 
@@ -236,10 +236,10 @@ fun ButtonLocationSection() {
 }
 
 @Composable
-fun ButtonNextSection() {
+fun ButtonNextSection(navigateToGuideFoto: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
         DefaultButton(
-            onClick = {},
+            onClick = {navigateToGuideFoto()},
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = "LANJUT",
             style = MaterialTheme.typography.labelMedium.copy(
