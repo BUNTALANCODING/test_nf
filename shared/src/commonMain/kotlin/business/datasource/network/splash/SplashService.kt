@@ -10,7 +10,7 @@ interface SplashService {
         const val LOGIN = "login"
     }
 
-    suspend fun login(username: String, password: String): MainGenericResponse<LoginDTO>
+    suspend fun login(email: String, password: String): MainGenericResponse<LoginDTO>
 
     suspend fun register(request: RegisterRequestDTO): MainGenericResponse<List<String>>
 

@@ -5,7 +5,6 @@ import business.core.BaseUseCase
 import business.core.ProgressBarState
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.MainService
-import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
 
 //class UpdateDeviceTokenUseCase(
 //    private val service: MainService,

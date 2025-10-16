@@ -2,8 +2,6 @@ package presentation.ui.main.auth.view_model
 
 import business.core.BaseViewModel
 import business.core.NetworkState
-import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
-import business.interactors.main.ForgotPasswordUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
@@ -14,7 +12,6 @@ class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
-    private val forgotPasswordUseCase: ForgotPasswordUseCase,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
 ) : BaseViewModel<LoginEvent, LoginState, LoginAction>() {
 
@@ -36,7 +33,7 @@ class LoginViewModel(
             }
 
             is LoginEvent.ForgotPassword -> {
-                forgotPassword(event.value)
+//                forgotPassword(event.value)
             }
 
             is LoginEvent.OnUpdateNameRegister -> {
@@ -88,7 +85,7 @@ class LoginViewModel(
             }
 
             is LoginEvent.ResendForgotPassword -> {
-                resendForgotPassword()
+//                resendForgotPassword()
             }
         }
     }
@@ -117,7 +114,7 @@ class LoginViewModel(
 //        )
 //    }
 
-    private fun forgotPassword(email: String) {
+    /*private fun forgotPassword(email: String) {
         executeUseCase(
             forgotPasswordUseCase.execute(params = ForgotPasswordUseCase.Params(email)),
             onSuccess = { data, status ->
@@ -140,20 +137,20 @@ class LoginViewModel(
         executeUseCase(
             forgotPasswordUseCase.execute(params = ForgotPasswordUseCase.Params(state.value.usernameLogin)),
             onSuccess = { data, status ->
-                /*status?.let { s ->
+                *//*status?.let { s ->
                     if (s) {
                         setAction {
                             LoginAction.Navigation.NavigateToSuccess
                         }
                     }
-                }*/
+                }*//*
             }, onLoading = {
                 setState { copy(progressBarState = it) }
             }, onNetworkStatus = {
                 setEvent(LoginEvent.OnUpdateNetworkState(it))
             }
         )
-    }
+    }*/
 
     private fun checkToken() {
         executeUseCase(
@@ -183,7 +180,7 @@ class LoginViewModel(
         executeUseCase(
             loginUseCase.execute(
                 LoginUseCase.Params(
-                    username = state.value.usernameLogin,
+                    email = state.value.usernameLogin,
                     password = state.value.passwordLogin,
                 )
             ),

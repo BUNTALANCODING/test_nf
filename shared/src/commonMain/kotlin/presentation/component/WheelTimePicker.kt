@@ -49,7 +49,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import business.datasource.network.main.responses.Time
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -305,6 +304,7 @@ fun Modifier.fadingEdge(brush: Brush) = this
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }*/
 
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WheelTimePicker(
@@ -398,12 +398,14 @@ fun WheelTimePicker(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            /*Spacer_8dp()
+            */
+/*Spacer_8dp()
             Text(
                 "Waktu sekarang: $currentTimeString",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary
-            )*/
+            )*//*
+
         }
 
         Column(
@@ -551,6 +553,7 @@ fun TimePicker(
         )
     }
 }
+*/
 
 fun Modifier.fadingEdge(brush: Brush) = this
     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
@@ -619,6 +622,7 @@ fun isTimePastWithMidnightHandling(timeString: String, currentTimeString: String
     }
 }
 
+/*
 // Helper function to get available times with midnight logic
 fun getAvailableTimesWithMidnightHandling(
     times: List<Time>,
@@ -667,6 +671,7 @@ fun getAvailableTimesWithMidnightHandling(
         } else Int.MAX_VALUE
     }
 }
+*/
 
 @Composable
 fun getCurrentTimeString(): String {

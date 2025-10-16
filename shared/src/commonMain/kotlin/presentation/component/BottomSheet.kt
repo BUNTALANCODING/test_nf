@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -63,13 +62,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import business.datasource.network.main.request.Passenger
-import business.datasource.network.main.responses.CargoCategoryDTO
-import business.datasource.network.main.responses.City
-import business.datasource.network.main.responses.Gender
-import business.datasource.network.main.responses.IdentityType
-import business.datasource.network.main.responses.PassengerCategory
-import business.domain.main.Country
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import presentation.theme.BorderOptionColor
@@ -249,192 +241,192 @@ fun DialogItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TicketTypeBottomSheet(
-    ticketType: List<CargoCategoryDTO>,
-    selectedType: String = "",
-    onSelect: (CargoCategoryDTO) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun TicketTypeBottomSheet(
+//    ticketType: List<CargoCategoryDTO>,
+//    selectedType: String = "",
+//    onSelect: (CargoCategoryDTO) -> Unit,
+//    onDismiss: () -> Unit,
+//) {
+//    val sheetState = rememberModalBottomSheetState(
+//        skipPartiallyExpanded = true
+//    )
+//
+//    ModalBottomSheet(
+//        onDismissRequest = onDismiss,
+//        containerColor = MaterialTheme.colorScheme.background,
+//        sheetState = sheetState,
+//        dragHandle = null,
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        Spacer_32dp()
+//
+//        IconButton(onClick = onDismiss) {
+//            Icon(
+//                imageVector = Icons.Default.Close,
+//                contentDescription = "Close",
+//                tint = MaterialTheme.colorScheme.onSurface
+//            )
+//        }
+//
+//        Spacer_8dp()
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .verticalScroll(rememberScrollState())
+//                .padding(horizontal = 16.dp)
+//        ) {
+//
+//            Text(
+//                "Pilih Tipe Tiket",
+//                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+//                modifier = Modifier.padding(end = 48.dp)
+//            )
+//
+//            Spacer_8dp()
+//
+//            ticketType.forEach { type ->
+//                TicketTypeRow(
+//                    type = type,
+//                    isSelected = type.cargoCategoryName == selectedType,
+//                    onClick = { onSelect(type) }
+//                )
+//
+//                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+//            }
+//        }
+//    }
+//}
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.background,
-        sheetState = sheetState,
-        dragHandle = null,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Spacer_32dp()
+//@Composable
+//fun TicketTypeRow(
+//    type: CargoCategoryDTO,
+//    isSelected: Boolean,
+//    onClick: () -> Unit
+//) {
+//    val backgroundColor = if (isSelected) {
+//        /*MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)*/
+//        Color.Transparent
+//    } else {
+//        Color.Transparent
+//    }
+//
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onClick() }
+//            .background(backgroundColor, shape = RoundedCornerShape(8.dp))
+//            .padding(vertical = 12.dp, horizontal = 8.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        Image(
+//            painter = rememberCustomImagePainter(type.cargoCategoryImg),
+//            contentDescription = null,
+//            modifier = Modifier
+//                .size(56.dp)
+//                .clip(RoundedCornerShape(8.dp)),
+//            contentScale = ContentScale.Fit,
+//        )
+//        Spacer(modifier = Modifier.width(12.dp))
+//        Column(
+//            modifier = Modifier.weight(1f)
+//        ) {
+//            Text(
+//                type.cargoCategoryName ?: "-",
+//                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//            Text(
+//                type.cargoCategoryAlias + " (Maks. " + type.maxPassenger.toString() + " penumpang)",
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
+//        }
+//
+//        if (isSelected) {
+//            Icon(
+//                imageVector = Icons.Default.Check,
+//                contentDescription = "Selected",
+//                tint = MaterialTheme.colorScheme.primary
+//            )
+//        }
+//    }
+//}
 
-        IconButton(onClick = onDismiss) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close",
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun IdentityTypeBottomSheet(
+//    state: HomeState,
+//    events: (HomeEvent) -> Unit,
+//) {
+//    val sheetState = rememberModalBottomSheetState(
+//        skipPartiallyExpanded = true
+//    )
+//
+//    ModalBottomSheet(
+////        onDismissRequest = { events(HomeEvent.OnIdentityState(UIComponentState.Hide)) },
+//        containerColor = MaterialTheme.colorScheme.background,
+//        sheetState = sheetState,
+//        dragHandle = null,
+//        onDismissRequest = {}
+//    ) {
+//
+//        Spacer_32dp()
+//
+//        Column(
+//            Modifier
+//                .fillMaxWidth()
+//                .padding(bottom = 24.dp)
+//        ) {
+//            // Header Row
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//
+//                IconButton(onClick = {  }) {
+//                    Icon(
+//                        imageVector = Icons.Default.Close,
+//                        contentDescription = "Close",
+//                        tint = MaterialTheme.colorScheme.onSurface
+//                    )
+//                }
+//
+//                Text(
+//                    "Pilih Tipe Identitas",
+//                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+//                )
+//            }
+//
+//            Spacer_8dp()
+//
+//            // List of ticket types
+//            state.home.identityType.forEach { type ->
+//                IdentityTypeRow(
+//                    type = type,
+//                    isSelected = type == state.selectedIdentityType,
+//                    onClick = {
+//                    }
+//                )
+//                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+//            }
+//
+//            Spacer_32dp()
+//        }
+//    }
+//}
 
-        Spacer_8dp()
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-        ) {
-
-            Text(
-                "Pilih Tipe Tiket",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(end = 48.dp)
-            )
-
-            Spacer_8dp()
-
-            ticketType.forEach { type ->
-                TicketTypeRow(
-                    type = type,
-                    isSelected = type.cargoCategoryName == selectedType,
-                    onClick = { onSelect(type) }
-                )
-
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-            }
-        }
-    }
-}
-
-@Composable
-fun TicketTypeRow(
-    type: CargoCategoryDTO,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val backgroundColor = if (isSelected) {
-        /*MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)*/
-        Color.Transparent
-    } else {
-        Color.Transparent
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .background(backgroundColor, shape = RoundedCornerShape(8.dp))
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = rememberCustomImagePainter(type.cargoCategoryImg),
-            contentDescription = null,
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Fit,
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Text(
-                type.cargoCategoryName ?: "-",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                type.cargoCategoryAlias + " (Maks. " + type.maxPassenger.toString() + " penumpang)",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun IdentityTypeBottomSheet(
-    state: HomeState,
-    events: (HomeEvent) -> Unit,
-) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
-    ModalBottomSheet(
-//        onDismissRequest = { events(HomeEvent.OnIdentityState(UIComponentState.Hide)) },
-        containerColor = MaterialTheme.colorScheme.background,
-        sheetState = sheetState,
-        dragHandle = null,
-        onDismissRequest = {}
-    ) {
-
-        Spacer_32dp()
-
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        ) {
-            // Header Row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                IconButton(onClick = {  }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                Text(
-                    "Pilih Tipe Identitas",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                )
-            }
-
-            Spacer_8dp()
-
-            // List of ticket types
-            state.home.identityType.forEach { type ->
-                IdentityTypeRow(
-                    type = type,
-                    isSelected = type == state.selectedIdentityType,
-                    onClick = {
-                    }
-                )
-                Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
-            }
-
-            Spacer_32dp()
-        }
-    }
-}
-
-@Composable
+/*@Composable
 fun IdentityTypeRow(
     type: IdentityType,
     isSelected: Boolean,
     onClick: (IdentityType) -> Unit
 ) {
     val backgroundColor = if (isSelected) {
-        /*MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)*/
+        *//*MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)*//*
         Color.Transparent
     } else {
         Color.Transparent
@@ -466,8 +458,9 @@ fun IdentityTypeRow(
             )
         }
     }
-}
+}*/
 
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PassengerCountBottomSheet(
@@ -600,6 +593,7 @@ fun PassengerCountBottomSheet(
         Spacer_16dp()
     }
 }
+*/
 
 @Composable
 fun PassengerRow(
@@ -694,11 +688,11 @@ fun SearchPortBottomDialog(
 
         Spacer_16dp()
 
-        RouteBottomSheet(
-            state = state,
-            events = events,
-            modifier = Modifier.fillMaxWidth()
-        )
+//        RouteBottomSheet(
+//            state = state,
+//            events = events,
+//            modifier = Modifier.fillMaxWidth()
+//        )
 
         Spacer_8dp()
     }
@@ -893,6 +887,7 @@ fun BookingDetailBottomSheet(
     }
 }
 
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryPickerBottomSheet(
@@ -988,8 +983,9 @@ fun CountryPickerBottomSheet(
         }
     }
 }
+*/
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityPickerBottomSheet(
     state: HomeState,
@@ -1073,8 +1069,9 @@ fun CityPickerBottomSheet(
             }
         }
     }
-}
+}*/
 
+/*
 @Composable
 fun CityRow(
     city: City,
@@ -1611,4 +1608,4 @@ private fun BottomSheetContent(
             }
         }
     }
-}
+}*/

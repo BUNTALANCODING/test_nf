@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import business.domain.main.NewsItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import presentation.theme.PrimaryColor
@@ -361,6 +360,7 @@ fun ExaminationCard(item: ExaminationItem) {
 }
 
 
+/*
 @Composable
 fun ListNewsCard(item: NewsItem) {
     Row(modifier = Modifier.fillMaxWidth().height(87.dp)) {
@@ -404,4 +404,4 @@ fun ListNewsCard(item: NewsItem) {
         }
 
     }
-}
+}*/

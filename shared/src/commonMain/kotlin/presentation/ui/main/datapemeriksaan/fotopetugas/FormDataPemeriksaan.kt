@@ -26,14 +26,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.vectorResource
+import presentation.component.BirthdayDatePrickerDialog
+import presentation.component.CustomDropdownPicker
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
 import presentation.component.DefaultTextField
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
+import presentation.component.noRippleClickable
 import presentation.theme.LightPurpleColor
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -73,6 +77,17 @@ private fun FormDataPemeriksaanContent(
     events: (HomeEvent) -> Unit,
     navigateToGuideFoto: () -> Unit
 ) {
+
+    if(state.showDialogDatePicker == UIComponentState.Show){
+        BirthdayDatePrickerDialog(
+            onDismiss = { events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Hide))},
+            onConfirm = { selectedDate ->
+                events(HomeEvent.OnUpdateTanggalPemeriksaan(selectedDate))
+                events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Hide))
+            }
+        )
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -125,7 +140,9 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
         )
         Spacer_8dp()
         DefaultTextField(
-            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
+            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE).noRippleClickable {
+                events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Show))
+            },
             value = state.tanggalPemeriksaan,
             onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
             enabled = false,
@@ -152,25 +169,38 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_8dp()
-        DefaultTextField(
-            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-            value = state.tanggalPemeriksaan,
-            onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
-            enabled = false,
-            placeholder = "Pilih Lokasi",
-            textStyle = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Normal
-            ),
-            iconEnd = {
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Pilih Tanggal",
-                    tint = Color.Black,
-                    modifier = Modifier.size(16.dp)
-                )
-            },
-            color = Color.White
+        CustomDropdownPicker(
+            options = state.selectedLocationList,
+            modifier = Modifier.fillMaxWidth(),
+            value = state.location,
+            expanded = state.showDialogLocation == UIComponentState.Show,
+            onShowDropdown = {events(HomeEvent.OnShowDialogLocation(UIComponentState.Show))},
+            onHideDropdown = {events(HomeEvent.OnShowDialogLocation(UIComponentState.Hide))},
+            onValueChange = {events(HomeEvent.OnUpdateLocation(it))},
+            onOptionSelected = {events(HomeEvent.OnUpdateLocation(it))}
         )
+//        DefaultTextField(
+//            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE).noRippleClickable {
+//                events(HomeEvent.OnShowDialogLocation(UIComponentState.Show))
+//                events(HomeEvent.GetLocation)
+//            },
+//            value = state.location,
+//            onValueChange = {events(HomeEvent.OnUpdateLocation(it))},
+//            enabled = false,
+//            placeholder = "Pilih Lokasi",
+//            textStyle = MaterialTheme.typography.labelMedium.copy(
+//                fontWeight = FontWeight.Normal
+//            ),
+//            iconEnd = {
+//                Icon(
+//                    imageVector = Icons.Default.ArrowDropDown,
+//                    contentDescription = "Pilih Lokasi",
+//                    tint = Color.Black,
+//                    modifier = Modifier.size(16.dp)
+//                )
+//            },
+//            color = Color.White
+//        )
         Spacer_16dp()
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

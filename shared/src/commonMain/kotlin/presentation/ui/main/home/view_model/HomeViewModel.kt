@@ -1,27 +1,20 @@
 package presentation.ui.main.home.view_model
 
 import business.core.BaseViewModel
+import business.core.ProgressBarState
 import business.core.UIComponentState
-import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
-import business.interactors.main.CheckStatusUseCase
-import business.interactors.main.CheckoutUseCase
-import business.interactors.main.GetAvailableFerryUseCase
+import business.datasource.network.main.responses.GetLocationDTO
+import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetProfileUseCase
-import business.interactors.main.HomeUseCase
-import business.interactors.main.PaymentUseCase
-import business.interactors.main.UpdateProfileUseCase
 import business.interactors.splash.CheckTokenUseCase
+import business.interactors.splash.LoginUseCase
 import common.ImageSaveShare
+import presentation.ui.main.auth.view_model.LoginAction
 
 class HomeViewModel(
-    private val homeUseCase: HomeUseCase,
-    private val ferryUseCase: GetAvailableFerryUseCase,
+    private val getLocationUseCase: GetLocationUseCase,
     private val profileUseCase: GetProfileUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase,
-    private val checkoutUseCase: CheckoutUseCase,
-    private val paymentUseCase: PaymentUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
-    private val checkStatusUseCase: CheckStatusUseCase,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
     private val imageSaver: ImageSaveShare
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
@@ -62,6 +55,9 @@ class HomeViewModel(
             }
             is HomeEvent.OnUpdateConditionSelection -> {
                 onUpdateConditionSelection(event.cardId, event.selection)
+            }
+            is HomeEvent.OnUpdateListLocation -> {
+//                onUpdateListLocation(event.value)
             }
             is HomeEvent.OnUpdateNoRangka -> {
                 onUpdateNoRangka(event.value)
@@ -104,13 +100,27 @@ class HomeViewModel(
             is HomeEvent.OnUpdateClearTrigger -> {
                 onUpdateClearTrigger(event.value)
             }
+            is HomeEvent.OnShowDialogDatePicker -> {
+                onShowDialogDatePicker(event.value)
+            }
 
             is HomeEvent.OnUpdateTanggalPemeriksaan -> {
                 onUpdateTanggalPemeriksaan(event.value)
             }
 
+            is HomeEvent.OnUpdateLocation -> {
+                onUpdateLocation(event.value)
+            }
+
             is HomeEvent.OnUpdateSelectedVehicle -> {
                 onUpdateSelectedVehicle(event.value)
+            }
+
+            is HomeEvent.GetLocation -> {
+                getLocation()
+            }
+            is HomeEvent.OnShowDialogLocation -> {
+                onShowDialogLocation(event.value)
             }
         }
     }
@@ -135,6 +145,26 @@ class HomeViewModel(
             copy(technicalConditions = updatedList)
         }
     }
+    private fun getLocation() {
+        executeUseCase(
+            getLocationUseCase.execute(
+                params = Unit,
+            ),
+            onSuccess = { data, status ->
+                data?.let { locationList ->
+                    setState {
+                        copy(
+                            selectedLocationList = locationList,
+                        )
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
     }
@@ -149,6 +179,9 @@ class HomeViewModel(
     }
     private fun onUpdateTanggalPemeriksaan(value: String) {
         setState { copy(tanggalPemeriksaan = value) }
+    }
+    private fun onUpdateLocation(value: String) {
+        setState { copy(location = value) }
     }
     private fun onUpdateSelectedTabListrik(value: Int) {
         setState { copy(selectedTabListrik = value) }
@@ -176,6 +209,14 @@ class HomeViewModel(
     }
     private fun onUpdateSelectedVehicle(value: String){
         setState { copy(selectedVehicle = value) }
+    }
+
+    private fun onShowDialogDatePicker(value: UIComponentState) {
+        setState { copy(showDialogDatePicker = value) }
+    }
+
+    private fun onShowDialogLocation(value: UIComponentState) {
+        setState { copy(showDialogLocation = value) }
     }
 
 //    private fun updateTokenFCM(token: String) {

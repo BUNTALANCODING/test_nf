@@ -101,7 +101,7 @@ fun LoginScreen(
     val validationState by remember(state.usernameLogin, state.passwordLogin) {
         derivedStateOf {
             LoginValidationState(
-                username = validateEmail(state.usernameLogin),
+                email = validateEmail(state.usernameLogin),
                 password = validatePassword(state.passwordLogin)
             )
         }
@@ -261,7 +261,7 @@ private fun LoginInputFields(
                     events(LoginEvent.OnUpdateUsernameLogin(it))
                 }
             },
-            validation = validationState.username,
+            validation = validationState.email,
         )
 
         Spacer_8dp()
@@ -375,17 +375,19 @@ private fun LoginButton(
 //
 @Stable
 private data class LoginValidationState(
-    val username: ValidationResult,
+    val email: ValidationResult,
     val password: ValidationResult
 ) {
     val isAllValid: Boolean
-        get() = username.isValid && password.isValid
+        get() = email.isValid && password.isValid
 }
 
 // Validation functions
-private fun validateEmail(username: String): ValidationResult {
+private fun validateEmail(email: String): ValidationResult {
     return when {
-        username.isBlank() -> ValidationResult(false, "Username tidak boleh kosong")
+        email.isBlank() -> ValidationResult(false, "Username tidak boleh kosong")
+        !email.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}\$")) ->
+            ValidationResult(false, "Email tidak valid")
 
         else -> ValidationResult(true)
     }

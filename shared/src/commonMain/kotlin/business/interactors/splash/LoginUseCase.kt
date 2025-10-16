@@ -21,12 +21,12 @@ class LoginUseCase(
 ) : BaseUseCase<LoginUseCase.Params, LoginDTO, LoginDTO>(appDataStoreManager) {
 
     data class Params(
-        val username: String,
+        val email: String,
         val password: String,
     )
 
     override suspend fun run(params: Params, token: String): MainGenericResponse<LoginDTO> {
-        val apiResponse = service.login(params.username, params.password)
+        val apiResponse = service.login(params.email, params.password)
 
         val result = apiResponse.result
 

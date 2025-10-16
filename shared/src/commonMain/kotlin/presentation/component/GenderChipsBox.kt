@@ -8,8 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import business.datasource.network.main.responses.Gender
 
+/*
 @Composable
 fun GenderChipsBox(gender: Gender, isSelected: Boolean, onClick: () -> Unit) {
     Card(
@@ -24,3 +24,4 @@ fun GenderChipsBox(gender: Gender, isSelected: Boolean, onClick: () -> Unit) {
         Text(gender.genderName.toString(), modifier = Modifier.padding(12.dp))
     }
 }
+*/

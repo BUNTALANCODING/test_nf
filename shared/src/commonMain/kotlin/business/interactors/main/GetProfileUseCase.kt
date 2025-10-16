@@ -6,7 +6,6 @@ import business.core.ProgressBarState
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.MainService
 import business.datasource.network.main.responses.ProfileDTO
-import business.domain.main.Profile
 
 class GetProfileUseCase(
     private val service: MainService,

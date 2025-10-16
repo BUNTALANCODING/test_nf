@@ -48,13 +48,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import business.core.UIComponentState
-import business.datasource.network.main.request.DataPassengerCO
-import business.datasource.network.main.responses.City
-import business.datasource.network.main.responses.Gender
-import business.datasource.network.main.responses.IdentityType
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PassengerDetailBottomSheet(
@@ -142,8 +139,10 @@ fun PassengerDetailBottomSheet(
         )
     }
 }
+*/
 
 // Extracted content composable
+/*
 @Composable
 private fun PassengerDetailContent(
     state: HomeState,
@@ -224,8 +223,9 @@ private fun PassengerDetailContent(
         Spacer(Modifier.height(8.dp))
     }
 }
+*/
 
-@Composable
+/*@Composable
 private fun RadioButtonGender(
     state: HomeState,
     events: (HomeEvent) -> Unit,
@@ -296,7 +296,7 @@ private fun RadioButtonGender(
             }
         }
     }
-}
+}*/
 
 @Composable
 private fun PassengerDetailHeader() {
@@ -438,6 +438,7 @@ private fun PassengerBirthdayField(
     }
 }
 
+/*
 @Composable
 private fun PassengerCityField(
     selectedCity: City, // Replace with your actual city data type
@@ -477,8 +478,9 @@ private fun PassengerCityField(
         )
     }
 }
+*/
 
-@Composable
+/*@Composable
 private fun PassengerIdentitySection(
     state: HomeState,
     events: (HomeEvent) -> Unit,
@@ -549,7 +551,7 @@ private fun PassengerIdentitySection(
             color = MaterialTheme.colorScheme.error
         )
     }
-}
+}*/
 
 // Validation state class
 @Stable
@@ -588,7 +590,7 @@ class ValidationState {
 }
 
 // Validation logic class
-class PassengerValidator {
+/*class PassengerValidator {
     fun validateAll(
         name: String,
         age: String,
@@ -645,7 +647,7 @@ class PassengerValidator {
             else -> true to null
         }
     }
-}
+}*/
 
 data class ValidationResult(
     val isNameValid: Boolean,
@@ -660,15 +662,3 @@ data class ValidationResult(
     val identityError: String?
 )
 
-// Helper function
-private fun createPassengerData(state: HomeState): DataPassengerCO {
-    return DataPassengerCO(
-        identityTypeId = state.selectedIdentityType.identityTypeId,
-        identityNumber = state.selectedIdentity,
-        passengerName = state.selectedName,
-        birthday = state.selectedBirthday,
-        age = if (state.selectedAge.isNotEmpty()) state.selectedAge.toInt() else 0,
-        cityId = state.selectedCity.cityId,
-        genderId = state.selectedGender.genderId
-    )
-}

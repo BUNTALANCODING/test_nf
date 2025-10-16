@@ -3,7 +3,6 @@ package presentation.token_manager
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import business.core.DataState
-import business.datasource.network.main.request.UpdateDeviceTokenRequestDTO
 import business.interactors.main.LogoutUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase

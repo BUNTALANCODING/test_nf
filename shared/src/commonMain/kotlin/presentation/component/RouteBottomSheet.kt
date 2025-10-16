@@ -1,5 +1,6 @@
-package presentation.component
 
+package presentation.component
+/*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,4 +120,4 @@ fun FerryTerminalRow(harbor: Route, typeRoute: String, onClick: (Route) -> Unit)
             }
         }
     }
-}
+}*/

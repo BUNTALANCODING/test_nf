@@ -17,14 +17,14 @@ import io.ktor.http.takeFrom
 class SplashServiceImpl(
     private val httpClient: HttpClient
 ) : SplashService {
-    override suspend fun login(username: String, password: String): MainGenericResponse<LoginDTO> {
+    override suspend fun login(email: String, password: String): MainGenericResponse<LoginDTO> {
         return httpClient.post {
             url {
                 takeFrom(BASE_URL)
                 encodedPath += SplashService.LOGIN
             }
             contentType(ContentType.Application.Json)
-            setBody(LoginRequestDTO(username = username, password = password))
+            setBody(LoginRequestDTO(email = email, password = password))
         }.body()
     }
 

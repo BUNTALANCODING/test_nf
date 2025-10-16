@@ -1,28 +1,27 @@
 package presentation.ui.main.home.view_model
 
-import androidx.compose.ui.graphics.ImageBitmap
 import business.core.NetworkState
 import business.core.UIComponentState
 import business.core.ViewEvent
-import business.datasource.network.main.request.DataPassengerCO
-import business.datasource.network.main.request.Passenger
-import business.datasource.network.main.request.PassengerCheckout
-import business.datasource.network.main.responses.CargoCategoryDTO
-import business.datasource.network.main.responses.City
-import business.datasource.network.main.responses.FerryDTO
-import business.datasource.network.main.responses.Gender
-import business.datasource.network.main.responses.IdentityType
-import business.datasource.network.main.responses.PassengerCategory
-import business.datasource.network.main.responses.ProfileDTO
-import business.datasource.network.main.responses.Route
+import business.datasource.network.main.responses.GetLocationDTO
 
 sealed class HomeEvent : ViewEvent {
 
     data object GetHomeContent : HomeEvent()
 
+    data object GetLocation : HomeEvent()
+
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
+    data class OnShowDialogDatePicker(val value: UIComponentState) : HomeEvent()
+
     data class OnUpdateTanggalPemeriksaan(val value: String) : HomeEvent()
+
+    data class OnShowDialogLocation(val value: UIComponentState) : HomeEvent()
+
+    data class OnUpdateLocation(val value: String) : HomeEvent()
+
+    data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
 
     data class OnUpdateClearTrigger(val value: Boolean) : HomeEvent()
 
