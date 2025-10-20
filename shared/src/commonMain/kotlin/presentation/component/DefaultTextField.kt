@@ -33,9 +33,12 @@ fun DefaultTextField(
     enabled: Boolean = true,
     placeholder: String,
     iconEnd: @Composable (() -> Unit)? = null,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(
+    textStylePlaceholder: TextStyle = MaterialTheme.typography.labelMedium.copy(
         fontWeight = FontWeight.Normal,
         color = Color.Gray
+    ),
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium.copy(
+        fontWeight = FontWeight.Normal,
     ),
     color: Color = Color.Transparent
 
@@ -43,26 +46,28 @@ fun DefaultTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        textStyle = textStyle,
         enabled = enabled,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         placeholder = {
             Text(
                 placeholder,
-                style = textStyle
+                style = textStylePlaceholder
             )
         },
         trailingIcon = iconEnd,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
-            .background(Color.White),
+            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp)),
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = color,
             focusedContainerColor = color,
             unfocusedIndicatorColor = color,
-            focusedIndicatorColor = color
+            focusedIndicatorColor = color,
+            disabledContainerColor = color,
+            disabledTextColor = Color.Black
         )
     )
 }

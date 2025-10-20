@@ -11,6 +11,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object GetLocation : HomeEvent()
 
+    data object RampcheckStart : HomeEvent()
+
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
     data class OnShowDialogDatePicker(val value: UIComponentState) : HomeEvent()
@@ -21,7 +23,17 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateLocation(val value: String) : HomeEvent()
 
+    data class OnUpdateLocationId(val value: String) : HomeEvent()
+
     data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
+
+    data class OnUpdateLatitude(val value: String) : HomeEvent()
+
+    data class OnUpdateLongitude(val value: String) : HomeEvent()
+
+    data class OnLocationTrigger(val value: Boolean) : HomeEvent()
+
+    data class OnUpdateStatusMessage(val value: String) : HomeEvent()
 
     data class OnUpdateClearTrigger(val value: Boolean) : HomeEvent()
 

@@ -1,6 +1,7 @@
 package common
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
@@ -81,6 +83,7 @@ actual fun MapComponent(
 }
 
 
+@SuppressLint("MissingPermission")
 private fun getLastKnownLocation(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
@@ -98,3 +101,5 @@ private fun getLastKnownLocation(
         }
     }
 }
+
+

@@ -2,9 +2,11 @@ package business.datasource.network.main
 
 import business.constants.BASE_URL
 import business.datasource.network.common.MainGenericResponse
+import business.datasource.network.main.request.RampcheckStartRequestDTO
 
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.ProfileDTO
+import business.datasource.network.main.responses.RampcheckStartDTO
 import business.datasource.network.splash.responses.ForgotRequestDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -51,6 +53,19 @@ class MainServiceImpl(
                 encodedPath += MainService.LOCATION
             }
             contentType(ContentType.Application.Json)
+        }.body()
+    }
+    override suspend fun rampcheckStart(request: RampcheckStartRequestDTO, token: String): MainGenericResponse<RampcheckStartDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.RAMPCHECK_START
+            }
+            contentType(ContentType.Application.Json)
+            setBody(request)
         }.body()
     }
 

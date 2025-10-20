@@ -18,6 +18,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,11 +28,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import business.core.UIComponentState
 import business.datasource.network.main.responses.GetLocationDTO
 import org.jetbrains.compose.resources.painterResource
@@ -48,10 +53,13 @@ fun CustomDropdownPicker(
     onShowDropdown: () -> Unit,
     onHideDropdown: () -> Unit,
     onValueChange : (String) -> Unit,
-    onOptionSelected: (String) -> Unit,
+    onOptionSelected: (GetLocationDTO) -> Unit,
 
     ) {
-    Column(modifier = modifier){
+    var rowSize by remember { mutableStateOf(Size.Zero) }
+    Column(modifier = modifier.onGloballyPositioned { layoutCoordinates ->
+        rowSize = layoutCoordinates.size.toSize()
+    }){
         DefaultTextField(
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE).noRippleClickable {
                 onShowDropdown()
@@ -75,42 +83,14 @@ fun CustomDropdownPicker(
             },
             color = Color.White
         )
-//        // Custom surface button lookalike
-//        Surface(
-//            shape = RoundedCornerShape(8.dp),
-//            border = BorderStroke(1.dp, Color.LightGray),
-//            color = Color.White,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .clickable { expanded = !expanded }
-//                .padding(horizontal = 0.dp) // optional if you want to control outer padding separately
-//        ) {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 12.dp, horizontal = 16.dp),
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(
-//                    text = if (selectedOption.isNullOrBlank()) label else selectedOption,
-//                    color = Color.Black,
-//                    style = textStyle // Apply textStyle to the label
-//                )
-//                Icon(
-//                    painter = painterResource(Res.drawable.arrow_down),
-//                    contentDescription = null,
-//                    tint = Color.Black
-//                )
-//            }
-//        }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onHideDropdown() },
             modifier = Modifier
-                .width(200.dp)
-                .background(Color.White)
+                .width(with(LocalDensity.current) { rowSize.width.toDp() }),
+            containerColor = Color.White
+
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
@@ -123,7 +103,7 @@ fun CustomDropdownPicker(
                         )
                     },
                     onClick = {
-                        onOptionSelected(option.rampcheckLocationName ?: "")
+                        onOptionSelected(option)
                         onHideDropdown()
                     }
                 )

@@ -1,6 +1,7 @@
 package presentation.ui.main.home.view_model
 
 import business.core.ViewSingleAction
+import presentation.ui.main.auth.view_model.LoginAction.Navigation
 
 sealed class HomeAction : ViewSingleAction {
 
@@ -10,6 +11,7 @@ sealed class HomeAction : ViewSingleAction {
 
         data object NavigateToLogin : Navigation()
 
+        data object NavigateToGuide : Navigation()
     }
 
 }

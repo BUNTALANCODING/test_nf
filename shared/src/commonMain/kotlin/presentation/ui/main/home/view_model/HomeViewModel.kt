@@ -3,9 +3,11 @@ package presentation.ui.main.home.view_model
 import business.core.BaseViewModel
 import business.core.ProgressBarState
 import business.core.UIComponentState
+import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetProfileUseCase
+import business.interactors.main.RampcheckStartUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import common.ImageSaveShare
@@ -13,10 +15,11 @@ import presentation.ui.main.auth.view_model.LoginAction
 
 class HomeViewModel(
     private val getLocationUseCase: GetLocationUseCase,
+    private val rampcheckStartUseCase: RampcheckStartUseCase,
     private val profileUseCase: GetProfileUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
-    private val imageSaver: ImageSaveShare
+//    private val imageSaver: ImageSaveShare
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
     override fun setInitialState() = HomeState()
@@ -27,7 +30,9 @@ class HomeViewModel(
             is HomeEvent.GetHomeContent -> {
 //                getHome()
             }
-
+            is HomeEvent.RampcheckStart -> {
+                rampcheckStart()
+            }
 
             is HomeEvent.OnUpdateCityCode -> {
                 onUpdateCityCode(event.value)
@@ -79,6 +84,22 @@ class HomeViewModel(
                 onUpdateSelectedMethod(event.value)
             }
 
+            is HomeEvent.OnUpdateLatitude -> {
+                onUpdateLatitude(event.value)
+            }
+
+            is HomeEvent.OnUpdateLongitude -> {
+                onUpdateLongitude(event.value)
+            }
+
+            is HomeEvent.OnLocationTrigger -> {
+                onLocationTrigger(event.value)
+            }
+
+            is HomeEvent.OnUpdateStatusMessage -> {
+                onUpdateStatusMessage(event.value)
+            }
+
             is HomeEvent.OnUpdateNik -> {
                 onUpdateNik(event.value)
             }
@@ -110,6 +131,9 @@ class HomeViewModel(
 
             is HomeEvent.OnUpdateLocation -> {
                 onUpdateLocation(event.value)
+            }
+            is HomeEvent.OnUpdateLocationId -> {
+                onUpdateLocationId(event.value)
             }
 
             is HomeEvent.OnUpdateSelectedVehicle -> {
@@ -165,6 +189,30 @@ class HomeViewModel(
             },
         )
     }
+    private fun rampcheckStart() {
+        executeUseCase(
+            rampcheckStartUseCase.execute(
+                params = RampcheckStartRequestDTO(
+                    inspectionDate = state.value.tanggalPemeriksaan,
+                    rampcheckLocationId = state.value.locationId,
+                    latitude = state.value.latitude,
+                    longitude = state.value.longitude
+                ),
+            ),
+            onSuccess = { data, status ->
+                status?.let { s ->
+                    if(s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToGuide
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
     }
@@ -182,6 +230,21 @@ class HomeViewModel(
     }
     private fun onUpdateLocation(value: String) {
         setState { copy(location = value) }
+    }
+    private fun onUpdateLocationId(value: String) {
+        setState { copy(locationId = value) }
+    }
+    private fun onUpdateLatitude(value: String) {
+        setState { copy(latitude = value) }
+    }
+    private fun onUpdateLongitude(value: String) {
+        setState { copy(longitude = value) }
+    }
+    private fun onLocationTrigger(value: Boolean) {
+        setState { copy(locationTrigger = value) }
+    }
+    private fun onUpdateStatusMessage(value: String) {
+        setState { copy(statusMessage = value) }
     }
     private fun onUpdateSelectedTabListrik(value: Int) {
         setState { copy(selectedTabListrik = value) }

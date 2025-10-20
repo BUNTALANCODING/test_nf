@@ -11,6 +11,7 @@ import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.LogoutUseCase
+import business.interactors.main.RampcheckStartUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
@@ -34,7 +35,7 @@ fun appModule(context: Context?) = module {
     single<AppDataStore> { AppDataStoreManager(context) }
     factory { SharedViewModel(get()) }
     factory { LoginViewModel(get(), get(), get()) }
-    factory { HomeViewModel(get(), get(), get(), getImageSaveShare()) }
+    factory { HomeViewModel(get(), get(), get(),get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -43,6 +44,7 @@ fun appModule(context: Context?) = module {
     single { CheckTokenUseCase(get()) }
     single { CheckFCMTokenUseCase(get()) }
     single { GetLocationUseCase(get(),get()) }
+    single { RampcheckStartUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 

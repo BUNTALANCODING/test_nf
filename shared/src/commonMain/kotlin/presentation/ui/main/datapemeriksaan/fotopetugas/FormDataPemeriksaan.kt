@@ -1,5 +1,6 @@
 package presentation.ui.main.datapemeriksaan.fotopetugas
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
 import business.core.UIComponentState
+import common.LocationFetcher
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.vectorResource
 import presentation.component.BirthdayDatePrickerDialog
@@ -78,9 +81,26 @@ private fun FormDataPemeriksaanContent(
     navigateToGuideFoto: () -> Unit
 ) {
 
-    if(state.showDialogDatePicker == UIComponentState.Show){
+    LaunchedEffect(Unit){
+        events(HomeEvent.GetLocation)
+    }
+    if (state.locationTrigger) {
+        LocationFetcher(
+            onLocationReceived = { latLng ->
+                events(HomeEvent.OnUpdateLatitude(latLng.latitude.toString()))
+                events(HomeEvent.OnUpdateLongitude(latLng.longitude.toString()))
+                events(HomeEvent.OnLocationTrigger(false))
+            },
+            onError = { message ->
+                events(HomeEvent.OnUpdateStatusMessage(message))
+                events(HomeEvent.OnLocationTrigger(false))
+            }
+        )
+    }
+
+    if (state.showDialogDatePicker == UIComponentState.Show) {
         BirthdayDatePrickerDialog(
-            onDismiss = { events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Hide))},
+            onDismiss = { events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Hide)) },
             onConfirm = { selectedDate ->
                 events(HomeEvent.OnUpdateTanggalPemeriksaan(selectedDate))
                 events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Hide))
@@ -92,21 +112,22 @@ private fun FormDataPemeriksaanContent(
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeadlineSection()
-            TextFieldSection(state,events)
-            ButtonLocationSection()
+            TextFieldSection(state, events)
+            ButtonLocationSection(state, events)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection(navigateToGuideFoto)
+            ButtonNextSection(events)
         }
     }
 
 }
 
 
-
-
 @Composable
 fun HeadlineSection() {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "INSPEKSI KESELAMATAN LALU LINTAS DAN ANGKUTAN\n JALAN UNTUK ANGKUTAN UMUM",
             style = MaterialTheme.typography.labelMedium.copy(
@@ -144,7 +165,7 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
                 events(HomeEvent.OnShowDialogDatePicker(UIComponentState.Show))
             },
             value = state.tanggalPemeriksaan,
-            onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
+            onValueChange = { events(HomeEvent.OnUpdateTanggalPemeriksaan(it)) },
             enabled = false,
             placeholder = "Tanggal Pemeriksaan",
             textStyle = MaterialTheme.typography.labelMedium.copy(
@@ -174,10 +195,15 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             value = state.location,
             expanded = state.showDialogLocation == UIComponentState.Show,
-            onShowDropdown = {events(HomeEvent.OnShowDialogLocation(UIComponentState.Show))},
-            onHideDropdown = {events(HomeEvent.OnShowDialogLocation(UIComponentState.Hide))},
-            onValueChange = {events(HomeEvent.OnUpdateLocation(it))},
-            onOptionSelected = {events(HomeEvent.OnUpdateLocation(it))}
+            onShowDropdown = {
+                events(HomeEvent.OnShowDialogLocation(UIComponentState.Show))
+            },
+            onHideDropdown = { events(HomeEvent.OnShowDialogLocation(UIComponentState.Hide)) },
+            onValueChange = { events(HomeEvent.OnUpdateLocation(it)) },
+            onOptionSelected = {
+                events(HomeEvent.OnUpdateLocation(it.rampcheckLocationName ?: ""))
+                events(HomeEvent.OnUpdateLocationId(it.rampcheckLocationId ?: ""))
+            }
         )
 //        DefaultTextField(
 //            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE).noRippleClickable {
@@ -214,12 +240,12 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
                 Spacer_8dp()
                 DefaultTextField(
                     modifier = Modifier.width(175.dp).height(DEFAULT__BUTTON_SIZE),
-                    value = state.tanggalPemeriksaan,
-                    onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
+                    value = state.latitude,
+                    onValueChange = { events(HomeEvent.OnUpdateTanggalPemeriksaan(it)) },
                     enabled = false,
                     placeholder = "Masukkan Latitude",
                     textStyle = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
                     ),
                     color = Color.White
                 )
@@ -235,8 +261,8 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
                 Spacer_8dp()
                 DefaultTextField(
                     modifier = Modifier.width(175.dp).height(DEFAULT__BUTTON_SIZE),
-                    value = state.tanggalPemeriksaan,
-                    onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
+                    value = state.longitude,
+                    onValueChange = { events(HomeEvent.OnUpdateTanggalPemeriksaan(it)) },
                     enabled = false,
                     placeholder = "Masukkan Longitude",
                     textStyle = MaterialTheme.typography.labelMedium.copy(
@@ -250,32 +276,50 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
 }
 
 @Composable
-fun ButtonLocationSection() {
+fun ButtonLocationSection(state: HomeState, event: (HomeEvent) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Spacer_16dp()
         DefaultButton(
-            onClick = {},
+            onClick = {
+                event(HomeEvent.OnLocationTrigger(true))
+            },
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = "GUNAKAN LOKASI SAYA",
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor, contentColor = PrimaryColor)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = LightPurpleColor,
+                contentColor = PrimaryColor
+            )
         )
+        Spacer_8dp()
+        AnimatedVisibility(state.statusMessage.isNotEmpty()){
+            Text(
+                state.statusMessage,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.error
+                )
+            )
+        }
     }
 }
 
 @Composable
-fun ButtonNextSection(navigateToGuideFoto: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
+fun ButtonNextSection(event: (HomeEvent) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
-            onClick = {navigateToGuideFoto()},
+            onClick = { event(HomeEvent.RampcheckStart) },
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = "LANJUT",
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor, contentColor = Color.White)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryColor,
+                contentColor = Color.White
+            )
         )
     }
 }
