@@ -97,7 +97,7 @@ fun ButtonLoading(
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
-        enabled = true,
+        enabled = enabled,
         modifier = modifier,
         interactionSource = interactionSource,
         elevation = elevation,
@@ -147,7 +147,7 @@ fun DefaultButton(
             0.dp
         ),
         colors = colors,
-        /*colors = if (enabled) DefaultButtonTheme() else DefaultButtonWithBorderPrimaryTheme(),*/
+        /*colors = if (enabled) DefaultButtonTheme() else DefaultButtonWithBorderPrimaryTheme(),*//**/
         /*border = BorderStroke(
             1.dp,
             ButtonPrimaryColor

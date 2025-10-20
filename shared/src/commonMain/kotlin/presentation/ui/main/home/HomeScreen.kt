@@ -153,7 +153,7 @@ private fun HeaderSection(
             ProfileButton(
                 state = state,
                 profileName = profile.memberName.orEmpty(),
-                onClick = navigateToLogin
+                onClick = {}
             )
 
         }

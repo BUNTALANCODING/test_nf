@@ -94,6 +94,10 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 is HomeAction.Navigation.NavigateToGuide -> {
                     navigator.navigate(HomeNavigation.GuideFotoPetugas)
                 }
+
+                HomeAction.Navigation.NavigateToKIR -> {
+                    navigator.navigate(HomeNavigation.DataKendaraanKIR)
+                }
             }
         }
     }

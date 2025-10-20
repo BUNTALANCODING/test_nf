@@ -1,17 +1,23 @@
 package presentation.ui.main.auth.view_model
 
+import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.viewModelScope
 import business.core.BaseViewModel
 import business.core.NetworkState
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
 import com.mmk.kmpnotifier.notification.NotifierManager
+import kotlinx.coroutines.launch
+import presentation.token_manager.TokenEvent
+import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeEvent
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
+    private val tokenManager: TokenManager,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
 ) : BaseViewModel<LoginEvent, LoginState, LoginAction>() {
 
@@ -152,28 +158,43 @@ class LoginViewModel(
         )
     }*/
 
+//    private fun checkToken() {
+//        executeUseCase(
+//            checkTokenUseCase.execute(Unit),
+//            onSuccess = { data, status ->
+//                data?.let {
+//
+//                    setState {
+//                        copy(isTokenValid = it)
+//                    }
+//
+//                    setAction {
+//                        if (it) {
+//                            LoginAction.Navigation.NavigateToMain
+//                        } else {
+//                            LoginAction.Navigation.NavigateToLogin
+//                        }
+//                    }
+//                }
+//            }, onLoading = {
+//                setState { copy(progressBarState = it) }
+//            }
+//        )
+//    }
+
     private fun checkToken() {
-        executeUseCase(
-            checkTokenUseCase.execute(Unit),
-            onSuccess = { data, status ->
-                data?.let {
+        tokenManager.onTriggerEvent(TokenEvent.CheckToken)
 
-                    setState {
-                        copy(isTokenValid = it)
-                    }
-
-                    setAction {
-                        if (it) {
-                            LoginAction.Navigation.NavigateToMain
-                        } else {
-                            LoginAction.Navigation.NavigateToLogin
-                        }
+        viewModelScope.launch {
+            snapshotFlow { tokenManager.state.value.isTokenAvailable }
+                .collect { isTokenValid ->
+                    if (isTokenValid) {
+                        setAction { LoginAction.Navigation.NavigateToMain }
+                    } else {
+                        setAction { LoginAction.Navigation.NavigateToLogin }
                     }
                 }
-            }, onLoading = {
-                setState { copy(progressBarState = it) }
-            }
-        )
+        }
     }
 
     private fun login() {

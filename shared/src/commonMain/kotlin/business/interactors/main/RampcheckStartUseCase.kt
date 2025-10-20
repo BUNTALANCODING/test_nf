@@ -37,6 +37,6 @@ class RampcheckStartUseCase(
     override val progressBarType = ProgressBarState.FullScreenLoading
     override val needNetworkState = false
     override val createException = false
-    override val checkToken = false
+    override val checkToken = true
     override val showDialog = true
 }

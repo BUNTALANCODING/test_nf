@@ -1,5 +1,6 @@
 package presentation.ui.main.home.view_model
 
+import androidx.compose.ui.graphics.ImageBitmap
 import business.core.BaseViewModel
 import business.core.ProgressBarState
 import business.core.UIComponentState
@@ -8,14 +9,18 @@ import business.datasource.network.main.responses.GetLocationDTO
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.UploadPetugasUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
+import coil3.Bitmap
 import common.ImageSaveShare
+import common.toBytes
 import presentation.ui.main.auth.view_model.LoginAction
 
 class HomeViewModel(
     private val getLocationUseCase: GetLocationUseCase,
     private val rampcheckStartUseCase: RampcheckStartUseCase,
+    private val uploadPetugasUseCase: UploadPetugasUseCase,
     private val profileUseCase: GetProfileUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
@@ -32,6 +37,9 @@ class HomeViewModel(
             }
             is HomeEvent.RampcheckStart -> {
                 rampcheckStart()
+            }
+            is HomeEvent.UploadOfficerImage -> {
+                uploadFotoPetugas()
             }
 
             is HomeEvent.OnUpdateCityCode -> {
@@ -146,6 +154,13 @@ class HomeViewModel(
             is HomeEvent.OnShowDialogLocation -> {
                 onShowDialogLocation(event.value)
             }
+
+            is HomeEvent.OnUpdateOfficerImage -> {
+                onUpdateOfficerByteArray(event.value)
+            }
+            is HomeEvent.OnUpdateOfficerImageImageBitmap -> {
+                onUpdateOfficerImageBitmap(event.value)
+            }
         }
     }
 
@@ -213,9 +228,32 @@ class HomeViewModel(
             },
         )
     }
+
+    private fun uploadFotoPetugas() {
+        executeUseCase(
+            uploadPetugasUseCase.execute(
+                params = UploadPetugasUseCase.Params(
+                    officerImage = state.value.officer_image_bitmap?.toBytes()
+                )
+            ),
+            onSuccess = { data, status ->
+                status?.let { s ->
+                    if(s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToKIR
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
     }
+
     private fun onUpdateNoRangka(value: String) {
         setState { copy(noRangka = value) }
     }
@@ -280,6 +318,14 @@ class HomeViewModel(
 
     private fun onShowDialogLocation(value: UIComponentState) {
         setState { copy(showDialogLocation = value) }
+    }
+
+    private fun onUpdateOfficerImageBitmap(value: ImageBitmap) {
+        setState { copy(officer_image_bitmap = value) }
+    }
+
+    private fun onUpdateOfficerByteArray(value: ByteArray) {
+        setState { copy(officer_image = value) }
     }
 
 //    private fun updateTokenFCM(token: String) {

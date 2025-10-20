@@ -5,6 +5,7 @@ import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.ProfileDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
+import business.datasource.network.main.responses.UploadPetugasDTO
 
 interface MainService {
     companion object {
@@ -15,6 +16,7 @@ interface MainService {
         const val NOTIFICATIONS = "getnotification"
         const val LOCATION = "getlocation"
         const val RAMPCHECK_START = "rampcheckstart"
+        const val OFFICER_IMAGE = "officerimage"
     }
 
 
@@ -24,12 +26,10 @@ interface MainService {
 
     suspend fun rampcheckStart(request : RampcheckStartRequestDTO,token: String): MainGenericResponse<RampcheckStartDTO>
 
-    suspend fun updateProfile(
+    suspend fun uploadFotoPetugas(
         token: String,
-        name: String,
-        age: String,
-        image: ByteArray?,
-    ): MainGenericResponse<Boolean>
+        officerImage: ByteArray?,
+    ): MainGenericResponse<UploadPetugasDTO>
 
 
 

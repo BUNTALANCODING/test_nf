@@ -12,6 +12,8 @@ sealed class HomeAction : ViewSingleAction {
         data object NavigateToLogin : Navigation()
 
         data object NavigateToGuide : Navigation()
+
+        data object NavigateToKIR : Navigation()
     }
 
 }

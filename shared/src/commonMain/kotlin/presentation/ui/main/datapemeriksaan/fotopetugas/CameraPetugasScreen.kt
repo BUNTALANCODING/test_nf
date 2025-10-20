@@ -54,12 +54,8 @@ import common.PermissionCallback
 import common.PermissionStatus
 import common.PermissionType
 import common.createPermissionsManager
-import common.toBase64
-import common.toBytes
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import presentation.component.DefaultScreenUI
 import presentation.ui.main.home.view_model.HomeEvent
@@ -196,11 +192,11 @@ private fun CameraKTPContent(
                         ) { image ->
                             launch {
                                 imageBitmap = image
-                                val base64 = withContext(Dispatchers.Default) {
-                                    image.toBytes().toBase64()
+                                if (imageBitmap != null){
+                                    events(HomeEvent.OnUpdateOfficerImageImageBitmap(imageBitmap!!))
+                                    navigateToVerifyFoto()
+                                    imageBitmap = null
                                 }
-                                navigateToVerifyFoto()
-                                imageBitmap = null
                             }
                         }
                     }
@@ -233,7 +229,6 @@ private fun CameraView(
         CameraPreview(
             modifier = Modifier.fillMaxSize(),
             cameraConfiguration = {
-                setQualityPrioritization(QualityPrioritization.QUALITY)
                 setCameraLens(CameraLens.BACK)
                 setFlashMode(FlashMode.OFF)
                 setImageFormat(ImageFormat.JPEG)

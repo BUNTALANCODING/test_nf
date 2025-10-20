@@ -1,5 +1,6 @@
 package presentation.ui.main.home.view_model
 
+import androidx.compose.ui.graphics.ImageBitmap
 import business.core.NetworkState
 import business.core.UIComponentState
 import business.core.ViewEvent
@@ -12,6 +13,8 @@ sealed class HomeEvent : ViewEvent {
     data object GetLocation : HomeEvent()
 
     data object RampcheckStart : HomeEvent()
+
+    data object UploadOfficerImage : HomeEvent()
 
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
@@ -64,6 +67,10 @@ sealed class HomeEvent : ViewEvent {
     data class OnShowDialogPajak(val value: UIComponentState) : HomeEvent()
 
     data class OnUpdatePin(val value: String) : HomeEvent()
+
+    data class OnUpdateOfficerImage(val value: ByteArray) : HomeEvent()
+
+    data class OnUpdateOfficerImageImageBitmap(val value: ImageBitmap) : HomeEvent()
 
     data class OnUpdateTokenFCM(val value: String) : HomeEvent()
 

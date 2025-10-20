@@ -1,5 +1,6 @@
 package presentation.ui.main.home.view_model
 
+import androidx.compose.ui.graphics.ImageBitmap
 import business.core.NetworkState
 import business.core.ProgressBarState
 import business.core.UIComponentState
@@ -31,6 +32,11 @@ data class HomeState(
     val longitude: String = "",
     val locationTrigger: Boolean = false,
     val statusMessage : String = "",
+    val officer_image : ByteArray? = null,
+    val officer_image_bitmap : ImageBitmap? = null,
+
+
+
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,
     val searchValue: String = "",
