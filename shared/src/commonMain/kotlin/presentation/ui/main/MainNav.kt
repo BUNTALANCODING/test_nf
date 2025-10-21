@@ -49,7 +49,9 @@ import presentation.ui.main.datapemeriksaan.fotopetugas.CameraPetugasScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.FormDataPemeriksaanScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideFotoPetugasScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.VerifyFotoPetugasScreen
+import presentation.ui.main.datapemeriksaan.kir.CameraKIRScreen
 import presentation.ui.main.datapemeriksaan.kir.DataKendaraanScreen
+import presentation.ui.main.datapemeriksaan.kir.DetailHasilScanScreen
 import presentation.ui.main.home.HomeScreen
 import presentation.ui.main.home.view_model.HomeAction
 import presentation.ui.main.home.view_model.HomeViewModel
@@ -97,6 +99,10 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 
                 HomeAction.Navigation.NavigateToKIR -> {
                     navigator.navigate(HomeNavigation.DataKendaraanKIR)
+                }
+
+                HomeAction.Navigation.NavigateToResultScreen -> {
+                    navigator.navigate(HomeNavigation.DetailHasilFotoKIR)
                 }
             }
         }
@@ -155,6 +161,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                             navigator.navigate(HomeNavigation.Login)
                         },
                         navigateToPemeriksaan = {
+//                            navigator.navigate(HomeNavigation.CameraFotoKIR)
                             navigator.navigate(HomeNavigation.Pemeriksaan)
                         },
                     )
@@ -205,7 +212,6 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
                         navigateToDataKIR = {
-                            navigator.navigate(HomeNavigation.DataKendaraanKIR)
                         },
                     )
                 }
@@ -218,6 +224,28 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
                         navigateToDetail = {},
+                    )
+                }
+
+                composable<HomeNavigation.DetailHasilFotoKIR> {
+                    DetailHasilScanScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToDetail = {},
+                    )
+                }
+
+                composable<HomeNavigation.CameraFotoKIR> {
+                    CameraKIRScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToVerifyPhotoKTP = {},
                     )
                 }
 

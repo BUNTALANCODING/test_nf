@@ -7,6 +7,7 @@ import business.datasource.network.main.MainService
 import business.datasource.network.main.MainServiceImpl
 import business.datasource.network.splash.SplashService
 import business.datasource.network.splash.SplashServiceImpl
+import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
@@ -36,7 +37,7 @@ fun appModule(context: Context?) = module {
     single<AppDataStore> { AppDataStoreManager(context) }
     factory { SharedViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(), get()) }
-    factory { HomeViewModel(get(), get(), get(),get(), get()) }
+    factory { HomeViewModel(get(), get(), get(),get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -47,6 +48,7 @@ fun appModule(context: Context?) = module {
     single { GetLocationUseCase(get(),get()) }
     single { RampcheckStartUseCase(get(),get()) }
     single { UploadPetugasUseCase(get(),get()) }
+    single { CheckQRUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 

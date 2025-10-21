@@ -4,8 +4,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import business.core.BaseViewModel
 import business.core.ProgressBarState
 import business.core.UIComponentState
+import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
+import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.RampcheckStartUseCase
@@ -23,6 +26,7 @@ class HomeViewModel(
     private val uploadPetugasUseCase: UploadPetugasUseCase,
     private val profileUseCase: GetProfileUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
+    private val checkQRUseCase: CheckQRUseCase,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
 //    private val imageSaver: ImageSaveShare
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
@@ -41,6 +45,9 @@ class HomeViewModel(
             is HomeEvent.UploadOfficerImage -> {
                 uploadFotoPetugas()
             }
+            is HomeEvent.CheckQR -> {
+                checkQR()
+            }
 
             is HomeEvent.OnUpdateCityCode -> {
                 onUpdateCityCode(event.value)
@@ -49,8 +56,9 @@ class HomeViewModel(
             is HomeEvent.OnValidateField -> {
 
             }
-
-
+            is HomeEvent.OnUpdateQrUrl -> {
+                onUpdateQrUrl(event.value)
+            }
 
             is HomeEvent.OnUpdateTokenFCM -> {
 //                updateTokenFCM(event.value)
@@ -229,11 +237,41 @@ class HomeViewModel(
         )
     }
 
+    private fun checkQR() {
+        executeUseCase(
+            checkQRUseCase.execute(
+                params = CheckQRRequestDTO(
+                    qrUrl = state.value.qrUrl
+                ),
+            ),
+            onSuccess = { data, status ->
+                status?.let { s ->
+                    if(s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToResultScreen
+                        }
+                    }
+                }
+                data?.let { dataHasil ->
+                    setState {
+                        copy(
+                            dataHasilEKIR = dataHasil,
+                        )
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
     private fun uploadFotoPetugas() {
         executeUseCase(
             uploadPetugasUseCase.execute(
                 params = UploadPetugasUseCase.Params(
-                    officerImage = state.value.officer_image_bitmap?.toBytes()
+                    officerImage = state.value.officer_image_bitmap!!.toBytes()
                 )
             ),
             onSuccess = { data, status ->
@@ -252,6 +290,10 @@ class HomeViewModel(
     }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
+    }
+
+    private fun onUpdateQrUrl(value: String) {
+        setState { copy(qrUrl = value) }
     }
 
     private fun onUpdateNoRangka(value: String) {

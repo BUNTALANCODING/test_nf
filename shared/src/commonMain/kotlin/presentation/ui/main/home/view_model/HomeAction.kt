@@ -13,6 +13,8 @@ sealed class HomeAction : ViewSingleAction {
 
         data object NavigateToGuide : Navigation()
 
+        data object NavigateToResultScreen : Navigation()
+
         data object NavigateToKIR : Navigation()
     }
 

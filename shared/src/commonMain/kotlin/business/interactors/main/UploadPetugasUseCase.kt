@@ -14,7 +14,25 @@ class UploadPetugasUseCase(
 
     data class Params(
         val officerImage: ByteArray?,
-    )
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+
+            other as Params
+
+            if (officerImage != null) {
+                if (other.officerImage == null) return false
+                if (!officerImage.contentEquals(other.officerImage)) return false
+            } else if (other.officerImage != null) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return officerImage?.contentHashCode() ?: 0
+        }
+    }
 
     override suspend fun run(
         params: Params,

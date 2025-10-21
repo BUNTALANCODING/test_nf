@@ -16,6 +16,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object UploadOfficerImage : HomeEvent()
 
+    data object CheckQR : HomeEvent()
+
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
     data class OnShowDialogDatePicker(val value: UIComponentState) : HomeEvent()
@@ -59,6 +61,8 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateSelectedMethod(val value: Pair<Int, Int>) : HomeEvent()
 
     data class OnUpdateNik(val value: String) : HomeEvent()
+
+    data class OnUpdateQrUrl(val value: String) : HomeEvent()
 
     data class OnUpdateSearch(val value: String) : HomeEvent()
 

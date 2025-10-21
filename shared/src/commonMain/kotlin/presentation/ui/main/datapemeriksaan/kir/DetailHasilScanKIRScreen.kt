@@ -115,15 +115,15 @@ fun DetailKendaraanSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     .padding(16.dp),
             ) {
 
-                InformasiRow("Nomor Kendaraan", "AA 1234 BC")
+                InformasiRow("Nomor Kendaraan", state.platNumber)
                 Spacer_8dp()
-                InformasiRow("Nama Perusahaan Angkutan", "DAMRI")
+                InformasiRow("Nama Perusahaan Angkutan", state.operatorName)
                 Spacer_8dp()
-                InformasiRow("Jenis Angkutan", "AKDP")
+                InformasiRow("Jenis Angkutan", state.cargoName)
                 Spacer_8dp()
-                InformasiRow("Trayek", "Garut - Tasik")
+                InformasiRow("Trayek", state.route)
                 Spacer_8dp()
-                InformasiRow("Nomor STUK", "657465465785")
+                InformasiRow("Nomor STUK", state.stukNo)
                 Spacer_8dp()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -139,7 +139,7 @@ fun DetailKendaraanSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
 
                     Text(
-                        "Berlaku",
+                        state.status,
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = SuccessColor

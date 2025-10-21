@@ -6,6 +6,7 @@ import business.core.ProgressBarState
 import business.core.UIComponentState
 import business.core.ViewState
 import business.datasource.network.common.JAlertResponse
+import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.ProfileDTO
 import kotlinx.datetime.Clock
@@ -34,7 +35,13 @@ data class HomeState(
     val statusMessage : String = "",
     val officer_image : ByteArray? = null,
     val officer_image_bitmap : ImageBitmap? = null,
-
+    val qrUrl: String = "",
+    val platNumber : String = "",
+    val operatorName : String = "",
+    val cargoName : String = "",
+    val route : String = "",
+    val stukNo : String = "",
+    val status : String = "",
 
 
     val selectedTab: Int = 1,
@@ -49,6 +56,8 @@ data class HomeState(
     val showDialogLocation: UIComponentState = UIComponentState.Hide,
 
     val selectedLocationList: List<GetLocationDTO> = listOf(),
+
+    val dataHasilEKIR: CheckQRDTO = CheckQRDTO(),
 
      val isTokenValid: Boolean = false,
     val updateTokenFCM: String = "",
