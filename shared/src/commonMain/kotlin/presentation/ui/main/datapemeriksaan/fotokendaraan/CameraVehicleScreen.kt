@@ -1,4 +1,4 @@
-package presentation.ui.main.datapemeriksaan.kir
+package presentation.ui.main.datapemeriksaan.fotokendaraan
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +36,11 @@ import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.BACK_IMAGE
+import business.constants.FRONT_IMAGE
+import business.constants.LEFT_IMAGE
+import business.constants.NRKB_IMAGE
+import business.constants.RIGHT_IMAGE
 import business.core.UIComponent
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.CameraLens
@@ -64,38 +69,38 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun CameraKIRScreen(
+fun CameraVehicleScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDataKendaraan: () -> Unit
+    navigateToFotoKendaraan: () -> Unit
 ) {
 
     DefaultScreenUI(
         errors = errors,
         progressBarState = state.progressBarState,
-        titleToolbar = "Foto KIR",
+        titleToolbar = "Foto Kendaraan ${state.imageTypes}",
         startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
         onClickStartIconToolbar = { popup() },
         isCamera = true
     ) {
-        CameraKIRContent(
+        CameraVehicleContent(
             state = state,
             events = events,
             popup = popup,
-            navigateToDataKendaraan = navigateToDataKendaraan
+            navigateToFotoKendaraan = navigateToFotoKendaraan
         )
 
     }
 }
 
 @Composable
-private fun CameraKIRContent(
+private fun CameraVehicleContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToDataKendaraan: () -> Unit
+    navigateToFotoKendaraan: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -193,8 +198,24 @@ private fun CameraKIRContent(
                             launch {
                                 imageBitmap = image
                                 if (imageBitmap != null){
-                                    events(HomeEvent.OnUpdateKIRImageBitmap(imageBitmap!!))
-                                    navigateToDataKendaraan()
+                                    when(state.imageTypes){
+                                        FRONT_IMAGE -> {
+                                            events(HomeEvent.OnUpdateFrontImageBitmap(imageBitmap!!))
+                                        }
+                                        BACK_IMAGE -> {
+                                            events(HomeEvent.OnUpdateBackImageBitmap(imageBitmap!!))
+                                        }
+                                        LEFT_IMAGE -> {
+                                            events(HomeEvent.OnUpdateLeftImageBitmap(imageBitmap!!))
+                                        }
+                                        RIGHT_IMAGE -> {
+                                            events(HomeEvent.OnUpdateRightImageBitmap(imageBitmap!!))
+                                        }
+                                        NRKB_IMAGE -> {
+                                            events(HomeEvent.OnUpdateNrkbImageBitmap(imageBitmap!!))
+                                        }
+                                    }
+                                    navigateToFotoKendaraan()
                                     imageBitmap = null
                                 }
                             }

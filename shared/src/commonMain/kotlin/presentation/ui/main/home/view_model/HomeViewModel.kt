@@ -5,18 +5,25 @@ import business.core.BaseViewModel
 import business.core.ProgressBarState
 import business.core.UIComponentState
 import business.datasource.network.main.request.CheckQRRequestDTO
+import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.request.UploadPetugasRequestDTO
+import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetProfileUseCase
+import business.interactors.main.GetVehicleUseCase
+import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.RampcheckStartUseCase
 import business.interactors.main.UploadPetugasUseCase
+import business.interactors.main.VehiclePhotoUseCase
 import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import coil3.Bitmap
 import common.ImageSaveShare
+import common.toBase64
 import common.toBytes
 import presentation.ui.main.auth.view_model.LoginAction
 
@@ -24,11 +31,10 @@ class HomeViewModel(
     private val getLocationUseCase: GetLocationUseCase,
     private val rampcheckStartUseCase: RampcheckStartUseCase,
     private val uploadPetugasUseCase: UploadPetugasUseCase,
-    private val profileUseCase: GetProfileUseCase,
-    private val checkTokenUseCase: CheckTokenUseCase,
     private val checkQRUseCase: CheckQRUseCase,
-//    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
-//    private val imageSaver: ImageSaveShare
+    private val getVehicleUseCase: GetVehicleUseCase,
+    private val platKIRUseCase: PlatKIRUseCase,
+    private val vehiclePhotoUseCase: VehiclePhotoUseCase
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
     override fun setInitialState() = HomeState()
@@ -49,6 +55,18 @@ class HomeViewModel(
                 checkQR()
             }
 
+            is HomeEvent.GetVehicle -> {
+                getVehicle()
+            }
+
+            is HomeEvent.PlatKIR -> {
+                platKIR()
+            }
+
+            is HomeEvent.VehiclePhoto -> {
+                vehiclePhoto()
+            }
+
             is HomeEvent.OnUpdateCityCode -> {
                 onUpdateCityCode(event.value)
             }
@@ -58,6 +76,10 @@ class HomeViewModel(
             }
             is HomeEvent.OnUpdateQrUrl -> {
                 onUpdateQrUrl(event.value)
+            }
+
+            is HomeEvent.GetLocation -> {
+                getLocation()
             }
 
             is HomeEvent.OnUpdateTokenFCM -> {
@@ -152,13 +174,11 @@ class HomeViewModel(
                 onUpdateLocationId(event.value)
             }
 
-            is HomeEvent.OnUpdateSelectedVehicle -> {
-                onUpdateSelectedVehicle(event.value)
+            is HomeEvent.OnUpdateVehiclePlatNumber -> {
+                onUpdateSelectedPlatNumber(event.value)
             }
 
-            is HomeEvent.GetLocation -> {
-                getLocation()
-            }
+
             is HomeEvent.OnShowDialogLocation -> {
                 onShowDialogLocation(event.value)
             }
@@ -168,6 +188,33 @@ class HomeViewModel(
             }
             is HomeEvent.OnUpdateOfficerImageImageBitmap -> {
                 onUpdateOfficerImageBitmap(event.value)
+            }
+
+            is HomeEvent.OnShowDropdownVehiclePicker -> {
+                onShowDropdownVehicle(event.value)
+            }
+
+            is HomeEvent.OnUpdateKIRImageBitmap -> {
+                onUpdateKIRImageBitmap(event.value)
+            }
+
+            is HomeEvent.OnUpdateBackImageBitmap -> {
+                onUpdateBackImageBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateFrontImageBitmap -> {
+                onUpdateFrontImageBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateImageTypes -> {
+                onUpdateImageTypes(event.value)
+            }
+            is HomeEvent.OnUpdateLeftImageBitmap -> {
+                onUpdateLeftImageBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateNrkbImageBitmap -> {
+                onUpdateNrkbImageBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateRightImageBitmap -> {
+                onUpdateRightImageBitmap(event.value)
             }
         }
     }
@@ -197,7 +244,7 @@ class HomeViewModel(
             getLocationUseCase.execute(
                 params = Unit,
             ),
-            onSuccess = { data, status ->
+            onSuccess = { data, status, code ->
                 data?.let { locationList ->
                     setState {
                         copy(
@@ -222,7 +269,7 @@ class HomeViewModel(
                     longitude = state.value.longitude
                 ),
             ),
-            onSuccess = { data, status ->
+            onSuccess = { data, status, code ->
                 status?.let { s ->
                     if(s){
                         setAction {
@@ -244,7 +291,7 @@ class HomeViewModel(
                     qrUrl = state.value.qrUrl
                 ),
             ),
-            onSuccess = { data, status ->
+            onSuccess = { data, status, code ->
                 status?.let { s ->
                     if(s){
                         setAction {
@@ -267,18 +314,88 @@ class HomeViewModel(
         )
     }
 
+    private fun getVehicle() {
+        executeUseCase(
+            getVehicleUseCase.execute(
+                params = Unit
+            ),
+            onSuccess = { data, status, code ->
+                data?.let { listVehicle ->
+                    setState {
+                        copy(
+                            listVehicle = listVehicle,
+                        )
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun vehiclePhoto() {
+        executeUseCase(
+            vehiclePhotoUseCase.execute(
+                params = VehiclePhotoRequestDTO(
+                    frontImage = state.value.frontImage?.toBytes()?.toBase64(),
+                    backImage = state.value.backImage?.toBytes()?.toBase64(),
+                    rightImage = state.value.rightImage?.toBytes()?.toBase64(),
+                    leftImage = state.value.leftImage?.toBytes()?.toBase64(),
+                    nrkbImage = state.value.nrkbImage?.toBytes()?.toBase64()
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {s ->
+                    if (s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToPemeriksaanAdministrasi
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
     private fun uploadFotoPetugas() {
         executeUseCase(
             uploadPetugasUseCase.execute(
-                params = UploadPetugasUseCase.Params(
-                    officerImage = state.value.officer_image_bitmap!!.toBytes()
+                params = UploadPetugasRequestDTO(
+                    officerImage = state.value.officer_image_bitmap?.toBytes()?.toBase64()
                 )
             ),
-            onSuccess = { data, status ->
+            onSuccess = { data, status, code ->
                 status?.let { s ->
                     if(s){
                         setAction {
                             HomeAction.Navigation.NavigateToKIR
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun platKIR() {
+        executeUseCase(
+            platKIRUseCase.execute(
+                params = PlatKIRRequestDTO(
+                    platNumber = state.value.selectedPlatNumber,
+                    kirImage = state.value.kirImage?.toBytes()?.toBase64()
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if(s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToQRKIR
                         }
                     }
                 }
@@ -350,8 +467,8 @@ class HomeViewModel(
     private fun onUpdateClearTrigger(value: Boolean){
         setState { copy(clearTrigger = value) }
     }
-    private fun onUpdateSelectedVehicle(value: String){
-        setState { copy(selectedVehicle = value) }
+    private fun onUpdateSelectedPlatNumber(value: String){
+        setState { copy(selectedPlatNumber = value) }
     }
 
     private fun onShowDialogDatePicker(value: UIComponentState) {
@@ -362,8 +479,37 @@ class HomeViewModel(
         setState { copy(showDialogLocation = value) }
     }
 
+    private fun onShowDropdownVehicle(value: UIComponentState) {
+        setState { copy(showDropdownVehicle = value) }
+    }
+
     private fun onUpdateOfficerImageBitmap(value: ImageBitmap) {
         setState { copy(officer_image_bitmap = value) }
+    }
+
+    private fun onUpdateKIRImageBitmap(value: ImageBitmap) {
+        setState { copy(kirImage = value) }
+    }
+
+    private fun onUpdateFrontImageBitmap(value: ImageBitmap) {
+        setState { copy(frontImage = value) }
+    }
+
+    private fun onUpdateBackImageBitmap(value: ImageBitmap) {
+        setState { copy(backImage = value) }
+    }
+    private fun onUpdateLeftImageBitmap(value: ImageBitmap) {
+        setState { copy(leftImage = value) }
+    }
+    private fun onUpdateRightImageBitmap(value: ImageBitmap) {
+        setState { copy(rightImage = value) }
+    }
+    private fun onUpdateNrkbImageBitmap(value: ImageBitmap) {
+        setState { copy(nrkbImage = value) }
+    }
+
+    private fun onUpdateImageTypes(value: String){
+        setState { copy(imageTypes = value) }
     }
 
     private fun onUpdateOfficerByteArray(value: ByteArray) {

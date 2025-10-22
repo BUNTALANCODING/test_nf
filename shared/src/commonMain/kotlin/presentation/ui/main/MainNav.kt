@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import presentation.navigation.AdministrasiNavigation
 import presentation.navigation.BottomNavigation
 import presentation.navigation.HomeNavigation
 import presentation.navigation.ProfileNavigation
@@ -45,6 +46,8 @@ import presentation.ui.main.auth.SuccessRegisterScreen
 import presentation.ui.main.auth.forgot.ForgotPasswordScreen
 import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.datapemeriksaan.fotokendaraan.CameraVehicleScreen
+import presentation.ui.main.datapemeriksaan.fotokendaraan.UnggahFotoKendaraanScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.CameraPetugasScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.FormDataPemeriksaanScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideFotoPetugasScreen
@@ -52,9 +55,11 @@ import presentation.ui.main.datapemeriksaan.fotopetugas.VerifyFotoPetugasScreen
 import presentation.ui.main.datapemeriksaan.kir.CameraKIRScreen
 import presentation.ui.main.datapemeriksaan.kir.DataKendaraanScreen
 import presentation.ui.main.datapemeriksaan.kir.DetailHasilScanScreen
+import presentation.ui.main.datapemeriksaan.kir.QRKIRScreen
 import presentation.ui.main.home.HomeScreen
 import presentation.ui.main.home.view_model.HomeAction
 import presentation.ui.main.home.view_model.HomeViewModel
+import presentation.ui.main.pemeriksaanadministrasi.GuidePemeriksaanAdministrasiScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,6 +108,13 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 
                 HomeAction.Navigation.NavigateToResultScreen -> {
                     navigator.navigate(HomeNavigation.DetailHasilFotoKIR)
+                }
+                HomeAction.Navigation.NavigateToQRKIR -> {
+                    navigator.navigate(HomeNavigation.QRKIRScreen)
+                }
+
+                HomeAction.Navigation.NavigateToPemeriksaanAdministrasi -> {
+                    navigator.navigate(AdministrasiNavigation.GuideAdministrasi)
                 }
             }
         }
@@ -162,7 +174,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToPemeriksaan = {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
-                            navigator.navigate(HomeNavigation.Pemeriksaan)
+//                            navigator.navigate(HomeNavigation.Pemeriksaan)
+                            navigator.navigate(HomeNavigation.FotoKendaraan)
                         },
                     )
                 }
@@ -223,7 +236,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToDetail = {},
+                        navigateToCameraKIR = {
+                            navigator.navigate(HomeNavigation.CameraFotoKIR)
+                        },
                     )
                 }
 
@@ -245,11 +260,59 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToVerifyPhotoKTP = {},
+                        navigateToDataKendaraan = {
+                            navigator.navigate(HomeNavigation.DataKendaraanKIR)
+                        },
                     )
                 }
 
-                
+                composable<HomeNavigation.QRKIRScreen> {
+                    QRKIRScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToVerifyPhotoKTP = {},
+                    )
+                }
+                composable<HomeNavigation.FotoKendaraan> {
+                    UnggahFotoKendaraanScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCamera = {
+                            navigator.navigate(HomeNavigation.CameraVehicle)
+                        },
+                    )
+                }
+                composable<HomeNavigation.CameraVehicle> {
+                    CameraVehicleScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToFotoKendaraan = {
+                            navigator.popBackStack()
+                        } ,
+                    )
+                }
+
+                composable<AdministrasiNavigation.GuideAdministrasi> {
+                    GuidePemeriksaanAdministrasiScreen(
+
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCameraFace = {},
+                    )
+                }
+
+
                 /**
                  * Auth
                  */

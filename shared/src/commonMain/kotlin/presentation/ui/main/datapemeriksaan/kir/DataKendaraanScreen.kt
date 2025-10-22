@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,9 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
+import presentation.component.CustomDropdownPicker
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
@@ -39,6 +42,9 @@ import presentation.component.DefaultTextField
 import presentation.component.DottedBorderBackground
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
+import presentation.component.VehicleDropdownPicker
+import presentation.component.noRippleClickable
+import presentation.navigation.HomeNavigation
 import presentation.theme.LightPurpleColor
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -54,7 +60,7 @@ fun DataKendaraanScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToCameraKIR: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -68,7 +74,7 @@ fun DataKendaraanScreen(
         DataKendaraanContent(
             state = state,
             events = events,
-            navigateToDetail = navigateToDetail
+            navigateToCameraKIR = navigateToCameraKIR
         )
 
     }
@@ -78,15 +84,19 @@ fun DataKendaraanScreen(
 private fun DataKendaraanContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToCameraKIR: () -> Unit
 ) {
+
+    LaunchedEffect(Unit){
+        events(HomeEvent.GetVehicle)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeadlineSection()
-            TextFieldSection(state,events)
+            TextFieldSection(state,events, navigateToCameraKIR)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("LANJUT PINDAI QR CODE KIR")
+            ButtonNextSection("LANJUT PINDAI QR CODE KIR", state, events)
 
         }
     }
@@ -122,7 +132,7 @@ fun HeadlineSection() {
 }
 
 @Composable
-fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
+fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit, navigateToCameraKIR: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
 
         Text(
@@ -132,24 +142,19 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_8dp()
-        DefaultTextField(
-            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-            value = state.tanggalPemeriksaan,
-            onValueChange = {events(HomeEvent.OnUpdateTanggalPemeriksaan(it))},
-            enabled = false,
-            placeholder = "Pilih Nomor Kendaraan",
-            textStyle = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Normal
-            ),
-            iconEnd = {
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Arrow Down",
-                    tint = Color.Black,
-                    modifier = Modifier.size(16.dp)
-                )
+        VehicleDropdownPicker(
+            options = state.listVehicle,
+            modifier = Modifier.fillMaxWidth(),
+            value = state.selectedPlatNumber,
+            expanded = state.showDropdownVehicle == UIComponentState.Show,
+            onShowDropdown = {
+                events(HomeEvent.OnShowDropdownVehiclePicker(UIComponentState.Show))
             },
-            color = Color.White
+            onHideDropdown = { events(HomeEvent.OnShowDropdownVehiclePicker(UIComponentState.Hide)) },
+            onValueChange = { events(HomeEvent.OnUpdateVehiclePlatNumber(it)) },
+            onOptionSelected = {
+                events(HomeEvent.OnUpdateVehiclePlatNumber(it.platNumber ?: ""))
+            }
         )
         Spacer_16dp()
 
@@ -166,38 +171,50 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_16dp()
-        DottedBorderBackground(modifier = Modifier.fillMaxWidth().height(160.dp)) {
+        DottedBorderBackground(modifier = Modifier.fillMaxWidth().height(160.dp).noRippleClickable { navigateToCameraKIR() }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painterResource(Res.drawable.ic_camera),
-                    null,
-                    modifier = Modifier.size(24.dp)
-                        .align(Alignment.CenterHorizontally),
-                    contentScale = ContentScale.Fit
-                )
-                Spacer_8dp()
-                Text(
-                    "Ambil Foto",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = PrimaryColor
-                    ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                if(state.kirImage != null){
+                    Image(
+                        contentDescription = null,
+                        bitmap = state.kirImage,
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painterResource(Res.drawable.ic_camera),
+                        null,
+                        modifier = Modifier.size(24.dp)
+                            .align(Alignment.CenterHorizontally),
+                        contentScale = ContentScale.Fit
+                    )
+                    Spacer_8dp()
+                    Text(
+                        "Ambil Foto",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = PrimaryColor
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
             }
         }
     }
 }
 
 @Composable
-fun ButtonNextSection(label: String) {
+fun ButtonNextSection(label: String, state: HomeState, events: (HomeEvent) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
         DefaultButton(
-            onClick = {},
+            onClick = {
+                events(HomeEvent.PlatKIR)
+            },
+            enabled = (state.kirImage != null && state.selectedPlatNumber.isNotEmpty()),
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = label,
             style = MaterialTheme.typography.labelMedium.copy(

@@ -365,7 +365,7 @@ private fun LoginButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(10.dp),
         colors =  ButtonDefaults.buttonColors(
-            containerColor = yellowBackground
+            containerColor = yellowBackground, contentColor = Color.White, disabledContainerColor = Color.LightGray, disabledContentColor = Color.Gray
         )
     )
 }

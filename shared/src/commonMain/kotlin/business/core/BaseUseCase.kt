@@ -60,7 +60,7 @@ abstract class BaseUseCase<Params, ApiResponse, Result>(
                 }
             }
 
-            emit(DataState.Data(data = mapApiResponse(result), status = result?.status))
+            emit(DataState.Data(data = mapApiResponse(result), status = result?.status, code = result?.code))
         } catch (e: Exception) {
 
             if (createException) {

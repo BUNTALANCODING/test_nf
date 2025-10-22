@@ -77,7 +77,7 @@ private fun GuidePemeriksaanAdministrasiContent(
             HeaderSection()
             InformasiFaceContent()
             Spacer(modifier = Modifier.weight(1f))
-            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN")
+            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, events)
         }
     }
 }

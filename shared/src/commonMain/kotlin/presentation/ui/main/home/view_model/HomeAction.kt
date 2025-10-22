@@ -16,6 +16,10 @@ sealed class HomeAction : ViewSingleAction {
         data object NavigateToResultScreen : Navigation()
 
         data object NavigateToKIR : Navigation()
+
+        data object NavigateToQRKIR : Navigation()
+
+        data object NavigateToPemeriksaanAdministrasi : Navigation()
     }
 
 }

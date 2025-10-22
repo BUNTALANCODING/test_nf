@@ -83,7 +83,7 @@ abstract class BaseViewModel<Event : ViewEvent,
 
     fun <T> executeUseCase(
         flow: Flow<DataState<T>>,
-        onSuccess: (T?, Boolean?) -> Unit,
+        onSuccess: (T?, Boolean?, String?) -> Unit,
         onLoading: (ProgressBarState) -> Unit,
         onNetworkStatus: (NetworkState) -> Unit = {}
     ) {
@@ -92,7 +92,7 @@ abstract class BaseViewModel<Event : ViewEvent,
                 when (dataState) {
                     is DataState.NetworkStatus -> onNetworkStatus(dataState.networkState)
                     is DataState.Response -> setError { dataState.uiComponent }
-                    is DataState.Data -> onSuccess(dataState.data, dataState.status)
+                    is DataState.Data -> onSuccess(dataState.data, dataState.status, dataState.code)
                     is DataState.Loading -> onLoading(dataState.progressBarState)
                 }
             }

@@ -115,7 +115,7 @@ private fun FormDataPemeriksaanContent(
             TextFieldSection(state, events)
             ButtonLocationSection(state, events)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection(events)
+            ButtonNextSection(state, events)
         }
     }
 
@@ -307,12 +307,13 @@ fun ButtonLocationSection(state: HomeState, event: (HomeEvent) -> Unit) {
 }
 
 @Composable
-fun ButtonNextSection(event: (HomeEvent) -> Unit) {
+fun ButtonNextSection(state: HomeState,event: (HomeEvent) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
             onClick = { event(HomeEvent.RampcheckStart) },
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = "LANJUT",
+            enabled = (state.tanggalPemeriksaan.isNotEmpty() && state.locationId.isNotEmpty() && state.latitude.isNotEmpty() && state.longitude.isNotEmpty()),
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),

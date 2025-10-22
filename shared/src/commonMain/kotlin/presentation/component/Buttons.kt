@@ -83,7 +83,7 @@ fun CircleButton(
 @Composable
 fun ButtonLoading(
     modifier: Modifier = Modifier,
-//    progressBarState: ProgressBarState,
+    progressBarState: ProgressBarState,
     onClick: () -> Unit,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -112,14 +112,14 @@ fun ButtonLoading(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
 
-//            AnimatedVisibility(visible = (progressBarState == ProgressBarState.ButtonLoading || progressBarState == ProgressBarState.FullScreenLoading)) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier
-//                        .size(25.dp),
-//                    strokeWidth = 2.dp,
-//                    color = if (enabled) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary,
-//                )
-//            }
+            AnimatedVisibility(visible = (progressBarState == ProgressBarState.ButtonLoading || progressBarState == ProgressBarState.FullScreenLoading)) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(25.dp),
+                    strokeWidth = 2.dp,
+                    color = if (enabled) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary,
+                )
+            }
 
             content()
         }
@@ -129,7 +129,7 @@ fun ButtonLoading(
 @Composable
 fun DefaultButton(
     modifier: Modifier = Modifier,
-//    progressBarState: ProgressBarState = ProgressBarState.Idle,
+    progressBarState: ProgressBarState = ProgressBarState.Idle,
     enabled: Boolean = true,
     enableElevation: Boolean = false,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
@@ -154,7 +154,7 @@ fun DefaultButton(
         ),*/
         shape = shape,
         onClick = onClick,
-//        progressBarState = progressBarState,
+        progressBarState = progressBarState,
     ) {
         Text(
             text = text,

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import business.core.UIComponentState
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.GetVehicleDTO
 import org.jetbrains.compose.resources.painterResource
 import presentation.ui.main.home.view_model.HomeEvent
 import rampcheck.shared.generated.resources.Res
@@ -97,6 +98,74 @@ fun CustomDropdownPicker(
                     text = {
                         Text(
                             text = option.rampcheckLocationName ?: "",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+                    },
+                    onClick = {
+                        onOptionSelected(option)
+                        onHideDropdown()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VehicleDropdownPicker(
+    options: List<GetVehicleDTO>,
+    modifier: Modifier = Modifier,
+    value: String,
+    expanded: Boolean,
+    onShowDropdown: () -> Unit,
+    onHideDropdown: () -> Unit,
+    onValueChange : (String) -> Unit,
+    onOptionSelected: (GetVehicleDTO) -> Unit,
+
+    ) {
+    var rowSize by remember { mutableStateOf(Size.Zero) }
+    Column(modifier = modifier.onGloballyPositioned { layoutCoordinates ->
+        rowSize = layoutCoordinates.size.toSize()
+    }){
+        DefaultTextField(
+            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE).noRippleClickable {
+                onShowDropdown()
+            },
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+            },
+            enabled = false,
+            placeholder = "Pilih Nomor Kendaraan",
+            textStyle = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Normal
+            ),
+            iconEnd = {
+                androidx.compose.material.Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Pilih Nomor Kendaraan",
+                    tint = Color.Black,
+                    modifier = Modifier.size(16.dp)
+                )
+            },
+            color = Color.White
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onHideDropdown() },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { rowSize.width.toDp() }),
+            containerColor = Color.White
+
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = option.platNumber ?: "",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Normal
                             )

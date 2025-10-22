@@ -1,25 +1,21 @@
 package presentation.ui.main.datapemeriksaan.kir
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,23 +26,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.decodeToImageBitmap
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
 import com.kashif.cameraK.controller.CameraController
-import com.kashif.cameraK.enums.CameraLens
 import com.kashif.cameraK.enums.Directory
-import com.kashif.cameraK.enums.FlashMode
-import com.kashif.cameraK.enums.ImageFormat
-import com.kashif.cameraK.enums.QualityPrioritization
 import com.kashif.cameraK.permissions.Permissions
 import com.kashif.cameraK.permissions.providePermissions
 import com.kashif.cameraK.result.ImageCaptureResult
-import com.kashif.cameraK.ui.CameraPreview
 import com.kashif.imagesaverplugin.ImageSaverConfig
 import com.kashif.imagesaverplugin.ImageSaverPlugin
 import com.kashif.imagesaverplugin.rememberImageSaverPlugin
@@ -55,47 +52,47 @@ import common.PermissionStatus
 import common.PermissionType
 import common.createPermissionsManager
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import presentation.component.DefaultScreenUI
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
+import qrscanner.QrScanner
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun CameraKIRScreen(
+fun QRKIRScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDataKendaraan: () -> Unit
+    navigateToVerifyPhotoKTP: () -> Unit
 ) {
 
     DefaultScreenUI(
         errors = errors,
         progressBarState = state.progressBarState,
-        titleToolbar = "Foto KIR",
+        titleToolbar = "Foto Petugas",
         startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
         onClickStartIconToolbar = { popup() },
         isCamera = true
     ) {
-        CameraKIRContent(
+        QRKIRScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToDataKendaraan = navigateToDataKendaraan
+            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
         )
 
     }
 }
 
 @Composable
-private fun CameraKIRContent(
+private fun QRKIRScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToDataKendaraan: () -> Unit
+    navigateToVerifyPhotoKTP: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -115,14 +112,15 @@ private fun CameraKIRContent(
             when (status) {
                 PermissionStatus.GRANTED -> {
                     when (permissionType) {
-                        PermissionType.CAMERA ->
-                        {
+                        PermissionType.CAMERA -> {
                             launchCamera = true
                         }
+
                         PermissionType.GALLERY -> {}
                         PermissionType.NOTIFICATION -> {}
                     }
                 }
+
                 else -> showDeniedDialog = true
             }
         }
@@ -180,29 +178,8 @@ private fun CameraKIRContent(
 // Main camera UI
     if (isCameraGranted) {
         CameraView(
-            imageSaverPlugin = imageSaverPlugin,
-            onBack = { popup() },
-            onCapture = {
-                isLoading = true
-                coroutineScope.launch {
-                    cameraController.value?.let {
-                        handleImageCapture(
-                            cameraController = it,
-                            imageSaverPlugin = imageSaverPlugin,
-                        ) { image ->
-                            launch {
-                                imageBitmap = image
-                                if (imageBitmap != null){
-                                    events(HomeEvent.OnUpdateKIRImageBitmap(imageBitmap!!))
-                                    navigateToDataKendaraan()
-                                    imageBitmap = null
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            onCameraReady = { cameraController.value = it }
+            state = state,
+            events = events
         )
     } else {
         // fallback UI
@@ -220,60 +197,50 @@ private fun CameraKIRContent(
 
 @Composable
 private fun CameraView(
-    imageSaverPlugin: ImageSaverPlugin,
-    onBack: () -> Unit,
-    onCapture: () -> Unit,
-    onCameraReady: (CameraController) -> Unit
+    state: HomeState,
+    events: (HomeEvent) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        CameraPreview(
-            modifier = Modifier.fillMaxSize(),
-            cameraConfiguration = {
-                setCameraLens(CameraLens.BACK)
-                setFlashMode(FlashMode.OFF)
-                setImageFormat(ImageFormat.JPEG)
-                setDirectory(Directory.PICTURES)
-                addPlugin(imageSaverPlugin)
-            },
-            onCameraControllerReady = { onCameraReady(it) }
-        )
 
-//        RectangleFocusOverlay(modifier = Modifier.fillMaxSize())
-
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val coroutineScope = rememberCoroutineScope()
+    Box(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
         Column(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .background(Color.Black.copy(alpha = 0.8f))
-                .padding(16.dp),
+                .background(Color.Transparent)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Pastikan Petugas dan Kendaraan terlihat jelas.",
-                style = MaterialTheme.typography.labelLarge.copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.Normal
-                ),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Box(modifier = Modifier.fillMaxWidth()) {
-                TextButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Tutup",
-                        tint = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Tutup", color = Color.White)
-                }
-                IconButton(modifier = Modifier.align(Alignment.Center), onClick = onCapture) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .border(4.dp, Color.White, shape = CircleShape)
-                            .background(Color(0xFF001F3F), shape = CircleShape)
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .size(300.dp)
+                    .clip(shape = RoundedCornerShape(size = 14.dp))
+                    .clipToBounds()
+                    .border(2.dp, Color.Gray, RoundedCornerShape(size = 14.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                QrScanner(
+                    modifier = Modifier
+                        .clipToBounds()
+                        .clip(shape = RoundedCornerShape(size = 14.dp)),
+                    flashlightOn = false,
+                    openImagePicker = false,
+                    onCompletion = {
+                        val delimiter = "/rfid/"
+                        val rfid = it.substringAfter(delimiter)
+                        println(rfid)
+                        events(HomeEvent.OnUpdateQrUrl(rfid))
+                        if (state.qrUrl.isNotEmpty()){
+                            events(HomeEvent.CheckQR)
+                        }
+                    },
+                    imagePickerHandler = {
+
+                    },
+                    onFailure = {
+                    }
+                )
+
             }
         }
     }
@@ -306,30 +273,31 @@ private suspend fun handleImageCapture(
         }
     }
 }
-//@Composable
-//fun RectangleFocusOverlay(modifier: Modifier = Modifier) {
-//    Canvas(modifier = modifier) {
-//        val canvasWidth = size.width
-//        val canvasHeight = size.height
-//
-//        val rectWidth = canvasWidth * 0.8f
-//        val rectHeight = canvasHeight * 0.3f
-//
-//        val topLeft = Offset(
-//            x = (canvasWidth - rectWidth) / 2f,
-//            y = canvasHeight * 0.35f
-//        )
-//
-//        val dashStroke = Stroke(
-//            width = 4.dp.toPx(),
-//            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-//        )
-//
-//        drawRect(
-//            color = Color.Yellow,
-//            topLeft = topLeft,
-//            size = Size(rectWidth, rectHeight),
-//            style = dashStroke
-//        )
-//    }
-//}
+
+@Composable
+fun RectangleFocusOverlay(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
+
+        val rectWidth = canvasWidth * 0.8f
+        val rectHeight = canvasHeight * 0.3f
+
+        val topLeft = Offset(
+            x = (canvasWidth - rectWidth) / 2f,
+            y = canvasHeight * 0.35f
+        )
+
+        val dashStroke = Stroke(
+            width = 4.dp.toPx(),
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+        )
+
+        drawRect(
+            color = Color.Yellow,
+            topLeft = topLeft,
+            size = Size(rectWidth, rectHeight),
+            style = dashStroke
+        )
+    }
+}

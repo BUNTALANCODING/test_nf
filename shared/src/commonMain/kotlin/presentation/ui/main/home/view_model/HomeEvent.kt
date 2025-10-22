@@ -16,7 +16,13 @@ sealed class HomeEvent : ViewEvent {
 
     data object UploadOfficerImage : HomeEvent()
 
+    data object GetVehicle : HomeEvent()
+
     data object CheckQR : HomeEvent()
+
+    data object PlatKIR : HomeEvent()
+
+    data object VehiclePhoto : HomeEvent()
 
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
@@ -30,6 +36,10 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateLocationId(val value: String) : HomeEvent()
 
+    data class OnUpdateVehiclePlatNumber(val value: String) : HomeEvent()
+
+    data class OnShowDropdownVehiclePicker(val value: UIComponentState) : HomeEvent()
+
     data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
 
     data class OnUpdateLatitude(val value: String) : HomeEvent()
@@ -41,8 +51,6 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateStatusMessage(val value: String) : HomeEvent()
 
     data class OnUpdateClearTrigger(val value: Boolean) : HomeEvent()
-
-    data class OnUpdateSelectedVehicle(val value: String) : HomeEvent()
 
     data class OnUpdateMiddleCode(val value: String) : HomeEvent()
 
@@ -75,6 +83,20 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateOfficerImage(val value: ByteArray) : HomeEvent()
 
     data class OnUpdateOfficerImageImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateKIRImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateFrontImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateBackImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateLeftImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateRightImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateNrkbImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateImageTypes(val value: String) : HomeEvent()
 
     data class OnUpdateTokenFCM(val value: String) : HomeEvent()
 

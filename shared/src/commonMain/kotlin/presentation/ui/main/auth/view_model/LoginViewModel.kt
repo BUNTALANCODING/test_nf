@@ -205,7 +205,7 @@ class LoginViewModel(
                     password = state.value.passwordLogin,
                 )
             ),
-            onSuccess = { data, status ->
+            onSuccess = { data, status, code ->
                 data?.let {
                     setAction {
                         if (it.token.toString().isNotEmpty()) {
@@ -240,7 +240,7 @@ class LoginViewModel(
                     confirmPassword = state.value.confirmPasswordRegister,
                     name = state.value.nameRegister
                 )
-            ), onSuccess = { data, status ->
+            ), onSuccess = { data, status, code ->
                 data?.let {
                     status?.let { s ->
                         if (s) {

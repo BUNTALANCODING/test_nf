@@ -2,6 +2,7 @@ package presentation.ui.main.datapemeriksaan.fotokendaraan
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.BACK_IMAGE
+import business.constants.FRONT_IMAGE
+import business.constants.LEFT_IMAGE
+import business.constants.NRKB_IMAGE
+import business.constants.RIGHT_IMAGE
 import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
@@ -40,6 +46,7 @@ import presentation.component.DottedBorderBackground
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_4dp
 import presentation.component.Spacer_8dp
+import presentation.component.noRippleClickable
 import presentation.theme.LightPurpleColor
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -55,7 +62,7 @@ fun UnggahFotoKendaraanScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToCamera: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -66,28 +73,28 @@ fun UnggahFotoKendaraanScreen(
         onClickStartIconToolbar = { popup() },
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
-        DataKendaraanContent(
+        UnggahFotoKendaraanContent(
             state = state,
             events = events,
-            navigateToDetail = navigateToDetail
+            navigateToCamera = navigateToCamera
         )
 
     }
 }
 
 @Composable
-private fun DataKendaraanContent(
+private fun UnggahFotoKendaraanContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToCamera: () -> Unit
 ) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeadlineSection()
-            UnggahFotoSection(state,events)
+            UnggahFotoSection(state,events, navigateToCamera)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("SIMPAN DAN LANJUT")
+            ButtonNextSection("SIMPAN DAN LANJUT", state, events)
 
         }
     }
@@ -117,7 +124,7 @@ fun HeadlineSection() {
 }
 
 @Composable
-fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
+fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit, navigateToCamera: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
             Column {
@@ -128,28 +135,39 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
                 )
                 Spacer_4dp()
-                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp)) {
+                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp).clickable {
+                    events(HomeEvent.OnUpdateImageTypes(FRONT_IMAGE))
+                    navigateToCamera()
+                }) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painterResource(Res.drawable.ic_camera),
-                            null,
-                            modifier = Modifier.size(24.dp)
-                                .align(Alignment.CenterHorizontally),
-                            contentScale = ContentScale.Fit
-                        )
-                        Spacer_8dp()
-                        Text(
-                            "Ambil Foto",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = PrimaryColor
-                            ),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                        if(state.frontImage != null){
+                            Image(
+                                contentDescription = null,
+                                bitmap = state.frontImage,
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painterResource(Res.drawable.ic_camera),
+                                null,
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentScale = ContentScale.Fit
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Ambil Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = PrimaryColor
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
                     }
                 }
             }
@@ -161,28 +179,39 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
                 )
                 Spacer_4dp()
-                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp)) {
+                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp).noRippleClickable {
+                    events(HomeEvent.OnUpdateImageTypes(BACK_IMAGE))
+                    navigateToCamera()
+                }) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painterResource(Res.drawable.ic_camera),
-                            null,
-                            modifier = Modifier.size(24.dp)
-                                .align(Alignment.CenterHorizontally),
-                            contentScale = ContentScale.Fit
-                        )
-                        Spacer_8dp()
-                        Text(
-                            "Ambil Foto",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = PrimaryColor
-                            ),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                        if(state.backImage != null){
+                            Image(
+                                contentDescription = null,
+                                bitmap = state.backImage,
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painterResource(Res.drawable.ic_camera),
+                                null,
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentScale = ContentScale.Fit
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Ambil Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = PrimaryColor
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
                     }
                 }
             }
@@ -199,28 +228,39 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
                 )
                 Spacer_4dp()
-                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp)) {
+                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp).noRippleClickable {
+                    events(HomeEvent.OnUpdateImageTypes(RIGHT_IMAGE))
+                    navigateToCamera()
+                }) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painterResource(Res.drawable.ic_camera),
-                            null,
-                            modifier = Modifier.size(24.dp)
-                                .align(Alignment.CenterHorizontally),
-                            contentScale = ContentScale.Fit
-                        )
-                        Spacer_8dp()
-                        Text(
-                            "Ambil Foto",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = PrimaryColor
-                            ),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                        if(state.rightImage != null){
+                            Image(
+                                contentDescription = null,
+                                bitmap = state.rightImage,
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painterResource(Res.drawable.ic_camera),
+                                null,
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentScale = ContentScale.Fit
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Ambil Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = PrimaryColor
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
                     }
                 }
             }
@@ -232,28 +272,39 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
                 )
                 Spacer_4dp()
-                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp)) {
+                DottedBorderBackground( modifier = Modifier.width(170.dp).height(120.dp).noRippleClickable {
+                    events(HomeEvent.OnUpdateImageTypes(LEFT_IMAGE))
+                    navigateToCamera()
+                }) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painterResource(Res.drawable.ic_camera),
-                            null,
-                            modifier = Modifier.size(24.dp)
-                                .align(Alignment.CenterHorizontally),
-                            contentScale = ContentScale.Fit
-                        )
-                        Spacer_8dp()
-                        Text(
-                            "Ambil Foto",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = PrimaryColor
-                            ),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                        if(state.leftImage != null){
+                            Image(
+                                contentDescription = null,
+                                bitmap = state.leftImage,
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Image(
+                                painterResource(Res.drawable.ic_camera),
+                                null,
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentScale = ContentScale.Fit
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Ambil Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = PrimaryColor
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
                     }
                 }
             }
@@ -267,28 +318,39 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_4dp()
-        DottedBorderBackground( modifier = Modifier.fillMaxWidth().height(120.dp)) {
+        DottedBorderBackground( modifier = Modifier.fillMaxWidth().height(120.dp).noRippleClickable {
+            events(HomeEvent.OnUpdateImageTypes(NRKB_IMAGE))
+            navigateToCamera()
+        }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painterResource(Res.drawable.ic_camera),
-                    null,
-                    modifier = Modifier.size(24.dp)
-                        .align(Alignment.CenterHorizontally),
-                    contentScale = ContentScale.Fit
-                )
-                Spacer_8dp()
-                Text(
-                    "Ambil Foto",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = PrimaryColor
-                    ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                if(state.nrkbImage != null){
+                    Image(
+                        contentDescription = null,
+                        bitmap = state.nrkbImage,
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painterResource(Res.drawable.ic_camera),
+                        null,
+                        modifier = Modifier.size(24.dp)
+                            .align(Alignment.CenterHorizontally),
+                        contentScale = ContentScale.Fit
+                    )
+                    Spacer_8dp()
+                    Text(
+                        "Ambil Foto",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = PrimaryColor
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
 
@@ -296,10 +358,14 @@ fun UnggahFotoSection(state: HomeState, events: (HomeEvent) -> Unit) {
 }
 
 @Composable
-fun ButtonNextSection(label: String) {
+fun ButtonNextSection(label: String, state: HomeState, events: (HomeEvent) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
         DefaultButton(
-            onClick = {},
+            progressBarState = state.progressBarState,
+            onClick = {
+                events(HomeEvent.VehiclePhoto)
+            },
+            enabled = (state.frontImage != null && state.backImage != null && state.leftImage != null && state.rightImage != null && state.nrkbImage != null),
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = label,
             style = MaterialTheme.typography.labelMedium.copy(

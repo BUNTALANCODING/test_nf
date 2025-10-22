@@ -42,10 +42,16 @@ sealed interface HomeNavigation {
     data object CameraFotoKIR : HomeNavigation
 
     @Serializable
+    data object QRKIRScreen : HomeNavigation
+
+    @Serializable
     data object DetailHasilFotoKIR : HomeNavigation
 
     @Serializable
     data object FotoKendaraan : HomeNavigation
+
+    @Serializable
+    data object CameraVehicle : HomeNavigation
 
 
 }

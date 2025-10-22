@@ -7,15 +7,19 @@ import business.datasource.network.main.request.KIRCompareRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
+import business.datasource.network.main.request.UploadPetugasRequestDTO
+import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
 
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.ProfileDTO
 import business.datasource.network.main.responses.QuestionDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
+import business.datasource.network.main.responses.VehiclePhotoDTO
 import business.datasource.network.splash.responses.ForgotRequestDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -144,6 +148,23 @@ class MainServiceImpl(
         }.body()
     }
 
+    override suspend fun uploadFotoPetugas(
+        request: UploadPetugasRequestDTO,
+        token: String,
+    ): MainGenericResponse<UploadPetugasDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.OFFICER_IMAGE
+            }
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
+    }
+
     override suspend fun rampcheckStart(
         request: RampcheckStartRequestDTO,
         token: String
@@ -155,6 +176,36 @@ class MainServiceImpl(
                 }
                 takeFrom(BASE_URL)
                 encodedPath += MainService.RAMPCHECK_START
+            }
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
+    }
+
+    override suspend fun getVehicle(token: String): MainGenericResponse<List<GetVehicleDTO>> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.GET_VEHICLE
+            }
+            contentType(ContentType.Application.Json)
+        }.body()
+    }
+
+    override suspend fun vehiclePhoto(
+        request: VehiclePhotoRequestDTO,
+        token: String
+    ): MainGenericResponse<VehiclePhotoDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.VEHICLE_PHOTO
             }
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -207,7 +258,7 @@ class MainServiceImpl(
 //        }.body()
 //    }
 
-    override suspend fun uploadFotoPetugas(
+    /*override suspend fun uploadFotoPetugas(
         token: String,
         officerImage: ByteArray?,
     ): MainGenericResponse<UploadPetugasDTO> {
@@ -258,7 +309,7 @@ class MainServiceImpl(
 //                )
 //            )
 //        }.body()
-    }
+    }*/
 
     override suspend fun getNotification(token: String): MainGenericResponse<List<String>> {
         return httpClient.post {

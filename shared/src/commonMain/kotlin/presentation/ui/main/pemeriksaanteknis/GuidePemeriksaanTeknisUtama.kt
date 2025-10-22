@@ -53,7 +53,6 @@ fun GuidePemeriksaanTeknisUtamaScreen(
             events = events,
             navigateToCameraFace = navigateToCameraFace
         )
-
     }
 }
 
@@ -68,7 +67,7 @@ private fun GuidePemeriksaanTeknisUtamaContent(
             HeaderSection()
             InformasiFaceContent()
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("MULAI PEMERIKSAAN")
+            ButtonNextSection("MULAI PEMERIKSAAN", state, events)
         }
     }
 }

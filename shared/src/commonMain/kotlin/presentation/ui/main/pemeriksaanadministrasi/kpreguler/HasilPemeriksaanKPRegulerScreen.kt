@@ -88,7 +88,7 @@ private fun HasilPemeriksaanKPregulerContent(
             HeaderSection()
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT")
+            ButtonNextSection("LANJUT", state, events)
         }
     }
 }

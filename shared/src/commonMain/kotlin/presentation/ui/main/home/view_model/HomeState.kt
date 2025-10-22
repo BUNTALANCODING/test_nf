@@ -8,6 +8,7 @@ import business.core.ViewState
 import business.datasource.network.common.JAlertResponse
 import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.ProfileDTO
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -42,24 +43,37 @@ data class HomeState(
     val route : String = "",
     val stukNo : String = "",
     val status : String = "",
+    val selectedPlatNumber: String = "",
+    val kirImage : ImageBitmap? = null,
+    val frontImage : ImageBitmap? = null,
+    val backImage : ImageBitmap? = null,
+    val rightImage : ImageBitmap? = null,
+    val leftImage : ImageBitmap? = null,
+    val nrkbImage : ImageBitmap? = null,
+    val imageTypes : String? = "",
+
+
+    val dataHasilEKIR: CheckQRDTO = CheckQRDTO(),
+
+    val listVehicle: List<GetVehicleDTO> = listOf(),
 
 
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,
     val searchValue: String = "",
     val selectedFilter: String = "",
-    val selectedVehicle: String = "",
     val selectedMethod: Pair<Int, Int> = Pair(0, 0),
     val pin: String = "",
     val showDialogPajak: UIComponentState = UIComponentState.Hide,
     val showDialogDatePicker: UIComponentState = UIComponentState.Hide,
     val showDialogLocation: UIComponentState = UIComponentState.Hide,
+    val showDropdownVehicle: UIComponentState = UIComponentState.Hide,
 
     val selectedLocationList: List<GetLocationDTO> = listOf(),
 
-    val dataHasilEKIR: CheckQRDTO = CheckQRDTO(),
 
-     val isTokenValid: Boolean = false,
+
+    val isTokenValid: Boolean = false,
     val updateTokenFCM: String = "",
     val profile: ProfileDTO = ProfileDTO(),
     val selectedOrigin: String = "",
