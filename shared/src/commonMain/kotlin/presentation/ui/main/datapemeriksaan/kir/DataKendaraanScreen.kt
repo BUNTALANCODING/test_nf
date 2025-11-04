@@ -87,16 +87,18 @@ private fun DataKendaraanContent(
     navigateToCameraKIR: () -> Unit
 ) {
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         events(HomeEvent.GetVehicle)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeadlineSection()
-            TextFieldSection(state,events, navigateToCameraKIR)
+            TextFieldSection(state, events, navigateToCameraKIR)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("LANJUT PINDAI QR CODE KIR", state, events)
+            ButtonNextSection("LANJUT PINDAI QR CODE KIR", state, onClick = {
+                events(HomeEvent.PlatKIR)
+            })
 
         }
     }
@@ -104,11 +106,12 @@ private fun DataKendaraanContent(
 }
 
 
-
-
 @Composable
 fun HeadlineSection() {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             "INSPEKSI KESELAMATAN LALU LINTAS DAN ANGKUTAN\n JALAN UNTUK ANGKUTAN UMUM",
             style = MaterialTheme.typography.labelMedium.copy(
@@ -132,7 +135,11 @@ fun HeadlineSection() {
 }
 
 @Composable
-fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit, navigateToCameraKIR: () -> Unit) {
+fun TextFieldSection(
+    state: HomeState,
+    events: (HomeEvent) -> Unit,
+    navigateToCameraKIR: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
 
         Text(
@@ -171,14 +178,16 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit, navigateToCa
             )
         )
         Spacer_16dp()
-        DottedBorderBackground(modifier = Modifier.fillMaxWidth().height(160.dp).noRippleClickable { navigateToCameraKIR() }) {
+        DottedBorderBackground(
+            modifier = Modifier.fillMaxWidth().height(160.dp)
+                .noRippleClickable { navigateToCameraKIR() }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(state.kirImage != null){
+                if (state.kirImage != null) {
                     Image(
                         contentDescription = null,
                         bitmap = state.kirImage,
@@ -208,11 +217,11 @@ fun TextFieldSection(state: HomeState, events: (HomeEvent) -> Unit, navigateToCa
 }
 
 @Composable
-fun ButtonNextSection(label: String, state: HomeState, events: (HomeEvent) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
+fun ButtonNextSection(label: String, state: HomeState, onClick: () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
             onClick = {
-                events(HomeEvent.PlatKIR)
+                onClick()
             },
             enabled = (state.kirImage != null && state.selectedPlatNumber.isNotEmpty()),
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
@@ -220,7 +229,10 @@ fun ButtonNextSection(label: String, state: HomeState, events: (HomeEvent) -> Un
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor, contentColor = Color.White)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryColor,
+                contentColor = Color.White
+            )
         )
     }
 }

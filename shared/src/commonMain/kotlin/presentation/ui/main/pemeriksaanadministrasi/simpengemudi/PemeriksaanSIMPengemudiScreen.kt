@@ -30,12 +30,12 @@ import rampcheck.shared.generated.resources.ic_identity
 import rampcheck.shared.generated.resources.ic_kemenhub
 
 @Composable
-fun PemeriksaanKPCadanganScreen(
+fun PemeriksaanSIMPengemudiScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraSIM: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -46,27 +46,29 @@ fun PemeriksaanKPCadanganScreen(
         onClickStartIconToolbar = { popup() },
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
-        HasilPemeriksaanKPCadanganContent(
+        PemeriksaanSIMPengemudiScreen(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToCameraSIM = navigateToCameraSIM
         )
 
     }
 }
 
 @Composable
-private fun HasilPemeriksaanKPCadanganContent(
+private fun PemeriksaanSIMPengemudiScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraSIM: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
-                negativeButtonLabel = "KARTU TIDAK ADA"
+                negativeButtonLabel = "KARTU TIDAK ADA",
+                positiveButtonClick = navigateToCameraSIM,
+                negativeButtonClick = {}
             )
         }
     }

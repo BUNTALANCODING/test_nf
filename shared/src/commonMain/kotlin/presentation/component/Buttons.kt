@@ -238,13 +238,18 @@ fun IconDrawableButton(
 }
 
 @Composable
-fun ButtonVerticalSection(positiveButtonLabel: String, negativeButtonLabel: String) {
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+fun ButtonVerticalSection(positiveButtonLabel: String, negativeButtonLabel: String, positiveButtonClick : () -> Unit, negativeButtonClick : () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         DefaultButton(
             modifier = Modifier.width(258.dp).height(DEFAULT__BUTTON_SIZE),
             enabled = true,
             text = positiveButtonLabel,
-            onClick = {},
+            onClick = {
+                positiveButtonClick()
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = PrimaryColor,
                 contentColor = Color.White
@@ -255,7 +260,9 @@ fun ButtonVerticalSection(positiveButtonLabel: String, negativeButtonLabel: Stri
             modifier = Modifier.width(258.dp).height(DEFAULT__BUTTON_SIZE),
             enabled = true,
             text = negativeButtonLabel,
-            onClick = {},
+            onClick = {
+                negativeButtonClick()
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = Color.White

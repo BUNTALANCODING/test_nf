@@ -44,7 +44,7 @@ fun PemeriksaanKartuUjiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraKartuUji: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -58,7 +58,7 @@ fun PemeriksaanKartuUjiScreen(
         PemeriksaanKartuUjiContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToCameraKartuUji = navigateToCameraKartuUji
         )
 
     }
@@ -68,14 +68,16 @@ fun PemeriksaanKartuUjiScreen(
 private fun PemeriksaanKartuUjiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraKartuUji: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
-                negativeButtonLabel = "KARTU TIDAK ADA"
+                negativeButtonLabel = "KARTU TIDAK ADA",
+                positiveButtonClick = {navigateToCameraKartuUji()},
+                negativeButtonClick = {}
             )
         }
     }

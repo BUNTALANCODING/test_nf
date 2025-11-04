@@ -43,7 +43,7 @@ fun HasilPemeriksaanSIMPengemudiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToPemeriksaanTeknis: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -57,7 +57,7 @@ fun HasilPemeriksaanSIMPengemudiScreen(
         HasilPemeriksaanSIMPengemudiContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToPemeriksaanTeknis = navigateToPemeriksaanTeknis
         )
 
     }
@@ -67,14 +67,14 @@ fun HasilPemeriksaanSIMPengemudiScreen(
 private fun HasilPemeriksaanSIMPengemudiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToPemeriksaanTeknis: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT", state, events)
+            ButtonNextSection("LANJUT", state, onClick = navigateToPemeriksaanTeknis)
         }
     }
 }

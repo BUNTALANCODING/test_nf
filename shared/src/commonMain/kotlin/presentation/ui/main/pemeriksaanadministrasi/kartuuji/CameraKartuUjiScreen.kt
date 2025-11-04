@@ -78,7 +78,7 @@ fun CameraKartuUjiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKameraUji: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -93,7 +93,7 @@ fun CameraKartuUjiScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToHasilKameraUji = navigateToHasilKameraUji
         )
 
     }
@@ -104,7 +104,7 @@ private fun CameraKartuUjiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKameraUji: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -204,7 +204,7 @@ private fun CameraKartuUjiContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToVerifyPhotoKTP()
+                                navigateToHasilKameraUji()
                                 imageBitmap = null
                             }
                         }

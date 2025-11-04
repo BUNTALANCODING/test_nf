@@ -48,7 +48,7 @@ fun GuidePemeriksaanAdministrasiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToKartuUji: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -60,7 +60,7 @@ fun GuidePemeriksaanAdministrasiScreen(
         GuidePemeriksaanAdministrasiContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToKartuUji = navigateToKartuUji
         )
 
     }
@@ -70,14 +70,14 @@ fun GuidePemeriksaanAdministrasiScreen(
 private fun GuidePemeriksaanAdministrasiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToKartuUji: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             InformasiFaceContent()
             Spacer(modifier = Modifier.weight(1f))
-            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, events)
+            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = {navigateToKartuUji()})
         }
     }
 }

@@ -56,7 +56,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -70,7 +70,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
         HasilPemeriksaanKPCadanganContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToTeknisPenunjang = navigateToTeknisPenunjang
         )
 
     }
@@ -80,7 +80,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
 private fun HasilPemeriksaanKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 

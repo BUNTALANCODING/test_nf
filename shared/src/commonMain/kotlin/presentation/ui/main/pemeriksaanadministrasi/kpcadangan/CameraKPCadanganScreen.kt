@@ -78,7 +78,7 @@ fun CameraKPCadanganScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKPCadangan: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -93,7 +93,7 @@ fun CameraKPCadanganScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToHasilKPCadangan = navigateToHasilKPCadangan
         )
 
     }
@@ -104,7 +104,7 @@ private fun CameraKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKPCadangan: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -204,7 +204,7 @@ private fun CameraKPCadanganContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToVerifyPhotoKTP()
+                                navigateToHasilKPCadangan()
                                 imageBitmap = null
                             }
                         }

@@ -53,6 +53,15 @@ sealed interface HomeNavigation {
     @Serializable
     data object CameraVehicle : HomeNavigation
 
+    @Serializable
+    data object GuideTeknisUtama : HomeNavigation
+
+    @Serializable
+    data object CameraTeknisUtama : HomeNavigation
+
+    @Serializable
+    data object HasilTeknisUtama : HomeNavigation
+
 
 }
 

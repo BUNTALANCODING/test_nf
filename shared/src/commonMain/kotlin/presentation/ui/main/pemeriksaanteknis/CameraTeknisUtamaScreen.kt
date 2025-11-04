@@ -79,7 +79,7 @@ fun CameraTeknisUtamaScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToQuestionTeknisUtama: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -94,7 +94,7 @@ fun CameraTeknisUtamaScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToQuestionTeknisUtama = navigateToQuestionTeknisUtama
         )
 
     }
@@ -105,7 +105,7 @@ private fun CameraTeknisUtamaContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToQuestionTeknisUtama: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()

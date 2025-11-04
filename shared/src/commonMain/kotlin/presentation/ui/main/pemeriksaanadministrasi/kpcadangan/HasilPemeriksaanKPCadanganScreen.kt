@@ -43,7 +43,7 @@ fun HasilPemeriksaanKPCadanganScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToSIM: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -57,7 +57,7 @@ fun HasilPemeriksaanKPCadanganScreen(
         HasilPemeriksaanKPCadanganContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToSIM = navigateToSIM
         )
 
     }
@@ -67,14 +67,14 @@ fun HasilPemeriksaanKPCadanganScreen(
 private fun HasilPemeriksaanKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToSIM: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT", state,events)
+            ButtonNextSection("LANJUT", state, onClick = navigateToSIM)
         }
     }
 }

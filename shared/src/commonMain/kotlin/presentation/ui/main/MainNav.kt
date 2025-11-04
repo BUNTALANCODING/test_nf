@@ -37,6 +37,7 @@ import presentation.navigation.AdministrasiNavigation
 import presentation.navigation.BottomNavigation
 import presentation.navigation.HomeNavigation
 import presentation.navigation.ProfileNavigation
+import presentation.navigation.TeknisNavigation
 import presentation.theme.DefaultCardColorsTheme
 import presentation.theme.DefaultNavigationBarItemTheme
 import presentation.ui.main.auth.LoginScreen
@@ -58,8 +59,24 @@ import presentation.ui.main.datapemeriksaan.kir.DetailHasilScanScreen
 import presentation.ui.main.datapemeriksaan.kir.QRKIRScreen
 import presentation.ui.main.home.HomeScreen
 import presentation.ui.main.home.view_model.HomeAction
+import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.pemeriksaanadministrasi.GuidePemeriksaanAdministrasiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.CameraKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpcadangan.CameraKPCadanganScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpcadangan.HasilPemeriksaanKPCadanganScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpcadangan.PemeriksaanKPCadanganScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpreguler.CameraKPRegulerScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpreguler.HasilPemeriksaanKPRegulerScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpreguler.PemeriksaanKPRegularScreen
+import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraSIMPengemudiScreen
+import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.HasilPemeriksaanSIMPengemudiScreen
+import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.PemeriksaanSIMPengemudiScreen
+import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,7 +99,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
             when (effect) {
                 is HomeAction.Navigation.NavigateToMain -> {
                     delay(2000)
-                    navigator.navigate(BottomNavigation.Home.route){
+                    navigator.navigate(BottomNavigation.Home.route) {
                         popUpTo(navigator.graph.findStartDestination().id) {
                             inclusive = true
                         }
@@ -109,6 +126,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 HomeAction.Navigation.NavigateToResultScreen -> {
                     navigator.navigate(HomeNavigation.DetailHasilFotoKIR)
                 }
+
                 HomeAction.Navigation.NavigateToQRKIR -> {
                     navigator.navigate(HomeNavigation.QRKIRScreen)
                 }
@@ -140,7 +158,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     }
                 }
 
-                else -> { /* Handle other actions */ }
+                else -> { /* Handle other actions */
+                }
             }
         }
     }
@@ -175,7 +194,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToPemeriksaan = {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
 //                            navigator.navigate(HomeNavigation.Pemeriksaan)
-                            navigator.navigate(HomeNavigation.FotoKendaraan)
+//                            navigator.navigate(HomeNavigation.FotoKendaraan)
+                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
                         },
                     )
                 }
@@ -297,7 +317,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToFotoKendaraan = {
                             navigator.popBackStack()
-                        } ,
+                        },
                     )
                 }
 
@@ -308,7 +328,187 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
+                        navigateToKartuUji = {
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanKartuUji)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.PemeriksaanKartuUji> {
+                    PemeriksaanKartuUjiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCameraKartuUji = {
+                            navigator.navigate(AdministrasiNavigation.CameraKartuUji)
+                        }
+                    )
+                }
+
+                composable<AdministrasiNavigation.CameraKartuUji> {
+                    CameraKartuUjiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToHasilKameraUji = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKartuUji)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.HasilPemeriksaanKartuUji> {
+                    HasilPemeriksaanKartuUjiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
                         navigateToCameraFace = {},
+                    )
+                }
+
+                composable<AdministrasiNavigation.PemeriksaanKPReguler> {
+                    PemeriksaanKPRegularScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCameraKPReguler = {
+                            navigator.navigate(AdministrasiNavigation.CameraKPReguler)
+                        }
+                    )
+                }
+
+                composable<AdministrasiNavigation.CameraKPReguler> {
+                    CameraKPRegulerScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToHasilKPRegular = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPReguler)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.HasilPemeriksaanKPReguler> {
+                    HasilPemeriksaanKPRegulerScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToKPCadangan = {
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPCadangan)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.PemeriksaanKPCadangan> {
+                    PemeriksaanKPCadanganScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCameraKPCadangan = {
+                            navigator.navigate(AdministrasiNavigation.CameraKPCadangan)
+                        }
+                    )
+                }
+
+                composable<AdministrasiNavigation.CameraKPCadangan> {
+                    CameraKPCadanganScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToHasilKPCadangan = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPCadangan)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.HasilPemeriksaanKPCadangan> {
+                    HasilPemeriksaanKPCadanganScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToSIM = {
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanSIM)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.PemeriksaanSIM> {
+                    PemeriksaanSIMPengemudiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToCameraSIM = {
+                            navigator.navigate(AdministrasiNavigation.CameraSIM)
+                        }
+                    )
+                }
+
+                composable<AdministrasiNavigation.CameraSIM> {
+                    CameraSIMPengemudiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToHasilSIM = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanSIM)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.HasilPemeriksaanSIM> {
+                    HasilPemeriksaanSIMPengemudiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToPemeriksaanTeknis = {
+                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
+                        },
+                    )
+                }
+
+                composable<TeknisNavigation.GuidePemeriksaanTeknisUtama> {
+                    GuidePemeriksaanTeknisUtamaScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToTeknisUtama = {
+                            navigator.navigate(TeknisNavigation.CameraTeknisUtama)
+                        },
+                    )
+                }
+
+                composable<TeknisNavigation.CameraTeknisUtama> {
+                    CameraTeknisUtamaScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToQuestionTeknisUtama = {
+                            navigator.navigate(TeknisNavigation.QuestionTeknisUtama)
+                        },
+                    )
+                }
+
+                composable<TeknisNavigation.QuestionTeknisUtama> {
+                    HasilPemeriksaanTeknisUtamaScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToTeknisPenunjang = {
+                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisPenunjang)
+                        },
                     )
                 }
 

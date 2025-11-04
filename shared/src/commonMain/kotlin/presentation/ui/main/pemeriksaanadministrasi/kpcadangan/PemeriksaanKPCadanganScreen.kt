@@ -35,7 +35,7 @@ fun PemeriksaanKPCadanganScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraKPCadangan: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -49,7 +49,7 @@ fun PemeriksaanKPCadanganScreen(
         HasilPemeriksaanKPCadanganContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToCameraKPCadangan = navigateToCameraKPCadangan
         )
 
     }
@@ -59,14 +59,18 @@ fun PemeriksaanKPCadanganScreen(
 private fun HasilPemeriksaanKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraKPCadangan: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
-                negativeButtonLabel = "KARTU TIDAK ADA"
+                negativeButtonLabel = "KARTU TIDAK ADA",
+                positiveButtonClick = {
+                    navigateToCameraKPCadangan()
+                },
+                negativeButtonClick = {}
             )
         }
     }

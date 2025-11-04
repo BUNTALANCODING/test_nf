@@ -78,7 +78,7 @@ fun CameraSIMPengemudiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilSIM: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -93,7 +93,7 @@ fun CameraSIMPengemudiScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToHasilSIM = navigateToHasilSIM
         )
 
     }
@@ -104,7 +104,7 @@ private fun CameraSIMPengemudiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilSIM: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -204,7 +204,7 @@ private fun CameraSIMPengemudiContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToVerifyPhotoKTP()
+                                navigateToHasilSIM()
                                 imageBitmap = null
                             }
                         }

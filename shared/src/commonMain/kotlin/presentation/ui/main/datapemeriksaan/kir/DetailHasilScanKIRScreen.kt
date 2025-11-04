@@ -72,7 +72,7 @@ private fun DataKendaraanContent(
             HeadlineSectionDetail()
             DetailKendaraanSection(state,events)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("MULAI PEMERIKSAAN", state = state, events = events)
+            ButtonNextSection("MULAI PEMERIKSAAN", state = state, onClick = {})
         }
     }
 

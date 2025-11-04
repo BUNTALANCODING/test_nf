@@ -57,7 +57,7 @@ fun HasilPemeriksaanKPRegulerScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToKPCadangan: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -71,7 +71,7 @@ fun HasilPemeriksaanKPRegulerScreen(
         HasilPemeriksaanKPregulerContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToKPCadangan = navigateToKPCadangan
         )
 
     }
@@ -81,14 +81,14 @@ fun HasilPemeriksaanKPRegulerScreen(
 private fun HasilPemeriksaanKPregulerContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToKPCadangan: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT", state, events)
+            ButtonNextSection("LANJUT", state, onClick = navigateToKPCadangan)
         }
     }
 }

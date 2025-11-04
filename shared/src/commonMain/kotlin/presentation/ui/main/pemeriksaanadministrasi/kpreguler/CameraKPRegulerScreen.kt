@@ -78,7 +78,7 @@ fun CameraKPRegulerScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKPRegular: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -93,7 +93,7 @@ fun CameraKPRegulerScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToVerifyPhotoKTP = navigateToVerifyPhotoKTP
+            navigateToHasilKPRegular = navigateToHasilKPRegular
         )
 
     }
@@ -104,7 +104,7 @@ private fun CameraKPRegulerContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToVerifyPhotoKTP: () -> Unit
+    navigateToHasilKPRegular: () -> Unit
 ) {
 
     val permissions: Permissions = providePermissions()
@@ -204,7 +204,7 @@ private fun CameraKPRegulerContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToVerifyPhotoKTP()
+                                navigateToHasilKPRegular()
                                 imageBitmap = null
                             }
                         }

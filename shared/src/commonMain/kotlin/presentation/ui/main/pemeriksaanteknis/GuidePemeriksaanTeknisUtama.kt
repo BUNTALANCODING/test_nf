@@ -39,7 +39,7 @@ fun GuidePemeriksaanTeknisUtamaScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToTeknisUtama: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -51,7 +51,7 @@ fun GuidePemeriksaanTeknisUtamaScreen(
         GuidePemeriksaanTeknisUtamaContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToTeknisUtama = navigateToTeknisUtama
         )
     }
 }
@@ -60,12 +60,12 @@ fun GuidePemeriksaanTeknisUtamaScreen(
 private fun GuidePemeriksaanTeknisUtamaContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToTeknisUtama: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
-            InformasiFaceContent()
+            InformasiGuideSection()
             Spacer(modifier = Modifier.weight(1f))
             ButtonNextSection("MULAI PEMERIKSAAN", state, events)
         }
@@ -94,12 +94,20 @@ private fun HeaderSection() {
                     textAlign = TextAlign.Center
                 )
             )
+            Spacer_8dp()
+            Text(
+                "(Pemeriksaan Kendaraan Bagian Luar)",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            )
         }
     }
 }
 
 @Composable
-private fun InformasiFaceContent() {
+private fun InformasiGuideSection() {
     Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -110,12 +118,22 @@ private fun InformasiFaceContent() {
             Spacer_8dp()
             GuideRow(
                 iconRes = Res.drawable.ic_bus_guide,
-                description = "Petugas melakukan perekaman video terhadap kendaraan yang diperiksa"
+                description = "Kendaraan yang periksa harus sesuai dengan data kendaraan yang telah dipilih sebelumnya"
             )
             Spacer_8dp()
             GuideRow(
                 iconRes = Res.drawable.ic_bus_guide,
-                description = "Kendaraan yang direkam harus sesuai dengan data kendaraan yang telah dipilih sebelumnya"
+                description = "Petugas melakukan perekaman video pada bagian luar kendaraan"
+            )
+            Spacer_8dp()
+            GuideRow(
+                iconRes = Res.drawable.ic_bus_guide,
+                description = "Rekam video kendaraan di area yang terang"
+            )
+            Spacer_8dp()
+            GuideRow(
+                iconRes = Res.drawable.ic_bus_guide,
+                description = "Gunakan flash ketika merekam video apabila kondisi terlalu gelap"
             )
         }
     }
