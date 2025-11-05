@@ -91,4 +91,10 @@ interface MainService {
         email: String
     ): MainGenericResponse<String>
 
+    suspend fun uploadVideo(
+        token: String,
+        filePath: String,
+        onProgress: (Float) -> Unit
+    ): MainGenericResponse<List<String>>
+
 }

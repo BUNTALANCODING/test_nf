@@ -87,7 +87,7 @@ private fun PemeriksaanKartuUjiContent(
             HeaderSection()
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT", state, events)
+            ButtonNextSection("LANJUT", state, onClick = {})
         }
     }
 }

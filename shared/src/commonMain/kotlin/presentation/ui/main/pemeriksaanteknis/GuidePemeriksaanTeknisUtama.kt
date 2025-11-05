@@ -67,7 +67,7 @@ private fun GuidePemeriksaanTeknisUtamaContent(
             HeaderSection()
             InformasiGuideSection()
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("MULAI PEMERIKSAAN", state, events)
+            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = navigateToTeknisUtama)
         }
     }
 }

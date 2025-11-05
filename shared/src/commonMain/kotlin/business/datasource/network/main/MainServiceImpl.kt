@@ -341,4 +341,54 @@ class MainServiceImpl(
             setBody(ForgotRequestDTO(email))
         }.body()
     }
+
+    override suspend fun uploadVideo(
+        token: String,
+        filePath: String,
+        onProgress: (Float) -> Unit
+    ): MainGenericResponse<List<String>> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.FORGOT_PASSWORD
+            }
+            contentType(ContentType.Application.Json)
+        }.body()
+    }
+//        val file = File(filePath)
+//        val totalBytes = file.length()
+//        var sentBytes = 0L
+//
+//        return httpClient.submitFormWithBinaryData(
+//            url = "https://file.io", // endpoint testing
+//            formData = formData {
+//                append(
+//                    "file",
+//                    object : InputProvider {
+//                        override fun toInput(): Input = object : Input {
+//                            override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+//                                val read = file.inputStream().read(buffer, offset, length)
+//                                if (read > 0) {
+//                                    sentBytes += read
+//                                    onProgress(sentBytes.toFloat() / totalBytes)
+//                                }
+//                                return read
+//                            }
+//
+//                            override fun close() {}
+//                        }
+//                    },
+//                    Headers.build {
+//                        append(HttpHeaders.ContentType, "video/mp4")
+//                        append(HttpHeaders.ContentDisposition, "filename=\"${file.name}\"")
+//                    }
+//                )
+//            },
+//            encodeInQuery = false
+//        ).body()
+//    }
+//    }
 }

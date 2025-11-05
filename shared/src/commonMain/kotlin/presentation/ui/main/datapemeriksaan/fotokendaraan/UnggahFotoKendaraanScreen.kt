@@ -365,7 +365,8 @@ fun ButtonNextSection(label: String, state: HomeState, events: (HomeEvent) -> Un
             onClick = {
                 events(HomeEvent.VehiclePhoto)
             },
-            enabled = (state.frontImage != null && state.backImage != null && state.leftImage != null && state.rightImage != null && state.nrkbImage != null),
+//            enabled = (state.frontImage != null && state.backImage != null && state.leftImage != null && state.rightImage != null && state.nrkbImage != null),
+            enabled = true,
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = label,
             style = MaterialTheme.typography.labelMedium.copy(

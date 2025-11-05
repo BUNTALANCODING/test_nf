@@ -6,12 +6,15 @@ import logger.Logger
 import logger.LoggerDefaults
 import app.net2software.rampcheck.BuildKonfig
 import app.net2software.rampcheck.android.R
+import business.constants.GetContext
 import presentation.App
+import video.api.uploader.api.work.stores.VideosApiStore
 
 @Composable
 fun MainView(application: Application) {
 
     ContextProvider.initialize(application.applicationContext)
+    GetContext.context = application
 
     val config = if (BuildKonfig.debug) {
         LoggerDefaults.debugConfig()
@@ -30,6 +33,8 @@ fun MainView(application: Application) {
     )
 
     App(application)
+
+    VideosApiStore.initialize()
 }
 
 

@@ -121,6 +121,8 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("androidx.camera:camera-lifecycle:1.3.1")
                         implementation("androidx.camera:camera-video:1.3.1")
                         implementation("androidx.camera:camera-view:1.3.1")
+                        implementation ("video.api:android-video-uploader:1.3.7")
+                        implementation("androidx.work:work-runtime-ktx:2.9.0")
                     }
                 }
 

@@ -98,7 +98,7 @@ private fun DataKendaraanContent(
             Spacer(modifier = Modifier.weight(1f))
             ButtonNextSection("LANJUT PINDAI QR CODE KIR", state, onClick = {
                 events(HomeEvent.PlatKIR)
-            })
+            }, enabled = (state.kirImage != null && state.selectedPlatNumber.isNotEmpty()))
 
         }
     }
@@ -217,13 +217,13 @@ fun TextFieldSection(
 }
 
 @Composable
-fun ButtonNextSection(label: String, state: HomeState, onClick: () -> Unit) {
+fun ButtonNextSection(label: String, state: HomeState, onClick: () -> Unit, enabled: Boolean = true) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
             onClick = {
                 onClick()
             },
-            enabled = (state.kirImage != null && state.selectedPlatNumber.isNotEmpty()),
+            enabled = enabled,
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = label,
             style = MaterialTheme.typography.labelMedium.copy(

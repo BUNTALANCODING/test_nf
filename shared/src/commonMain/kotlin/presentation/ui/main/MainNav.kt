@@ -195,7 +195,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
 //                            navigator.navigate(HomeNavigation.Pemeriksaan)
 //                            navigator.navigate(HomeNavigation.FotoKendaraan)
-                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
+//                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
+                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
                         },
                     )
                 }
