@@ -4,18 +4,23 @@ import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.KIRCompareRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
+import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
+import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
+import business.datasource.network.main.request.UploadVideoRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
+import business.datasource.network.main.responses.PreviewBADTO
 import business.datasource.network.main.responses.ProfileDTO
 import business.datasource.network.main.responses.QuestionDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
+import business.datasource.network.main.responses.SubmitSignatureDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
 
@@ -29,6 +34,7 @@ interface MainService {
         const val LOCATION = "getlocation"
         const val RAMPCHECK_START = "rampcheckstart"
         const val VEHICLE_PHOTO = "vehiclephoto"
+        const val CHECK_FILE = "checkfile"
         const val OFFICER_IMAGE = "officerimage"
         const val CHECKQR = "check_qr"
         const val PLAT_KIR = "platkir"
@@ -36,6 +42,8 @@ interface MainService {
         const val QUESTION = "question"
         const val SUBMIT_QUESTION = "submitquestion"
         const val GET_VEHICLE = "getvehicle"
+        const val SUBMIT_SIGNATURE = "submitsignature"
+        const val PREVIEW_BA = "show_ba"
     }
 
 
@@ -79,6 +87,15 @@ interface MainService {
         token: String,
     ): MainGenericResponse<List<String>>
 
+    suspend fun submitSignature(
+        token: String,
+        params: SubmitSignatureRequestDTO
+    ): MainGenericResponse<SubmitSignatureDTO>
+
+    suspend fun previewBA(
+        token: String,
+        params: PreviewBARequestDTO
+    ): MainGenericResponse<PreviewBADTO>
 
 //    suspend fun updateDeviceToken(
 //        token: String,
@@ -93,8 +110,7 @@ interface MainService {
 
     suspend fun uploadVideo(
         token: String,
-        filePath: String,
-        onProgress: (Float) -> Unit
-    ): MainGenericResponse<List<String>>
+        params : UploadVideoRequestDTO
+    ): Boolean
 
 }

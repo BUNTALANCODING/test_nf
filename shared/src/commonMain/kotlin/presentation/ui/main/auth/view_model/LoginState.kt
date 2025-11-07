@@ -3,6 +3,7 @@ package presentation.ui.main.auth.view_model
 import business.core.NetworkState
 import business.core.ProgressBarState
 import business.core.ViewState
+import business.datasource.network.splash.responses.LoginDTO
 
 data class LoginState(
     val nameRegister: String = "",
@@ -13,6 +14,8 @@ data class LoginState(
     val usernameLogin: String = "",
     val passwordLogin: String = "",
     val fcmToken: String = "",
+    val dataLogin : LoginDTO = LoginDTO(),
+
     val isTokenValid: Boolean = false,
     val isSuccessRegister: Boolean = false,
     val isSuccessResend: Boolean = false,

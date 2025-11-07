@@ -170,15 +170,36 @@ private fun CameraTeknisUtamaContent(
 
                 scope.launch {
                     try {
+
+                        val tempFile = copyUriToTempFile(videoUri)
+
+                        // Dapatkan path yang dibutuhkan oleh WorkManager
+                        val filePath = tempFile
+
+                        println("File path for upload: $filePath")
+
+                        // **LANGKAH 2: Panggil Event ViewModel**
+                        // Ini akan memicu HomeViewModel untuk mendapatkan token dan menjadwalkan WorkManager.
+                        events(HomeEvent.UploadVideo(filePath))
+
+                        // **LANGKAH 3: Navigasi**
+                        // Setelah WorkManager diantrikan, kita bisa navigasi atau menutup kamera.
+                        navigateToQuestionTeknisUtama()
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        // Tampilkan error ke pengguna (misal: "Gagal menyiapkan file untuk unggah")
+                    }
+                    /*try {
                         val tempFile = copyUriToTempFile(videoUri)
                         val uploader = VideoUploader(context)
-                        val uploadToken = "MY_UPLOAD_TOKEN"
+                        val uploadToken =
 
                         val workId = uploader.uploadVideo(tempFile, uploadToken)
                         println("Upload started with WorkId = $workId")
                     } catch (e: Exception) {
                         e.printStackTrace()
-                    }
+                    }*/
                 }
             }
         )

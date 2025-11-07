@@ -1,11 +1,16 @@
 package presentation.component
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,15 +27,12 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -40,19 +42,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.ic_info_alert
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.ZoneOffset
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -61,7 +64,8 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import presentation.theme.LightPurpleColor
 import presentation.theme.PrimaryColor
-import rampcheck.shared.generated.resources.ic_bus_guide
+import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_info_alert
 import rampcheck.shared.generated.resources.ic_plus
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,6 +76,8 @@ fun AlertDialog(
     subtitle: String,
     isButtonVertical : Boolean = false,
     isButtonVisible : Boolean = false,
+    positiveLabel : String,
+    negativeLabel : String,
     onDismissRequest: () -> Unit,
 
 ) {
@@ -90,13 +96,14 @@ fun AlertDialog(
                 painter = painterResource(iconRes),
                 contentDescription = null
             )
-            Spacer_8dp()
+            Spacer_32dp()
             Text(
                 title,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold
                 )
             )
+            Spacer_16dp()
             Text(
                 subtitle,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -104,7 +111,7 @@ fun AlertDialog(
                     textAlign = TextAlign.Center
                 )
             )
-            Spacer_8dp()
+            Spacer_32dp()
 
             if(isButtonVisible){
                 if(isButtonVertical){
@@ -113,7 +120,7 @@ fun AlertDialog(
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
                             onClick = onDismissRequest,
                             colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
-                            text = "VERIFIKASI SEKARANG",
+                            text = positiveLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
                                 color = PrimaryColor,
                                 fontWeight = FontWeight.Bold
@@ -125,7 +132,7 @@ fun AlertDialog(
                         DefaultButton(
                             onClick = onDismissRequest,
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-                            text = "BATALKAN",
+                            text = negativeLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
@@ -139,7 +146,7 @@ fun AlertDialog(
                             modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
                             onClick = onDismissRequest,
                             colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
-                            text = "KEMBALI",
+                            text = positiveLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
                                 color = PrimaryColor,
                                 fontWeight = FontWeight.Bold
@@ -151,7 +158,7 @@ fun AlertDialog(
                         DefaultButton(
                             onClick = onDismissRequest,
                             modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
-                            text = "YA,HAPUS",
+                            text = negativeLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
@@ -430,6 +437,131 @@ fun MaterialDatePickerDialog(
                     .height(48.dp),
                 shape = RoundedCornerShape(8.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun SignaturePad(
+    modifier: Modifier = Modifier,
+    onSave: (ImageBitmap) -> Unit,
+    onClose: () -> Unit
+) {
+    var paths by remember { mutableStateOf(mutableListOf<List<Offset>>()) }
+    var currentPath by remember { mutableStateOf<List<Offset>>(emptyList()) }
+
+    val pathColor = Color.Black
+    var strokeWidth = 4f
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Text(
+            "Tanda tangan disini",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // Canvas tempat coret-coret
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray.copy(alpha = 0.3f))
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = { offset ->
+                            currentPath = listOf(offset)
+                        },
+                        onDrag = { change, _ ->
+                            currentPath = currentPath + change.position
+                        },
+                        onDragEnd = {
+                            paths.add(currentPath)
+                            currentPath = emptyList()
+                        }
+                    )
+                }
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                paths.forEach { path ->
+                    for (i in 0 until path.size - 1) {
+                        drawLine(
+                            color = pathColor,
+                            start = path[i],
+                            end = path[i + 1],
+                            strokeWidth = strokeWidth
+                        )
+                    }
+                }
+                for (i in 0 until currentPath.size - 1) {
+                    drawLine(
+                        color = pathColor,
+                        start = currentPath[i],
+                        end = currentPath[i + 1],
+                        strokeWidth = strokeWidth
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                onClick = onClose,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray
+                )
+            ) {
+                Text("BATAL")
+            }
+
+            Button(
+                onClick = {
+                    // Convert paths menjadi ImageBitmap beneran
+                    val bitmapWidth = 1000
+                    val bitmapHeight = 600
+                    val imageBitmap = ImageBitmap(bitmapWidth, bitmapHeight)
+                    val canvas = androidx.compose.ui.graphics.Canvas(imageBitmap)
+
+                    val paint = Paint().apply {
+                        color = pathColor
+                        strokeWidth = strokeWidth
+                        style = PaintingStyle.Stroke
+                        isAntiAlias = true
+                    }
+
+                    paths.forEach { path ->
+                        for (i in 0 until path.size - 1) {
+                            canvas.drawLine(path[i], path[i + 1], paint)
+                        }
+                    }
+
+                    // include coretan yang belum dilepas
+                    for (i in 0 until currentPath.size - 1) {
+                        canvas.drawLine(currentPath[i], currentPath[i + 1], paint)
+                    }
+
+                    onSave(imageBitmap)
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2E006D)
+                )
+            ) {
+                Text("SIMPAN")
+            }
         }
     }
 }

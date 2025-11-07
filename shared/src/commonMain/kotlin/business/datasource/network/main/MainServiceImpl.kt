@@ -5,9 +5,12 @@ import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.KIRCompareRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
+import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
+import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
+import business.datasource.network.main.request.UploadVideoRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
 
@@ -15,14 +18,19 @@ import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
+import business.datasource.network.main.responses.PreviewBADTO
 import business.datasource.network.main.responses.ProfileDTO
 import business.datasource.network.main.responses.QuestionDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
+import business.datasource.network.main.responses.SubmitSignatureDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
 import business.datasource.network.splash.responses.ForgotRequestDTO
+import common.PlatformFile
+import common.platformModule
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -30,15 +38,18 @@ import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentDisposition.Companion.File
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import io.ktor.http.takeFrom
+import io.ktor.util.InternalAPI
 import io.ktor.utils.io.core.buildPacket
 import io.ktor.utils.io.core.writeFully
 import kotlinx.datetime.Clock
+import okio.FileNotFoundException
 
 class MainServiceImpl(
     private val httpClient: HttpClient
@@ -70,7 +81,10 @@ class MainServiceImpl(
         }.body()
     }
 
-    override suspend fun checkQR(request: CheckQRRequestDTO, token: String, ): MainGenericResponse<CheckQRDTO> {
+    override suspend fun checkQR(
+        request: CheckQRRequestDTO,
+        token: String,
+    ): MainGenericResponse<CheckQRDTO> {
         return httpClient.post {
             url {
                 headers {
@@ -212,6 +226,23 @@ class MainServiceImpl(
         }.body()
     }
 
+    override suspend fun previewBA(
+        token: String,
+        request: PreviewBARequestDTO,
+    ): MainGenericResponse<PreviewBADTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.PREVIEW_BA
+            }
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
+    }
+
 
 //    @OptIn(InternalAPI::class)
 //    override suspend fun uploadFotoPetugas(
@@ -324,6 +355,23 @@ class MainServiceImpl(
         }.body()
     }
 
+    override suspend fun submitSignature(
+        token: String,
+        params: SubmitSignatureRequestDTO
+    ): MainGenericResponse<SubmitSignatureDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.SUBMIT_SIGNATURE
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }.body()
+    }
+
 
     override suspend fun forgotPassword(
         token: String,
@@ -342,21 +390,88 @@ class MainServiceImpl(
         }.body()
     }
 
+
+    @OptIn(InternalAPI::class)
     override suspend fun uploadVideo(
         token: String,
-        filePath: String,
-        onProgress: (Float) -> Unit
-    ): MainGenericResponse<List<String>> {
-        return httpClient.post {
-            url {
-                headers {
-                    append(HttpHeaders.Authorization, token)
-                }
-                takeFrom(BASE_URL)
-                encodedPath += MainService.FORGOT_PASSWORD
+        params: UploadVideoRequestDTO
+    ): Boolean {
+        // 1️⃣ Siapkan file
+        val platformFile = try {
+            PlatformFile(params.filePath)
+        } catch (e: Exception) {
+            throw FileNotFoundException("File video tidak ditemukan: ${params.filePath}")
+        }
+
+        val totalBytes = platformFile.totalBytes
+
+        return httpClient.submitFormWithBinaryData(
+            url = BASE_URL + MainService.CHECK_FILE,
+            formData = formData {
+                append(
+                    "file",
+                    InputProvider {
+                        platformFile.asInput()
+                    },
+                    Headers.build {
+                        append(HttpHeaders.ContentType, "video/mp4")
+                        append(
+                            HttpHeaders.ContentDisposition,
+                            "form-data; name=\"file\"; filename=\"${platformFile.fileName}\""
+                        )
+                    }
+                )
             }
-            contentType(ContentType.Application.Json)
+        ) {
+            // 3️⃣ Header Authorization
+            headers {
+                append(HttpHeaders.Authorization, token)
+            }
+
+            // 4️⃣ Progress bar
+            onUpload { bytesSentTotal, _ ->
+                if (totalBytes > 0) {
+                    val progress = bytesSentTotal.toFloat() / totalBytes.toFloat()
+                    params.onProgress(progress)
+                }
+            }
         }.body()
+       /* val platformFile = try {
+            PlatformFile(params.filePath)
+        } catch (e: Exception) {
+            throw FileNotFoundException("File video tidak ditemukan: ${params.filePath}")
+        }
+
+        val totalBytes = platformFile.totalBytes
+
+        return httpClient.submitFormWithBinaryData(
+            url = BASE_URL + MainService.VEHICLE_PHOTO,
+            formData = formData {
+
+                // SOLUSI: Gunakan fungsi 'append' yang menerima ByteReadChannel sebagai 'value'
+                append(
+                    key = "file",
+                    value = platformFile.readChannel(),
+                    headers = Headers.build {
+                        append(HttpHeaders.ContentType, "video/mp4")
+                        append(HttpHeaders.ContentDisposition, "filename=\"${platformFile.fileName}\"")
+                    }
+                )
+            }
+        ) {
+            // ... (Header dan onUpload tetap sama)
+            headers {
+                append(HttpHeaders.Authorization, token)
+            }
+
+            onUpload { bytesSentTotal, _ ->
+                println("cek totalBytes $totalBytes")
+                if (totalBytes > 0) {
+                    val progress = bytesSentTotal.toFloat() / totalBytes.toFloat()
+                    params.onProgress(progress)
+                }
+            }
+        }.body()*/
     }
 //        val file = File(filePath)
 //        val totalBytes = file.length()

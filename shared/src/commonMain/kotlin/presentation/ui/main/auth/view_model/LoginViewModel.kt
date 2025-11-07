@@ -215,6 +215,9 @@ class LoginViewModel(
                             LoginAction.Navigation.NavigateToLogin
                         }
                     }
+                    setState {
+                        copy(dataLogin = data)
+                    }
                 }
             },
             onLoading = {

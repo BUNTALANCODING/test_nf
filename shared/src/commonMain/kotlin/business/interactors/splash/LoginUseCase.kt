@@ -40,6 +40,18 @@ class LoginUseCase(
                 params.email
             )*/
         }
+        if(result?.officerName != null){
+            appDataStoreManager.setValue(
+                DataStoreKeys.OFFICER_NAME,
+                result.officerName
+            )
+        }
+        if(result?.officerCode != null){
+            appDataStoreManager.setValue(
+                DataStoreKeys.OFFICER_NIP,
+                result.officerCode
+            )
+        }
 
         return apiResponse
     }

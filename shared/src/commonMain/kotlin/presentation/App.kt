@@ -18,6 +18,7 @@ import coil3.network.NetworkFetcher
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.PayloadData
 import common.Context
+import common.platformModule
 import di.appModule
 import logger.Logger
 import org.koin.compose.KoinApplication
@@ -30,7 +31,7 @@ import presentation.ui.splash.SplashNav
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-internal fun App(context: Context?) {
+internal fun App(context: Context) {
 
     NotifierManager.setLogger { message ->
         Logger.d("Notifier Logger => $message")
@@ -54,9 +55,10 @@ internal fun App(context: Context?) {
         })
     }
 
-    KoinApplication(application = {
-        modules(appModule(context))
-    }) {
+//    KoinApplication(application = {
+//        modules(appModule(context), platformModule())
+//
+//    }) {
 
         /*setSingletonImageLoaderFactory { context ->
             ImageLoader.Builder(context)
@@ -73,22 +75,16 @@ internal fun App(context: Context?) {
             LaunchedEffect(key1 = viewModel.tokenManager.state.value.isTokenAvailable) {
                 if (!viewModel.tokenManager.state.value.isTokenAvailable) {
                     navigator.popBackStack()
-                    navigator.navigate(AppNavigation.Splash)
+                    navigator.navigate(AppNavigation.Main)
                 }
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
                 NavHost(
                     navController = navigator,
-                    startDestination = AppNavigation.Splash,
+                    startDestination = AppNavigation.Main,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    composable<AppNavigation.Splash> {
-                        SplashNav(navigateToMain = {
-                            navigator.popBackStack()
-                            navigator.navigate(AppNavigation.Main)
-                        })
-                    }
                     composable<AppNavigation.Main> {
                         MainNav(context = context) {
                             navigator.popBackStack()
@@ -97,7 +93,7 @@ internal fun App(context: Context?) {
                     }
                 }
             }
-        }
+//        }
     }
 }
 

@@ -34,9 +34,12 @@ import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.navigation.AdministrasiNavigation
+import presentation.navigation.AppNavigation
+import presentation.navigation.BANavigation
 import presentation.navigation.BottomNavigation
 import presentation.navigation.HomeNavigation
 import presentation.navigation.ProfileNavigation
+import presentation.navigation.SplashNavigation
 import presentation.navigation.TeknisNavigation
 import presentation.theme.DefaultCardColorsTheme
 import presentation.theme.DefaultNavigationBarItemTheme
@@ -47,6 +50,9 @@ import presentation.ui.main.auth.SuccessRegisterScreen
 import presentation.ui.main.auth.forgot.ForgotPasswordScreen
 import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
+import presentation.ui.main.beritaacara.KemenhubBeritaAcaraScreen
+import presentation.ui.main.beritaacara.PengemudiBeritaAcaraScreen
 import presentation.ui.main.datapemeriksaan.fotokendaraan.CameraVehicleScreen
 import presentation.ui.main.datapemeriksaan.fotokendaraan.UnggahFotoKendaraanScreen
 import presentation.ui.main.datapemeriksaan.fotopetugas.CameraPetugasScreen
@@ -77,6 +83,7 @@ import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.PemeriksaanSIMP
 import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
+import presentation.ui.splash.SplashScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,6 +100,22 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 //    val showBottomBar = currentRoute == BottomNavigation.Home.route ||
 //                currentRoute == BottomNavigation.Notification.route ||
 //                currentRoute == BottomNavigation.Profile.route
+
+//    NavHost(
+//        startDestination = AppNavigation.Main,
+//        navController = navigator,
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        composable<AppNavigation.Main> {
+//            LoginScreen(
+//                state = viewModelLogin.state.value,
+//                events = viewModelLogin::onTriggerEvent,
+//                errors = viewModelLogin.errors,
+//                navigateToRegister = {},
+//                navigateToForgot = {}
+//            )
+//        }
+//    }
 
     LaunchedEffect(Unit) {
         viewModel.action.collectLatest { effect ->
@@ -196,11 +219,11 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 //                            navigator.navigate(HomeNavigation.Pemeriksaan)
 //                            navigator.navigate(HomeNavigation.FotoKendaraan)
 //                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
-                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
+//                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
+                            navigator.navigate(BANavigation.FormBeritaAcara)
                         },
                     )
                 }
-
                 composable<HomeNavigation.Pemeriksaan> {
                     FormDataPemeriksaanScreen(
 
@@ -510,6 +533,39 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToTeknisPenunjang = {
                             navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisPenunjang)
                         },
+                    )
+                }
+
+                composable<BANavigation.FormBeritaAcara> {
+                    FormBeritaAcaraScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        loginState = viewModelLogin.state.value,
+                        navigateToPengemudi = {
+                            navigator.navigate(BANavigation.PengemudiBeritaAcara)
+                        },
+                        navigateToKemenhub = {
+                            navigator.navigate(BANavigation.KemenhubBeritaAcara)
+                        },
+                    )
+                }
+                composable<BANavigation.PengemudiBeritaAcara> {
+                    PengemudiBeritaAcaraScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                    )
+                }
+
+                composable<BANavigation.KemenhubBeritaAcara> {
+                    KemenhubBeritaAcaraScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
                     )
                 }
 

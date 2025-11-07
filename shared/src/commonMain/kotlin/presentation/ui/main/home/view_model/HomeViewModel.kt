@@ -1,31 +1,32 @@
 package presentation.ui.main.home.view_model
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.viewModelScope
+import business.constants.AUTHORIZATION_BEARER_TOKEN
+import business.constants.DataStoreKeys
+import business.core.AppDataStore
 import business.core.BaseViewModel
-import business.core.ProgressBarState
 import business.core.UIComponentState
 import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
+import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
-import business.datasource.network.main.responses.CheckQRDTO
-import business.datasource.network.main.responses.GetLocationDTO
 import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
-import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.PlatKIRUseCase
+import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadPetugasUseCase
 import business.interactors.main.VehiclePhotoUseCase
-import business.interactors.splash.CheckTokenUseCase
-import business.interactors.splash.LoginUseCase
-import coil3.Bitmap
-import common.ImageSaveShare
 import common.toBase64
 import common.toBytes
-import presentation.ui.main.auth.view_model.LoginAction
+import kotlinx.coroutines.launch
+import presentation.util.BackgroundScheduler
 
 class HomeViewModel(
     private val getLocationUseCase: GetLocationUseCase,
@@ -34,7 +35,11 @@ class HomeViewModel(
     private val checkQRUseCase: CheckQRUseCase,
     private val getVehicleUseCase: GetVehicleUseCase,
     private val platKIRUseCase: PlatKIRUseCase,
-    private val vehiclePhotoUseCase: VehiclePhotoUseCase
+    private val vehiclePhotoUseCase: VehiclePhotoUseCase,
+    private val appDataStoreManager: AppDataStore,
+    private val submitSignatureUseCase: SubmitSignatureUseCase,
+    private val previewBAUseCase: PreviewBAUseCase,
+    private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
     override fun setInitialState() = HomeState()
@@ -53,6 +58,18 @@ class HomeViewModel(
             }
             is HomeEvent.CheckQR -> {
                 checkQR()
+            }
+
+            is HomeEvent.SetStateValue -> {
+                setStateValue()
+            }
+
+            is HomeEvent.PreviewBA -> {
+                previewBA()
+            }
+
+            is HomeEvent.SubmitSignature -> {
+                submitSignature()
             }
 
             is HomeEvent.GetVehicle -> {
@@ -207,6 +224,9 @@ class HomeViewModel(
             is HomeEvent.OnUpdateImageTypes -> {
                 onUpdateImageTypes(event.value)
             }
+            is HomeEvent.UploadVideo -> {
+                startVideoUpload(event.value)
+            }
             is HomeEvent.OnUpdateLeftImageBitmap -> {
                 onUpdateLeftImageBitmap(event.value)
             }
@@ -215,6 +235,55 @@ class HomeViewModel(
             }
             is HomeEvent.OnUpdateRightImageBitmap -> {
                 onUpdateRightImageBitmap(event.value)
+            }
+            is HomeEvent.OnShowDialogTandaTanganKemenhub -> {
+                onShowDialogTandaTanganKemenhub(event.value)
+            }
+            is HomeEvent.OnShowDialogTandaTanganPengemudi -> {
+                onShowDialogTandaTanganPengemudi(event.value)
+            }
+            is HomeEvent.OnShowDialogTandaTanganPenguji -> {
+                onShowDialogTandaTanganPenguji(event.value)
+            }
+            is HomeEvent.OnUpdateTTDKemenhub -> {
+                onUpdateTTDKemenhub(event.value)
+            }
+            is HomeEvent.OnUpdateTTDPengemudi -> {
+                onUpdateTTDPengemudi(event.value)
+            }
+            is HomeEvent.OnUpdateTTDPenguji -> {
+                onUpdateTTDPenguji(event.value)
+            }
+            is HomeEvent.OnUpdateTTDKemenhubBitmap -> {
+                onUpdateTTDKemenhubBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateTTDPengemudiBitmap -> {
+                onUpdateTTDPengemudiBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateTTDPengujiBitmap -> {
+                onUpdateTTDPengujiBitmap(event.value)
+            }
+            is HomeEvent.OnShowDialogSubmitSignature -> {
+                onShowDialogSubmitSignature(event.value)
+            }
+            is HomeEvent.OnUpdateDriverName -> {
+                onUpdateDriverName(event.value)
+            }
+            is HomeEvent.OnUpdateKemenhubNIP -> {
+                onUpdateKemenhubNIP(event.value)
+            }
+            is HomeEvent.OnUpdateKemenhubName -> {
+                onUpdateKemenhubName(event.value)
+            }
+
+            is HomeEvent.OnUpdateOfficerNIP ->  {
+                onUpdateOfficerNIP(event.value)
+            }
+            is HomeEvent.OnUpdateOfficerName -> {
+                onUpdateOfficerName(event.value)
+            }
+            is HomeEvent.OnUpdateRampcheckId -> {
+                onUpdateRampcheckId(event.value)
             }
         }
     }
@@ -274,6 +343,51 @@ class HomeViewModel(
                     if(s){
                         setAction {
                             HomeAction.Navigation.NavigateToGuide
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun  setStateValue(){
+        viewModelScope.launch {
+            val officerName = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NAME)
+            val officerNIP = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NIP)
+            setState {
+                copy(officerName = officerName ?: "")
+            }
+            setState {
+                copy(officerNip = officerNIP ?: "")
+            }
+
+        }
+    }
+
+    private fun submitSignature() {
+
+        executeUseCase(
+            submitSignatureUseCase.execute(
+
+                params = SubmitSignatureRequestDTO(
+                    rampcheckOfficerNip = state.value.nipKemenhub,
+                    rampcheckOfficerName = state.value.officerName,
+                    rampcheckOfficerSignature = state.value.ttdPenguji,
+                    driverName = state.value.driverName,
+                    driverSignature = state.value.ttdPengemudi,
+                    kemenhubNip = state.value.nipKemenhub,
+                    kemenhubName = state.value.kemenhubName,
+                    kemenhubSignature = state.value.ttdKemenhub
+                ),
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if(s){
+                        setState {
+                            copy(showDialogSuccessSubmitSignature = UIComponentState.Show)
                         }
                     }
                 }
@@ -405,6 +519,28 @@ class HomeViewModel(
             },
         )
     }
+
+    private fun previewBA() {
+        executeUseCase(
+            previewBAUseCase.execute(
+                params = PreviewBARequestDTO(
+                    rampcheckId = state.value.rampcheckId
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if(s){
+                        setAction {
+                            HomeAction.Navigation.NavigateToQRKIR
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
     }
@@ -512,8 +648,80 @@ class HomeViewModel(
         setState { copy(imageTypes = value) }
     }
 
+    private fun onShowDialogTandaTanganPengemudi(value: UIComponentState) {
+        setState { copy(showDialogTandaTanganPengemudi = value) }
+    }
+
+    private fun onShowDialogTandaTanganPenguji(value: UIComponentState) {
+        setState { copy(showDialogTandaTanganPenguji = value) }
+    }
+    private fun onShowDialogTandaTanganKemenhub(value: UIComponentState) {
+        setState { copy(showDialogTandaTanganKemenhub = value) }
+    }
+    private fun onUpdateTTDPenguji(value: String){
+        setState { copy(ttdPenguji = value) }
+    }
+    private fun onUpdateTTDPengemudi(value: String){
+        setState { copy(ttdPengemudi = value) }
+    }
+    private fun onUpdateTTDKemenhub(value: String){
+        setState { copy(ttdKemenhub = value) }
+    }
+    private fun onUpdateTTDPengujiBitmap(value: ImageBitmap){
+        setState { copy(ttdPengujiBitmap = value) }
+    }
+    private fun onUpdateTTDPengemudiBitmap(value: ImageBitmap){
+        setState { copy(ttdPengemudiBitmap = value) }
+    }
+    private fun onUpdateTTDKemenhubBitmap(value: ImageBitmap){
+        setState { copy(ttdKemenhubBitmap = value) }
+    }
+
+    private fun onUpdateDriverName(value: String){
+        setState { copy(driverName = value) }
+    }
+    private fun onUpdateKemenhubName(value: String){
+        setState { copy(kemenhubName = value) }
+    }
+
+    private fun onUpdateKemenhubNIP(value: String){
+        setState { copy(nipKemenhub = value) }
+    }
+
+    private fun onUpdateOfficerName(value: String){
+        setState { copy(officerName = value) }
+    }
+
+    private fun onUpdateOfficerNIP(value: String){
+        setState { copy(officerNip = value) }
+    }
+    private fun onUpdateRampcheckId(value: Int){
+        setState { copy(rampcheckId = value) }
+    }
+    private fun onShowDialogSubmitSignature(value: UIComponentState) {
+        setState { copy(showDialogSuccessSubmitSignature = value) }
+    }
+
+    private fun onUpdateFilePath(value: String){
+        setState { copy(filePath = value) }
+    }
+
     private fun onUpdateOfficerByteArray(value: ByteArray) {
         setState { copy(officer_image = value) }
+    }
+
+    fun startVideoUpload(filePath: String) = viewModelScope.launch {
+
+        val token = appDataStoreManager.readValue(AUTHORIZATION_BEARER_TOKEN) ?: run {
+
+            return@launch
+        }
+
+
+        scheduler.enqueueVideoUpload(filePath, token)
+
+        // 3. Update UI (Opsional)
+        // setState { copy(status = "Video sedang diunggah di latar belakang") }
     }
 
 //    private fun updateTokenFCM(token: String) {

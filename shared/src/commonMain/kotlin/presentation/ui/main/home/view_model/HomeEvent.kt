@@ -14,6 +14,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object RampcheckStart : HomeEvent()
 
+    data object SubmitSignature : HomeEvent()
+
     data object UploadOfficerImage : HomeEvent()
 
     data object GetVehicle : HomeEvent()
@@ -23,6 +25,10 @@ sealed class HomeEvent : ViewEvent {
     data object PlatKIR : HomeEvent()
 
     data object VehiclePhoto : HomeEvent()
+
+    data object SetStateValue : HomeEvent()
+
+    data object PreviewBA : HomeEvent()
 
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 
@@ -76,6 +82,26 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateNamaLengkap(val value: String) : HomeEvent()
 
+    data class OnShowDialogTandaTanganPenguji(val value: UIComponentState) : HomeEvent()
+
+    data class OnShowDialogTandaTanganPengemudi(val value: UIComponentState) : HomeEvent()
+
+    data class OnShowDialogTandaTanganKemenhub(val value: UIComponentState) : HomeEvent()
+
+    data class OnUpdateTTDPenguji(val value: String) : HomeEvent()
+
+    data class OnUpdateTTDPengemudi(val value: String) : HomeEvent()
+
+    data class OnUpdateTTDKemenhub(val value: String) : HomeEvent()
+
+    data class OnShowDialogSubmitSignature(val value: UIComponentState) : HomeEvent()
+
+    data class OnUpdateTTDPengujiBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateTTDPengemudiBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateTTDKemenhubBitmap(val value: ImageBitmap) : HomeEvent()
+
     data class OnShowDialogPajak(val value: UIComponentState) : HomeEvent()
 
     data class OnUpdatePin(val value: String) : HomeEvent()
@@ -95,6 +121,20 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateRightImageBitmap(val value: ImageBitmap) : HomeEvent()
 
     data class OnUpdateNrkbImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class UploadVideo(val value: String) : HomeEvent()
+
+    data class OnUpdateDriverName(val value: String) : HomeEvent()
+
+    data class OnUpdateKemenhubName(val value: String) : HomeEvent()
+
+    data class OnUpdateKemenhubNIP(val value: String) : HomeEvent()
+
+    data class OnUpdateOfficerName(val value: String) : HomeEvent()
+
+    data class OnUpdateOfficerNIP(val value: String) : HomeEvent()
+
+    data class OnUpdateRampcheckId(val value: Int) : HomeEvent()
 
     data class OnUpdateImageTypes(val value: String) : HomeEvent()
 

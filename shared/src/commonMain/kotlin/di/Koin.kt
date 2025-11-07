@@ -15,6 +15,7 @@ import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.LogoutUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadPetugasUseCase
 import business.interactors.main.VehiclePhotoUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
@@ -29,8 +30,9 @@ import presentation.SharedViewModel
 import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.util.BackgroundScheduler
 
-fun appModule(context: Context?) = module {
+fun appModule(context: Context) = module {
     single { Json { isLenient = true; ignoreUnknownKeys = true } }
     single {
         KtorHttpClient.httpClient(get())
@@ -38,9 +40,10 @@ fun appModule(context: Context?) = module {
     single<SplashService> { SplashServiceImpl(get()) }
     single<MainService> { MainServiceImpl(get()) }
     single<AppDataStore> { AppDataStoreManager(context) }
+    single<BackgroundScheduler> { get() }
     factory { SharedViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(), get()) }
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get()) }
+    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -55,6 +58,7 @@ fun appModule(context: Context?) = module {
     single { CheckQRUseCase(get(),get()) }
     single { PlatKIRUseCase(get(),get()) }
     single { VehiclePhotoUseCase(get(),get()) }
+    single { SubmitSignatureUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 

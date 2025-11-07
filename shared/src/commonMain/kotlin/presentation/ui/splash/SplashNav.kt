@@ -16,21 +16,20 @@ import presentation.navigation.SplashNavigation
 internal fun SplashNav(navigateToMain: () -> Unit) {
     val navigator = rememberNavController()
 
-    LaunchedEffect(Unit) {
-        delay(4000L)
-        navigateToMain()
-    }
+//    LaunchedEffect(Unit) {
+//        navigateToMain()
+//    }
 
     ChangeStatusBarColors(MaterialTheme.colorScheme.primary)
 
-    NavHost(
-        startDestination = SplashNavigation.Splash,
-        navController = navigator,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        composable<SplashNavigation.Splash> {
-            SplashScreen()
-        }
-    }
+//    NavHost(
+//        startDestination = SplashNavigation.Splash,
+//        navController = navigator,
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        composable<SplashNavigation.Splash> {
+//            SplashScreen()
+//        }
+//    }
 
 }

@@ -10,6 +10,7 @@ import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.ProfileDTO
+import coil3.Bitmap
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -52,6 +53,8 @@ data class HomeState(
     val nrkbImage : ImageBitmap? = null,
     val imageTypes : String? = "",
 
+    val filePath : String? = "",
+
 
     val dataHasilEKIR: CheckQRDTO = CheckQRDTO(),
 
@@ -71,48 +74,29 @@ data class HomeState(
 
     val selectedLocationList: List<GetLocationDTO> = listOf(),
 
+    val showDialogTandaTanganPengemudi: UIComponentState = UIComponentState.Hide,
+    val showDialogTandaTanganPenguji: UIComponentState = UIComponentState.Hide,
+    val showDialogTandaTanganKemenhub: UIComponentState = UIComponentState.Hide,
+    val ttdPengemudi : String? = "",
+    val ttdPenguji : String? = "",
+    val ttdKemenhub : String? = "",
 
+    val ttdPengemudiBitmap : ImageBitmap? = null,
+    val ttdPengujiBitmap : ImageBitmap? = null,
+    val ttdKemenhubBitmap : ImageBitmap? = null,
+
+    val officerName : String = "",
+    val officerNip : String = "",
+    val driverName : String = "",
+    val kemenhubName : String = "",
+    val nipKemenhub : String = "",
+    val rampcheckId : Int = 0,
+
+    val showDialogSuccessSubmitSignature: UIComponentState = UIComponentState.Hide,
 
     val isTokenValid: Boolean = false,
     val updateTokenFCM: String = "",
     val profile: ProfileDTO = ProfileDTO(),
-    val selectedOrigin: String = "",
-    val selectedDestination: String = "",
-    val selectedDate: String = "",
-    val selectedTime: String = "",
-    val typeRoute: String = "",
-    val navigateToFerry: Boolean = false,
-    val navigateToSelectPayment: Boolean = false,
-    val isOrigin: Int = 1,
-    val onUpdateCount: Int = 0,
-    val incDecPassenger: Int = 0,
-    val editScheduleBSheetState: UIComponentState = UIComponentState.Hide,
-    val searchDialogState: UIComponentState = UIComponentState.Hide,
-    val dateDialogState: UIComponentState = UIComponentState.Hide,
-    val birthdayDialogState: UIComponentState = UIComponentState.Hide,
-    val timeDialogState: UIComponentState = UIComponentState.Hide,
-    val passengerDialogState: UIComponentState = UIComponentState.Hide,
-    val ticketTypeDialogState: UIComponentState = UIComponentState.Hide,
-
-    val selectedTitle: String = "Tuan",
-    val selectedName: String = "",
-    val selectedEmail: String = "",
-    val selectedAge: String = "",
-    val selectedIdentity: String = "",
-    val selectedPhone: String = "",
-    val selectedBirthday: String = "",
-    val selectedVehicleNumber: String = "",
-    val priceDetailState: UIComponentState = UIComponentState.Hide,
-    val identityState: UIComponentState = UIComponentState.Hide,
-    val cityState: UIComponentState = UIComponentState.Hide,
-    val genderState: UIComponentState = UIComponentState.Hide,
-    val passengerDetailState: UIComponentState = UIComponentState.Hide,
-    val bookingDetailState: UIComponentState = UIComponentState.Hide,
-
-
-
-    val idPassengerCO: Int = 0,
-    val idIndexDetail: Int = 0,
 
     val errorResult: JAlertResponse = JAlertResponse(),
     val errorDialogState: UIComponentState = UIComponentState.Hide,

@@ -123,6 +123,9 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("androidx.camera:camera-view:1.3.1")
                         implementation ("video.api:android-video-uploader:1.3.7")
                         implementation("androidx.work:work-runtime-ktx:2.9.0")
+                        implementation("io.insert-koin:koin-androidx-workmanager:4.0.0")
+                        implementation("io.insert-koin:koin-android:4.0.0")
+                        implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
                     }
                 }
 
