@@ -97,12 +97,15 @@ private fun PDFBeritaAcaraContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
 ) {
+    LaunchedEffect(Unit){
+        events(HomeEvent.PreviewBA)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                 Base64PdfViewer(
-                    base64Pdf = dummyBase64,
+                    base64Pdf = state.base64PreviewBA,
                     modifier = Modifier.fillMaxSize()
                         .padding(16.dp)
                 )

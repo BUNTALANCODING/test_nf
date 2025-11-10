@@ -77,7 +77,8 @@ fun FormBeritaAcaraScreen(
     errors: Flow<UIComponent>,
     popup: () -> Unit,
     navigateToPengemudi: () -> Unit,
-    navigateToKemenhub: () -> Unit
+    navigateToKemenhub: () -> Unit,
+    navigateToPreviewBA: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -91,6 +92,7 @@ fun FormBeritaAcaraScreen(
             events = events,
             navigateToPengemudi = navigateToPengemudi,
             navigateToKemenhub = navigateToKemenhub,
+            navigateToPreviewBA = navigateToPreviewBA,
             loginState = loginState
         )
 
@@ -103,7 +105,8 @@ private fun FormBeritaAcaraContent(
     events: (HomeEvent) -> Unit,
     loginState: LoginState,
     navigateToPengemudi: () -> Unit,
-    navigateToKemenhub: () -> Unit
+    navigateToKemenhub: () -> Unit,
+    navigateToPreviewBA: () -> Unit,
 ) {
 
     LaunchedEffect(Unit){
@@ -169,7 +172,9 @@ private fun FormBeritaAcaraContent(
                 events(HomeEvent.OnShowDialogSubmitSignature(UIComponentState.Hide))
             },
             positiveLabel = "UNDUH DAN SELESAI",
-            negativeLabel = "LIHAT PREVIEW"
+            negativeLabel = "LIHAT PREVIEW",
+            onClickPositive = {},
+            onClickNegative = navigateToPreviewBA
         )
     }
     Column(modifier = Modifier.fillMaxSize()) {

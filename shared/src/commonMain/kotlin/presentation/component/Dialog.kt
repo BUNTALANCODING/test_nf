@@ -78,6 +78,8 @@ fun AlertDialog(
     isButtonVisible : Boolean = false,
     positiveLabel : String,
     negativeLabel : String,
+    onClickPositive : () -> Unit,
+    onClickNegative : () -> Unit,
     onDismissRequest: () -> Unit,
 
 ) {
@@ -118,7 +120,7 @@ fun AlertDialog(
                     Column {
                         DefaultButton(
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-                            onClick = onDismissRequest,
+                            onClick = onClickPositive,
                             colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
                             text = positiveLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
@@ -130,7 +132,7 @@ fun AlertDialog(
                         Spacer_8dp()
 
                         DefaultButton(
-                            onClick = onDismissRequest,
+                            onClick = onClickNegative,
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
                             text = negativeLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
@@ -144,7 +146,7 @@ fun AlertDialog(
 
                         DefaultButton(
                             modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
-                            onClick = onDismissRequest,
+                            onClick = onClickPositive,
                             colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
                             text = positiveLabel,
                             style = MaterialTheme.typography.labelLarge.copy(
@@ -156,7 +158,7 @@ fun AlertDialog(
                         Spacer_8dp()
 
                         DefaultButton(
-                            onClick = onDismissRequest,
+                            onClick = onClickNegative,
                             modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
                             text = negativeLabel,
                             style = MaterialTheme.typography.labelLarge.copy(

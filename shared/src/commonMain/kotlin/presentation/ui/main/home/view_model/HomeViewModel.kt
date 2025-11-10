@@ -528,11 +528,9 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let { s ->
-                    if(s){
-                        setAction {
-                            HomeAction.Navigation.NavigateToQRKIR
-                        }
+                data?.let {
+                    setState {
+                        copy(base64PreviewBA = data.base64 ?: "")
                     }
                 }
             },

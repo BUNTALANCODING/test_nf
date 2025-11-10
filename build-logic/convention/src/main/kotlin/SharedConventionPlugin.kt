@@ -125,7 +125,6 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("androidx.work:work-runtime-ktx:2.9.0")
                         implementation("io.insert-koin:koin-androidx-workmanager:4.0.0")
                         implementation("io.insert-koin:koin-android:4.0.0")
-                        implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
                     }
                 }
 

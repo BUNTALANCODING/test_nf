@@ -52,6 +52,7 @@ import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
 import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
 import presentation.ui.main.beritaacara.KemenhubBeritaAcaraScreen
+import presentation.ui.main.beritaacara.PDFBeritaAcaraScreen
 import presentation.ui.main.beritaacara.PengemudiBeritaAcaraScreen
 import presentation.ui.main.datapemeriksaan.fotokendaraan.CameraVehicleScreen
 import presentation.ui.main.datapemeriksaan.fotokendaraan.UnggahFotoKendaraanScreen
@@ -549,6 +550,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToKemenhub = {
                             navigator.navigate(BANavigation.KemenhubBeritaAcara)
                         },
+                        navigateToPreviewBA = {navigator.navigate(BANavigation.PreviewBeritaAcara)},
                     )
                 }
                 composable<BANavigation.PengemudiBeritaAcara> {
@@ -562,6 +564,15 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 
                 composable<BANavigation.KemenhubBeritaAcara> {
                     KemenhubBeritaAcaraScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                    )
+                }
+
+                composable<BANavigation.PreviewBeritaAcara> {
+                    PDFBeritaAcaraScreen(
                         errors = viewModel.errors,
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
