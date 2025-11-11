@@ -3,10 +3,14 @@ package business.datasource.network.main
 import business.constants.BASE_URL
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.request.CheckQRRequestDTO
+import business.datasource.network.main.request.GetStepRequestDTO
+import business.datasource.network.main.request.HistoryRampcheckRequestDTO
+import business.datasource.network.main.request.IdentifyRequestDTO
 import business.datasource.network.main.request.KIRCompareRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.request.SendEmailBARequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
@@ -15,13 +19,17 @@ import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
 
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
+import business.datasource.network.main.responses.HistoryRampcheckDTO
+import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.PreviewBADTO
 import business.datasource.network.main.responses.ProfileDTO
 import business.datasource.network.main.responses.QuestionDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
+import business.datasource.network.main.responses.SendEmailBADTO
 import business.datasource.network.main.responses.SubmitSignatureDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
@@ -228,7 +236,7 @@ class MainServiceImpl(
 
     override suspend fun previewBA(
         token: String,
-        request: PreviewBARequestDTO,
+        params: PreviewBARequestDTO,
     ): MainGenericResponse<PreviewBADTO> {
         return httpClient.post {
             url {
@@ -239,7 +247,75 @@ class MainServiceImpl(
                 encodedPath += MainService.PREVIEW_BA
             }
             contentType(ContentType.Application.Json)
-            setBody(request)
+            setBody(params)
+        }.body()
+    }
+
+    override suspend fun sendEmailBA(
+        token: String,
+        params: SendEmailBARequestDTO,
+    ): MainGenericResponse<SendEmailBADTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.PREVIEW_BA
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }.body()
+    }
+
+    override suspend fun getStep(
+        token: String,
+        params: GetStepRequestDTO
+    ): MainGenericResponse<GetStepDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.GETSTEP
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }.body()
+    }
+
+    override suspend fun identity(
+        token: String,
+        params: IdentifyRequestDTO
+    ): MainGenericResponse<IdentifyDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.IDENTIFY
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }.body()
+    }
+
+    override suspend fun historyRampcheck(
+        token: String,
+        params: HistoryRampcheckRequestDTO
+    ): MainGenericResponse<HistoryRampcheckDTO> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.HISTORY_RAMPCHECK
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
         }.body()
     }
 
