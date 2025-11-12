@@ -20,7 +20,13 @@ sealed class HomeEvent : ViewEvent {
 
     data object GetVehicle : HomeEvent()
 
-    data object GetStepKartuUji : HomeEvent()
+    data object NegativeAnswerUji : HomeEvent()
+
+    data object NegativeAnswerKPReguler : HomeEvent()
+
+    data object NegativeAnswerKPCadangan : HomeEvent()
+
+    data object NegativeAnswerSIM : HomeEvent()
 
     data object CheckQR : HomeEvent()
 
@@ -52,7 +58,13 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateKeteranganKartuTidakAda(val value: String) : HomeEvent()
 
-    data class OnUpdateTidakSesuaiKartuUji(val value: String) : HomeEvent()
+    data class OnUpdateTidakSesuai(val value: String) : HomeEvent()
+
+    data class OnUpdateTidakSesuaiBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateTypeCard(val value: String) : HomeEvent()
+
+    data class OnUpdateCardAvailable(val value: Int) : HomeEvent()
 
     data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
 
@@ -147,6 +159,8 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateImageTypes(val value: String) : HomeEvent()
 
     data class OnUpdateTokenFCM(val value: String) : HomeEvent()
+
+    data class OnUpdateSelectionKartuUji(val value: Int) : HomeEvent()
 
     data object OnValidateField : HomeEvent()
 

@@ -216,7 +216,7 @@ data class ConditionItem(
     val selection: Int = 0
 )
 @Composable
-fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit){
+fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit, onClickCamera : () -> Unit){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -238,9 +238,9 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
 
             // ✅ SELESAI — kalau API bilang selection = 1 → YA
             RadioButton(
-                selected = item.selection == 1,
+                selected = state.selectionKartuUji == 1,
                 onClick = {
-                    events(HomeEvent.OnUpdateConditionSelection(item.questionId, 1))
+                    events(HomeEvent.OnUpdateSelectionKartuUji(1))
                 }
             )
             Text("Ya, Sesuai")
@@ -249,16 +249,16 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
 
             // ✅ SELESAI — kalau API bilang selection = 2 → TIDAK
             RadioButton(
-                selected = item.selection == 2,
+                selected = state.selectionKartuUji == 2,
                 onClick = {
-                    events(HomeEvent.OnUpdateConditionSelection(item.questionId, 2))
+                    events(HomeEvent.OnUpdateSelectionKartuUji(2))
                 }
             )
             Text("Tidak Sesuai")
         }
 
         AnimatedVisibility(
-            visible = item.selection == 2,
+            visible = state.selectionKartuUji == 2,
             enter = expandVertically(expandFrom = Alignment.Top),
             exit = shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
@@ -277,7 +277,7 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
 
                 Spacer_8dp()
 
-                DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp)) {
+                DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp).clickable { onClickCamera() }) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),

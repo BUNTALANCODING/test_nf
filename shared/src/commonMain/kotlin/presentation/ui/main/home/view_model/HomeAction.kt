@@ -20,6 +20,12 @@ sealed class HomeAction : ViewSingleAction {
         data object NavigateToQRKIR : Navigation()
 
         data object NavigateToPemeriksaanAdministrasi : Navigation()
+
+        data object NavigateToKPReguler : Navigation()
+
+        data object NavigateToKPCadangan : Navigation()
+
+        data object NavigateToSIMPengemudi : Navigation()
     }
 
 }

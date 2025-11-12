@@ -9,6 +9,7 @@ import business.core.BaseViewModel
 import business.core.UIComponentState
 import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.GetStepRequestDTO
+import business.datasource.network.main.request.NegativeAnswerRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
@@ -19,6 +20,7 @@ import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetStepUseCase
 import business.interactors.main.GetVehicleUseCase
+import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
@@ -41,7 +43,7 @@ class HomeViewModel(
     private val appDataStoreManager: AppDataStore,
     private val submitSignatureUseCase: SubmitSignatureUseCase,
     private val previewBAUseCase: PreviewBAUseCase,
-    private val getStepUseCase: GetStepUseCase,
+    private val negativeAnswerUseCase: NegativeAnswerUseCase,
     private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -87,8 +89,20 @@ class HomeViewModel(
                 vehiclePhoto()
             }
 
-            is HomeEvent.GetStepKartuUji -> {
-                getStepKartuUji()
+            is HomeEvent.NegativeAnswerUji -> {
+                negativeAnswerKartuUji()
+            }
+
+            is HomeEvent.NegativeAnswerKPReguler -> {
+                negativeAnswerKPReguler()
+            }
+
+            is HomeEvent.NegativeAnswerKPCadangan -> {
+                negativeAnswerKPCadangan()
+            }
+
+            is HomeEvent.NegativeAnswerSIM -> {
+                negativeAnswerSIM()
             }
 
             is HomeEvent.OnUpdateCityCode -> {
@@ -134,8 +148,11 @@ class HomeViewModel(
 //                onUpdateListLocation(event.value)
             }
 
-            is HomeEvent.OnUpdateTidakSesuaiKartuUji -> {
-                onUpdateTidakSesuaiKartuUJi(event.value)
+            is HomeEvent.OnUpdateTidakSesuai -> {
+                onUpdateTidakSesuai(event.value)
+            }
+            is HomeEvent.OnUpdateTidakSesuaiBitmap -> {
+                onUpdateTidakSesuaiBitmap(event.value)
             }
             is HomeEvent.OnUpdateNoRangka -> {
                 onUpdateNoRangka(event.value)
@@ -303,14 +320,29 @@ class HomeViewModel(
             is HomeEvent.OnUpdateRampcheckId -> {
                 onUpdateRampcheckId(event.value)
             }
+
+            is HomeEvent.OnUpdateSelectionKartuUji -> {
+                onUpdateSelectionKartuUji(event.value)
+            }
+
+            is HomeEvent.OnUpdateTypeCard -> {
+                onUpdateTypeCard(event.value)
+            }
+
+            is HomeEvent.OnUpdateCardAvailable -> {
+                onUpdateAvailableCard(event.value)
+            }
         }
     }
 
     private fun onUpdateCityCode(value: String) {
         setState { copy(cityCodeValue = value) }
     }
-    private fun onUpdateTidakSesuaiKartuUJi(value: String) {
-        setState { copy(tidakSesuaiKartuUji = value) }
+    private fun onUpdateTidakSesuai(value: String) {
+        setState { copy(tidakSesuai = value) }
+    }
+    private fun onUpdateTidakSesuaiBitmap(value: ImageBitmap) {
+        setState { copy(tidakSesuaiBitmap = value) }
     }
     private fun onUpdateMiddleCode(value: String) {
         setState { copy(middleCodeValue = value) }
@@ -349,21 +381,94 @@ class HomeViewModel(
             },
         )
     }
-    private fun getStepKartuUji() {
+    private fun negativeAnswerKartuUji() {
         executeUseCase(
-            getStepUseCase.execute(
-                params = GetStepRequestDTO(
-                    step = 1
+            negativeAnswerUseCase.execute(
+                params = NegativeAnswerRequestDTO(
+                    type = state.value.typeCard,
+                    condition = state.value.keteranganKartuTidakAda
                 ),
             ),
             onSuccess = { data, status, code ->
-                data?.let {
+                status?.let {
                     setState {
                         copy(
-                            getStepKartuUJi = it,
+                            typeCard = "",
+                            keteranganKartuTidakAda = ""
                         )
                     }
-
+                    setAction { HomeAction.Navigation.NavigateToKPReguler }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+    private fun negativeAnswerKPReguler() {
+        executeUseCase(
+            negativeAnswerUseCase.execute(
+                params = NegativeAnswerRequestDTO(
+                    type = state.value.typeCard,
+                    condition = state.value.keteranganKartuTidakAda
+                ),
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {
+                    setState {
+                        copy(
+                            typeCard = "",
+                            keteranganKartuTidakAda = ""
+                        )
+                    }
+                    setAction { HomeAction.Navigation.NavigateToKPCadangan }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+    private fun negativeAnswerKPCadangan() {
+        executeUseCase(
+            negativeAnswerUseCase.execute(
+                params = NegativeAnswerRequestDTO(
+                    type = state.value.typeCard,
+                    condition = state.value.keteranganKartuTidakAda
+                ),
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {
+                    setState {
+                        copy(
+                            typeCard = "",
+                            keteranganKartuTidakAda = ""
+                        )
+                    }
+                    setAction { HomeAction.Navigation.NavigateToSIMPengemudi }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+    private fun negativeAnswerSIM() {
+        executeUseCase(
+            negativeAnswerUseCase.execute(
+                params = NegativeAnswerRequestDTO(
+                    type = state.value.typeCard,
+                    condition = state.value.keteranganKartuTidakAda
+                ),
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {
+                    setState {
+                        copy(
+                            typeCard = "",
+                            keteranganKartuTidakAda = ""
+                        )
+                    }
                 }
             },
             onLoading = {
@@ -751,12 +856,24 @@ class HomeViewModel(
         setState { copy(showDialogSuccessSubmitSignature = value) }
     }
 
+    private fun onUpdateSelectionKartuUji(value: Int) {
+        setState { copy(selectionKartuUji = value) }
+    }
+
     private fun onUpdateFilePath(value: String){
         setState { copy(filePath = value) }
     }
 
     private fun onUpdateOfficerByteArray(value: ByteArray) {
         setState { copy(officer_image = value) }
+    }
+
+    private fun onUpdateTypeCard(value: String){
+        setState { copy(typeCard = value) }
+    }
+
+    private fun onUpdateAvailableCard(value: Int){
+        setState { copy(availableCard = value) }
     }
 
     fun startVideoUpload(filePath: String) = viewModelScope.launch {

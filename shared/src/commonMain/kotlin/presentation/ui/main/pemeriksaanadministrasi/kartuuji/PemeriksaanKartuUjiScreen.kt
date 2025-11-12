@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_NOT_AVAILABLE
+import business.constants.KARTU_UJI_TYPE
 import business.core.UIComponent
 import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
@@ -47,7 +49,8 @@ fun PemeriksaanKartuUjiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraKartuUji: () -> Unit
+    navigateToCameraKartuUji: () -> Unit,
+    navigateToHasilUji: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -61,7 +64,8 @@ fun PemeriksaanKartuUjiScreen(
         PemeriksaanKartuUjiContent(
             state = state,
             events = events,
-            navigateToCameraKartuUji = navigateToCameraKartuUji
+            navigateToCameraKartuUji = navigateToCameraKartuUji,
+            navigateToHasilUji = navigateToHasilUji
         )
 
     }
@@ -71,7 +75,8 @@ fun PemeriksaanKartuUjiScreen(
 private fun PemeriksaanKartuUjiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraKartuUji: () -> Unit
+    navigateToCameraKartuUji: () -> Unit,
+    navigateToHasilUji: () -> Unit
 ) {
 
 
@@ -84,6 +89,9 @@ private fun PemeriksaanKartuUjiContent(
             },
             onSimpan = {
                 events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+                events(HomeEvent.OnUpdateTypeCard(KARTU_UJI_TYPE))
+                events(HomeEvent.OnUpdateCardAvailable(CARD_NOT_AVAILABLE))
+                navigateToHasilUji()
             },
             enableSimpan = state.keteranganKartuTidakAda != null
         )

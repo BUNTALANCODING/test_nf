@@ -16,11 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_NOT_AVAILABLE
+import business.constants.KP_CADANGAN_TYPE
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ButtonVerticalSection
 import presentation.component.DefaultScreenUI
+import presentation.component.KartuTidakAdaDialog
 import presentation.component.Spacer_48dp
 import presentation.component.Spacer_8dp
 import presentation.ui.main.home.view_model.HomeEvent
@@ -35,7 +39,8 @@ fun PemeriksaanKPCadanganScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraKPCadangan: () -> Unit
+    navigateToCameraKPCadangan: () -> Unit,
+    navigateToHasilKPCadangan : () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -49,7 +54,8 @@ fun PemeriksaanKPCadanganScreen(
         HasilPemeriksaanKPCadanganContent(
             state = state,
             events = events,
-            navigateToCameraKPCadangan = navigateToCameraKPCadangan
+            navigateToCameraKPCadangan = navigateToCameraKPCadangan,
+            navigateToHasilKPCadangan = navigateToHasilKPCadangan
         )
 
     }
@@ -59,8 +65,25 @@ fun PemeriksaanKPCadanganScreen(
 private fun HasilPemeriksaanKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraKPCadangan: () -> Unit
+    navigateToCameraKPCadangan: () -> Unit,
+    navigateToHasilKPCadangan: () -> Unit
 ) {
+    if (state.showDialogKartuTidakAda == UIComponentState.Show) {
+        KartuTidakAdaDialog(
+            keterangan = state.keteranganKartuTidakAda ?: "",
+            onKeteranganChange = { events(HomeEvent.OnUpdateKeteranganKartuTidakAda(it)) },
+            onDismiss = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+            },
+            onSimpan = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+                events(HomeEvent.OnUpdateTypeCard(KP_CADANGAN_TYPE))
+                events(HomeEvent.OnUpdateCardAvailable(CARD_NOT_AVAILABLE))
+                navigateToHasilKPCadangan()
+            },
+            enableSimpan = state.keteranganKartuTidakAda != null
+        )
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
@@ -70,7 +93,9 @@ private fun HasilPemeriksaanKPCadanganContent(
                 positiveButtonClick = {
                     navigateToCameraKPCadangan()
                 },
-                negativeButtonClick = {}
+                negativeButtonClick = {
+                    events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show))
+                }
             )
         }
     }

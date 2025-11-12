@@ -143,20 +143,30 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     navigator.navigate(HomeNavigation.GuideFotoPetugas)
                 }
 
-                HomeAction.Navigation.NavigateToKIR -> {
+                is HomeAction.Navigation.NavigateToKIR -> {
                     navigator.navigate(HomeNavigation.DataKendaraanKIR)
                 }
 
-                HomeAction.Navigation.NavigateToResultScreen -> {
+                is HomeAction.Navigation.NavigateToResultScreen -> {
                     navigator.navigate(HomeNavigation.DetailHasilFotoKIR)
                 }
 
-                HomeAction.Navigation.NavigateToQRKIR -> {
+                is HomeAction.Navigation.NavigateToQRKIR -> {
                     navigator.navigate(HomeNavigation.QRKIRScreen)
                 }
 
-                HomeAction.Navigation.NavigateToPemeriksaanAdministrasi -> {
+                is HomeAction.Navigation.NavigateToPemeriksaanAdministrasi -> {
                     navigator.navigate(AdministrasiNavigation.GuideAdministrasi)
+                }
+
+                is HomeAction.Navigation.NavigateToKPCadangan -> {
+                    navigator.navigate(AdministrasiNavigation.PemeriksaanKPCadangan)
+                }
+                is HomeAction.Navigation.NavigateToKPReguler -> {
+                    navigator.navigate(AdministrasiNavigation.PemeriksaanKPReguler)
+                }
+                is HomeAction.Navigation.NavigateToSIMPengemudi -> {
+                    navigator.navigate(AdministrasiNavigation.PemeriksaanSIM)
                 }
             }
         }
@@ -368,6 +378,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToCameraKartuUji = {
                             navigator.navigate(AdministrasiNavigation.CameraKartuUji)
+                        },
+                        navigateToHasilUji = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKartuUji)
                         }
                     )
                 }
@@ -402,6 +415,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToCameraKPReguler = {
                             navigator.navigate(AdministrasiNavigation.CameraKPReguler)
+                        },
+                        navigateToHasilKPReguler = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPReguler)
                         }
                     )
                 }
@@ -424,9 +440,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToKPCadangan = {
-                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPCadangan)
-                        },
+//                        navigateToKPCadangan = {
+//                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPCadangan)
+//                        },
                     )
                 }
 
@@ -438,6 +454,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToCameraKPCadangan = {
                             navigator.navigate(AdministrasiNavigation.CameraKPCadangan)
+                        },
+                        navigateToHasilKPCadangan = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPCadangan)
                         }
                     )
                 }
@@ -474,6 +493,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToCameraSIM = {
                             navigator.navigate(AdministrasiNavigation.CameraSIM)
+                        },
+                        navigateToHasilSIM = {
+                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanSIM)
                         }
                     )
                 }

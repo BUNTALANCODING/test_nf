@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
@@ -17,10 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_NOT_AVAILABLE
 import business.constants.SECTION_KARTU_UJI
 import business.constants.SECTION_KP_CADANGAN
 import business.core.UIComponent
@@ -34,6 +37,7 @@ import presentation.ui.main.datapemeriksaan.kir.ButtonNextSection
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_kartu_not_available
 import rampcheck.shared.generated.resources.ic_kemenhub
 import rampcheck.shared.generated.resources.kartu_uji
 
@@ -71,36 +75,80 @@ private fun HasilPemeriksaanKPCadanganContent(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            HeaderSection()
+            HeaderSection(state)
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
-            ButtonNextSection("LANJUT", state, onClick = navigateToSIM)
+            ButtonNextSection("LANJUT", state, onClick = {
+                events(HomeEvent.NegativeAnswerKPCadangan)
+            })
         }
     }
 }
 
 @Composable
 private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
-    val items = state.technicalConditions.filter { it.section == SECTION_KP_CADANGAN }
-    Column(Modifier.fillMaxWidth().padding(16.dp)) {
-        Text(
-            "Hasil Pemeriksaan",
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold,
+    if(state.availableCard == CARD_NOT_AVAILABLE){
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
+            Text(
+                "Hasil Pemeriksaan",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                )
             )
-        )
-        Spacer_16dp()
-        items.forEach { item ->
-            ConditionCard(item = item, events = events)
+            Spacer_16dp()
+            Text(
+                "KP Cadangan",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                )
+            )
             Spacer_8dp()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(16.dp),
+            ) {
+                Text(
+                    state.keteranganKartuTidakAda ?: "",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.Normal
+                    )
+                )
+            }
         }
+    } else {
+        val items = state.getStepKartuUJi.questions?.filter { it?.questionId == 183 }
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(
+                "Hasil Pemeriksaan",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                )
+            )
+            Spacer_16dp()
+            items?.forEach { item ->
+                ConditionCard(
+                    item = item!!, events = events, state = state,
+                    value = state.tidakSesuai,
+                    onValueChange = {
+                        events(HomeEvent.OnUpdateTidakSesuai(it))
+                    },
+                    onClickCamera = {
 
+                    }
+                )
+                Spacer_8dp()
+            }
+
+        }
     }
 }
 
 
 @Composable
-private fun HeaderSection() {
+private fun HeaderSection(state: HomeState) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -111,11 +159,19 @@ private fun HeaderSection() {
 
             Spacer_16dp()
             Column(modifier = Modifier.fillMaxWidth().height(120.dp).background(Color(0xFFE5E5E5)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Image(
-                    painter = painterResource(Res.drawable.kartu_uji),
-                    modifier = Modifier.height(110.dp),
-                    contentDescription = null
-                )
+                if(state.availableCard == CARD_NOT_AVAILABLE){
+                    Image(
+                        painter = painterResource(Res.drawable.ic_kartu_not_available),
+                        modifier = Modifier.height(110.dp),
+                        contentDescription = null
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(Res.drawable.kartu_uji),
+                        modifier = Modifier.height(110.dp),
+                        contentDescription = null
+                    )
+                }
             }
             Spacer_8dp()
             Text(

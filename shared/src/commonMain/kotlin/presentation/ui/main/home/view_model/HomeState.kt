@@ -64,7 +64,13 @@ data class HomeState(
     val keteranganKartuTidakAda : String? = "",
     val kartuUjiBitmap : ImageBitmap? = null,
     val getStepKartuUJi : GetStepDTO = GetStepDTO(),
-    val tidakSesuaiKartuUji : String = "",
+    val tidakSesuai : String = "",
+    val tidakSesuaiBitmap : ImageBitmap? = null,
+    val selectionKartuUji : Int = 0,
+
+    val typeCard : String = "",
+
+    val availableCard : Int = 0,
 
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,

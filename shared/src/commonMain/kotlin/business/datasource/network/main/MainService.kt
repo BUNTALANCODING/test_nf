@@ -6,6 +6,7 @@ import business.datasource.network.main.request.GetStepRequestDTO
 import business.datasource.network.main.request.HistoryRampcheckRequestDTO
 import business.datasource.network.main.request.IdentifyRequestDTO
 import business.datasource.network.main.request.KIRCompareRequestDTO
+import business.datasource.network.main.request.NegativeAnswerRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
@@ -56,6 +57,7 @@ interface MainService {
         const val SEND_EMAIL_BA = "sendemail"
         const val GETSTEP = "getstep"
         const val IDENTIFY = "identify"
+        const val NEGATIVE_ANSWER = "negativeanswer"
     }
 
 
@@ -128,6 +130,11 @@ interface MainService {
         token: String,
         params: HistoryRampcheckRequestDTO
     ): MainGenericResponse<HistoryRampcheckDTO>
+
+    suspend fun negativeAnswer(
+        token: String,
+        params: NegativeAnswerRequestDTO
+    ): MainGenericResponse<String>
 
 //    suspend fun updateDeviceToken(
 //        token: String,

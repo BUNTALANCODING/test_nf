@@ -7,6 +7,7 @@ import business.datasource.network.main.request.GetStepRequestDTO
 import business.datasource.network.main.request.HistoryRampcheckRequestDTO
 import business.datasource.network.main.request.IdentifyRequestDTO
 import business.datasource.network.main.request.KIRCompareRequestDTO
+import business.datasource.network.main.request.NegativeAnswerRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
@@ -313,6 +314,23 @@ class MainServiceImpl(
                 }
                 takeFrom(BASE_URL)
                 encodedPath += MainService.HISTORY_RAMPCHECK
+            }
+            contentType(ContentType.Application.Json)
+            setBody(params)
+        }.body()
+    }
+
+    override suspend fun negativeAnswer(
+        token: String,
+        params: NegativeAnswerRequestDTO
+    ): MainGenericResponse<String> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.NEGATIVE_ANSWER
             }
             contentType(ContentType.Application.Json)
             setBody(params)

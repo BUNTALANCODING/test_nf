@@ -16,11 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_NOT_AVAILABLE
+import business.constants.KP_REGULER_TYPE
+import business.constants.SIM_PENGEMUDI_TYPE
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ButtonVerticalSection
 import presentation.component.DefaultScreenUI
+import presentation.component.KartuTidakAdaDialog
 import presentation.component.Spacer_48dp
 import presentation.component.Spacer_8dp
 import presentation.ui.main.home.view_model.HomeEvent
@@ -35,7 +40,8 @@ fun PemeriksaanSIMPengemudiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraSIM: () -> Unit
+    navigateToCameraSIM: () -> Unit,
+    navigateToHasilSIM: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -49,7 +55,8 @@ fun PemeriksaanSIMPengemudiScreen(
         PemeriksaanSIMPengemudiScreen(
             state = state,
             events = events,
-            navigateToCameraSIM = navigateToCameraSIM
+            navigateToCameraSIM = navigateToCameraSIM,
+            navigateToHasilSIM = navigateToHasilSIM
         )
 
     }
@@ -59,8 +66,26 @@ fun PemeriksaanSIMPengemudiScreen(
 private fun PemeriksaanSIMPengemudiScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraSIM: () -> Unit
+    navigateToCameraSIM: () -> Unit,
+    navigateToHasilSIM: () -> Unit
 ) {
+
+    if (state.showDialogKartuTidakAda == UIComponentState.Show) {
+        KartuTidakAdaDialog(
+            keterangan = state.keteranganKartuTidakAda ?: "",
+            onKeteranganChange = { events(HomeEvent.OnUpdateKeteranganKartuTidakAda(it)) },
+            onDismiss = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+            },
+            onSimpan = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+                events(HomeEvent.OnUpdateTypeCard(SIM_PENGEMUDI_TYPE))
+                events(HomeEvent.OnUpdateCardAvailable(CARD_NOT_AVAILABLE))
+                navigateToHasilSIM()
+            },
+            enableSimpan = state.keteranganKartuTidakAda != null
+        )
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
@@ -68,7 +93,7 @@ private fun PemeriksaanSIMPengemudiScreen(
                 positiveButtonLabel = "AMBIL FOTO",
                 negativeButtonLabel = "KARTU TIDAK ADA",
                 positiveButtonClick = navigateToCameraSIM,
-                negativeButtonClick = {}
+                negativeButtonClick = {events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show))}
             )
         }
     }
@@ -93,7 +118,7 @@ private fun HeaderSection() {
             )
             Spacer_8dp()
             Text(
-                "KP Cadangan",
+                "SIM Pengemudi",
                 style = MaterialTheme.typography.labelLarge.copy(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
