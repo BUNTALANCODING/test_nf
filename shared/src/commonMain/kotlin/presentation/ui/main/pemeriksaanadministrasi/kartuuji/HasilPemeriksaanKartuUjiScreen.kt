@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,6 +83,10 @@ private fun PemeriksaanKartuUjiContent(
     events: (HomeEvent) -> Unit,
     navigateToCameraFace: () -> Unit
 ) {
+
+    LaunchedEffect(Unit){
+        events(HomeEvent.GetStepKartuUji)
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
@@ -95,7 +100,7 @@ private fun PemeriksaanKartuUjiContent(
 @Composable
 private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
 
-    val items = state.technicalConditions.filter { it.section == SECTION_KARTU_UJI }
+    val items = state.getStepKartuUJi.questions?.filter { it?.questionId == 183 }
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
         Text(
             "Hasil Pemeriksaan",
@@ -104,8 +109,14 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
         )
         Spacer_16dp()
-        items.forEach { item ->
-            ConditionCard(item = item, events = events)
+        items?.forEach { item ->
+            ConditionCard(
+                item = item, events = events,
+                value = state.tidakSesuaiKartuUji,
+                onValueChange = {
+                    events(HomeEvent.OnUpdateTidakSesuaiKartuUji(it))
+                }
+            )
             Spacer_8dp()
         }
 

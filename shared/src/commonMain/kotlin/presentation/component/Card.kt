@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import business.datasource.network.main.responses.GetStepDTO
+import business.datasource.network.main.responses.QuestionsItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
 import presentation.theme.PrimaryColor
@@ -213,7 +216,7 @@ data class ConditionItem(
     val selection: Int = 0
 )
 @Composable
-fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
+fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,7 +225,7 @@ fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
             .padding(16.dp),
     ) {
         Text(
-            item.title,
+            item.questionName ?: "",
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -231,28 +234,29 @@ fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
         Divider(thickness = 1.dp, color = Color.Gray)
         Spacer_8dp()
 
-        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            // ✅ SELESAI — kalau API bilang selection = 1 → YA
             RadioButton(
                 selected = item.selection == 1,
-                onClick = { events(HomeEvent.OnUpdateConditionSelection(item.id, 1)) }
+                onClick = {
+                    events(HomeEvent.OnUpdateConditionSelection(item.questionId, 1))
+                }
             )
-            Text(
-                "Ya, Sesuai",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
-            )
-            Spacer_16dp()
+            Text("Ya, Sesuai")
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            // ✅ SELESAI — kalau API bilang selection = 2 → TIDAK
             RadioButton(
                 selected = item.selection == 2,
                 onClick = {
-                    events(HomeEvent.OnUpdateConditionSelection(item.id, 2))
-
+                    events(HomeEvent.OnUpdateConditionSelection(item.questionId, 2))
                 }
             )
-            Text(
-                "Tidak Sesuai",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
-            )
+            Text("Tidak Sesuai")
         }
+
         AnimatedVisibility(
             visible = item.selection == 2,
             enter = expandVertically(expandFrom = Alignment.Top),
@@ -264,8 +268,10 @@ fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
 
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = {},
+                    value = value,
+                    onValueChange = {
+                        onValueChange(it)
+                    },
                     placeholder = "Masukkan Kondisi Sebenarnya"
                 )
 

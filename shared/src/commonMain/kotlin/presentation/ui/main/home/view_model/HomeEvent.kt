@@ -20,6 +20,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object GetVehicle : HomeEvent()
 
+    data object GetStepKartuUji : HomeEvent()
+
     data object CheckQR : HomeEvent()
 
     data object PlatKIR : HomeEvent()
@@ -45,6 +47,12 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateVehiclePlatNumber(val value: String) : HomeEvent()
 
     data class OnShowDropdownVehiclePicker(val value: UIComponentState) : HomeEvent()
+
+    data class OnShowDialogKartuTidakAda(val value: UIComponentState) : HomeEvent()
+
+    data class OnUpdateKeteranganKartuTidakAda(val value: String) : HomeEvent()
+
+    data class OnUpdateTidakSesuaiKartuUji(val value: String) : HomeEvent()
 
     data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
 

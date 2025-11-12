@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,12 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ButtonVerticalSection
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
+import presentation.component.KartuTidakAdaDialog
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_48dp
 import presentation.component.Spacer_8dp
@@ -70,19 +73,33 @@ private fun PemeriksaanKartuUjiContent(
     events: (HomeEvent) -> Unit,
     navigateToCameraKartuUji: () -> Unit
 ) {
+
+
+    if (state.showDialogKartuTidakAda == UIComponentState.Show) {
+        KartuTidakAdaDialog(
+            keterangan = state.keteranganKartuTidakAda ?: "",
+            onKeteranganChange = { events(HomeEvent.OnUpdateKeteranganKartuTidakAda(it)) },
+            onDismiss = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+            },
+            onSimpan = {
+                events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Hide))
+            },
+            enableSimpan = state.keteranganKartuTidakAda != null
+        )
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
                 negativeButtonLabel = "KARTU TIDAK ADA",
-                positiveButtonClick = {navigateToCameraKartuUji()},
-                negativeButtonClick = {}
+                positiveButtonClick = { navigateToCameraKartuUji() },
+                negativeButtonClick = { events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show)) }
             )
         }
     }
 }
-
 
 
 @Composable

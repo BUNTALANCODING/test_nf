@@ -8,6 +8,7 @@ import business.core.ViewState
 import business.datasource.network.common.JAlertResponse
 import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.ProfileDTO
 import coil3.Bitmap
@@ -60,6 +61,10 @@ data class HomeState(
 
     val listVehicle: List<GetVehicleDTO> = listOf(),
 
+    val keteranganKartuTidakAda : String? = "",
+    val kartuUjiBitmap : ImageBitmap? = null,
+    val getStepKartuUJi : GetStepDTO = GetStepDTO(),
+    val tidakSesuaiKartuUji : String = "",
 
     val selectedTab: Int = 1,
     val selectedTabListrik: Int = 1,
@@ -94,6 +99,8 @@ data class HomeState(
     val base64PreviewBA : String = "",
 
     val showDialogSuccessSubmitSignature: UIComponentState = UIComponentState.Hide,
+
+    val showDialogKartuTidakAda: UIComponentState = UIComponentState.Hide,
 
     val isTokenValid: Boolean = false,
     val updateTokenFCM: String = "",

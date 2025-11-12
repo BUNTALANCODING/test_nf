@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -52,6 +53,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -343,6 +345,94 @@ fun SendEmailDialog(
 
 
 
+        }
+    }
+}
+
+@Composable
+fun KartuTidakAdaDialog(
+    keterangan: String,
+    onKeteranganChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSimpan: () -> Unit,
+    enableSimpan: Boolean
+) {
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
+        Box(
+            modifier = Modifier
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(20.dp)
+        ) {
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+
+                // Title
+                Text(
+                    text = "Kartu Tidak Ada",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                // Label
+                Text(
+                    text = "Keterangan",
+                    fontWeight = FontWeight.Medium
+                )
+
+                // TextField
+                OutlinedTextField(
+                    value = keterangan,
+                    onValueChange = onKeteranganChange,
+                    placeholder = { Text("Masukkan Keterangan") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(Modifier.height(6.dp))
+
+                // Buttons
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+
+                    Button(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFF0E4FF),
+                            contentColor = PrimaryColor
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("KEMBALI")
+                    }
+
+                    // Simpan
+                    Button(
+                        onClick = onSimpan,
+                        modifier = Modifier.weight(1f),
+                        enabled = enableSimpan,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (enableSimpan) PrimaryColor else Color(0xFFDDDDDD),
+                            contentColor = if (enableSimpan) Color.White else Color.Gray
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("SIMPAN")
+                    }
+                }
+            }
         }
     }
 }

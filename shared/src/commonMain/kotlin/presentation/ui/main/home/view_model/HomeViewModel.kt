@@ -8,6 +8,7 @@ import business.core.AppDataStore
 import business.core.BaseViewModel
 import business.core.UIComponentState
 import business.datasource.network.main.request.CheckQRRequestDTO
+import business.datasource.network.main.request.GetStepRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
@@ -16,6 +17,7 @@ import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
+import business.interactors.main.GetStepUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
@@ -39,6 +41,7 @@ class HomeViewModel(
     private val appDataStoreManager: AppDataStore,
     private val submitSignatureUseCase: SubmitSignatureUseCase,
     private val previewBAUseCase: PreviewBAUseCase,
+    private val getStepUseCase: GetStepUseCase,
     private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -84,6 +87,10 @@ class HomeViewModel(
                 vehiclePhoto()
             }
 
+            is HomeEvent.GetStepKartuUji -> {
+                getStepKartuUji()
+            }
+
             is HomeEvent.OnUpdateCityCode -> {
                 onUpdateCityCode(event.value)
             }
@@ -110,6 +117,13 @@ class HomeViewModel(
             is HomeEvent.OnUpdateLastCode -> {
                 onUpdateLastCode(event.value)
             }
+            is HomeEvent.OnShowDialogKartuTidakAda -> {
+                onShowDialogKartuTidakAda(event.value)
+            }
+
+            is HomeEvent.OnUpdateKeteranganKartuTidakAda -> {
+                onUpdateKeteranganKartuTidakAda(event.value)
+            }
             is HomeEvent.OnUpdateMiddleCode -> {
                 onUpdateMiddleCode(event.value)
             }
@@ -118,6 +132,10 @@ class HomeViewModel(
             }
             is HomeEvent.OnUpdateListLocation -> {
 //                onUpdateListLocation(event.value)
+            }
+
+            is HomeEvent.OnUpdateTidakSesuaiKartuUji -> {
+                onUpdateTidakSesuaiKartuUJi(event.value)
             }
             is HomeEvent.OnUpdateNoRangka -> {
                 onUpdateNoRangka(event.value)
@@ -291,6 +309,9 @@ class HomeViewModel(
     private fun onUpdateCityCode(value: String) {
         setState { copy(cityCodeValue = value) }
     }
+    private fun onUpdateTidakSesuaiKartuUJi(value: String) {
+        setState { copy(tidakSesuaiKartuUji = value) }
+    }
     private fun onUpdateMiddleCode(value: String) {
         setState { copy(middleCodeValue = value) }
     }
@@ -318,6 +339,28 @@ class HomeViewModel(
                     setState {
                         copy(
                             selectedLocationList = locationList,
+                        )
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+    private fun getStepKartuUji() {
+        executeUseCase(
+            getStepUseCase.execute(
+                params = GetStepRequestDTO(
+                    step = 1
+                ),
+            ),
+            onSuccess = { data, status, code ->
+                data?.let {
+                    setState {
+                        copy(
+                            getStepKartuUJi = it,
                         )
                     }
 
@@ -541,6 +584,14 @@ class HomeViewModel(
     }
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
+    }
+
+    private fun onShowDialogKartuTidakAda(value: UIComponentState) {
+        setState { copy(showDialogKartuTidakAda = value) }
+    }
+
+    private fun onUpdateKeteranganKartuTidakAda(value: String) {
+        setState { copy(keteranganKartuTidakAda = value) }
     }
 
     private fun onUpdateQrUrl(value: String) {
