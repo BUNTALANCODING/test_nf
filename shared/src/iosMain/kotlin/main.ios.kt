@@ -24,6 +24,7 @@ var globalLatitude: Double = 0.0
 var globalLongitude: Double = 0.0
 
 // iOS main function or App delegate
+@OptIn(ExperimentalNativeApi::class)
 fun initializeLogger() {
     val config = if (Platform.isDebugBinary) {
         LoggerDefaults.debugConfig()

@@ -39,7 +39,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import business.constants.SELESAI
 import business.datasource.network.main.responses.GetStepDTO
+import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.QuestionsItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -306,15 +308,12 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
     }
 }
 
-data class ExaminationItem(
-    val vehicleNumber: String,
-    val examinationDate: String
-)
-
 @Composable
-fun ExaminationCard(item: ExaminationItem) {
+fun ExaminationCard(item: HistoryRampcheckDTOItem,status: Int, onClick: (HistoryRampcheckDTOItem) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable {
+            onClick(item)
+        },
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -331,14 +330,14 @@ fun ExaminationCard(item: ExaminationItem) {
             // Left Column: Nomor Kendaraan
             Column {
                 Text(
-                    text = "Nomor Kendaraan",
+                    text = if (status == SELESAI) "Nomor Berita Acara" else "Nomor Kendaraan",
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = Color.Gray
                     )
                 )
                 Spacer_4dp()
                 Text(
-                    text = item.vehicleNumber,
+                    text = item.platNumber ?: "",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold
                     )
@@ -348,14 +347,14 @@ fun ExaminationCard(item: ExaminationItem) {
             // Right Column: Tanggal Pemeriksaan
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "Tanggal Pemeriksaan",
+                    text = if (status == SELESAI) "Terbit Pada" else "Tanggal Pemeriksaan",
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = Color.Gray
                     )
                 )
                 Spacer_4dp()
                 Text(
-                    text = item.examinationDate,
+                    text = item.inspectionDate ?: "",
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold
                     )

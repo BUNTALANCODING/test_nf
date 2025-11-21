@@ -14,6 +14,7 @@ import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.request.SendEmailBARequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
+import business.datasource.network.main.request.UploadChunkRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.UploadVideoRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
@@ -23,6 +24,7 @@ import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTO
+import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
@@ -32,6 +34,7 @@ import business.datasource.network.main.responses.QuestionDTO
 import business.datasource.network.main.responses.RampcheckStartDTO
 import business.datasource.network.main.responses.SendEmailBADTO
 import business.datasource.network.main.responses.SubmitSignatureDTO
+import business.datasource.network.main.responses.UploadChunkResponseDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
 import business.datasource.network.splash.responses.ForgotRequestDTO
@@ -40,6 +43,8 @@ import common.platformModule
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.onUpload
+import io.ktor.client.plugins.timeout
+import io.ktor.client.request.forms.ChannelProvider
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -55,14 +60,52 @@ import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import io.ktor.http.takeFrom
 import io.ktor.util.InternalAPI
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.buildPacket
 import io.ktor.utils.io.core.writeFully
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import okio.FileNotFoundException
 
 class MainServiceImpl(
     private val httpClient: HttpClient
 ) : MainService {
+
+    suspend fun uploadChunkStandalone(
+        token: String,
+        chunk: ByteArray,
+        fileName: String,
+        chunkIndex: Int,
+        totalChunks: Int
+    ): UploadChunkResponseDTO {
+        val finalToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+
+        return try {
+            val response: MainGenericResponse<UploadChunkResponseDTO> = httpClient.submitFormWithBinaryData(
+                url = "$BASE_URL/interioridentify",
+                formData = formData {
+                    append("file", chunk, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+                        append(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+                    })
+                    append("unique_key", fileName)
+                    append("chunk_index", chunkIndex)
+                    append("total_chunks", totalChunks)
+                }
+            ) {
+                headers { append(HttpHeaders.Authorization, finalToken) }
+                timeout { requestTimeoutMillis = 60000 }
+            }.body()
+
+            response.result ?: UploadChunkResponseDTO() // fallback if null
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            UploadChunkResponseDTO() // fallback on error
+        }
+    }
 
     override suspend fun getProfile(token: String): MainGenericResponse<ProfileDTO> {
         return httpClient.post {
@@ -306,7 +349,7 @@ class MainServiceImpl(
     override suspend fun historyRampcheck(
         token: String,
         params: HistoryRampcheckRequestDTO
-    ): MainGenericResponse<HistoryRampcheckDTO> {
+    ): MainGenericResponse<List<HistoryRampcheckDTOItem>> {
         return httpClient.post {
             url {
                 headers {
@@ -491,6 +534,7 @@ class MainServiceImpl(
         params: UploadVideoRequestDTO
     ): Boolean {
         // 1️⃣ Siapkan file
+        println("Uploading Video...")
         val platformFile = try {
             PlatformFile(params.filePath)
         } catch (e: Exception) {
@@ -600,4 +644,68 @@ class MainServiceImpl(
 //        ).body()
 //    }
 //    }
+
+    override suspend fun uploadChunkFile(
+        token: String,
+        request: UploadChunkRequestDTO
+    ): MainGenericResponse<UploadChunkResponseDTO> {
+
+        println("DEBUG_REPO: 1. Entering uploadChunkFile...")
+
+        if (request.file.isEmpty()) {
+            println("DEBUG_REPO: ERROR - Empty file bytes!")
+            return MainGenericResponse(
+                status = false,
+                code = "100",
+                message = "File bytes are empty",
+                result = null
+            )
+        }
+
+        return try {
+            val finalToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+            println("DEBUG_REPO: 2. Building Ktor Request...")
+
+            val response = httpClient.submitFormWithBinaryData(
+                url = "$BASE_URL/interioridentify",
+                formData = formData {
+                    append("file", request.file, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=\"${request.fileName}\"")
+                        append(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+                    })
+                    append("unique_key", request.uniqueKey)
+                    append("chunk_index", request.chunkIndex)
+                    append("total_chunks", request.totalChunks)
+                }
+            ) {
+                headers {
+                    append(HttpHeaders.Authorization, finalToken)
+                }
+                timeout {
+                    requestTimeoutMillis = 60_000
+                    connectTimeoutMillis = 60_000
+                    socketTimeoutMillis = 60_000
+                }
+            }
+
+            println("DEBUG_REPO: 3. Network Call Finished! Status: ${response.status}")
+
+            val body = response.body<MainGenericResponse<UploadChunkResponseDTO>>()
+            println("DEBUG_REPO: 4. Response Parsed: $body")
+
+            body
+        } catch (e: Exception) {
+            println("DEBUG_REPO: 5. CRASHED: ${e.message}")
+            e.printStackTrace()
+
+            MainGenericResponse(
+                status = false,
+                code = "99",
+                message = e.message ?: "Unknown error",
+                result = null
+            )
+        }
+    }
+
+
 }

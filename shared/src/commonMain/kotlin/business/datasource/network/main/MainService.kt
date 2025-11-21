@@ -13,6 +13,7 @@ import business.datasource.network.main.request.RampcheckStartRequestDTO
 import business.datasource.network.main.request.SendEmailBARequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
+import business.datasource.network.main.request.UploadChunkRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.UploadVideoRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
@@ -20,7 +21,7 @@ import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
-import business.datasource.network.main.responses.HistoryRampcheckDTO
+import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
@@ -31,6 +32,7 @@ import business.datasource.network.main.responses.RampcheckStartDTO
 import business.datasource.network.main.responses.SendEmailBADTO
 import business.datasource.network.main.responses.SubmitSignatureDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
+import business.datasource.network.main.responses.UploadChunkResponseDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
 
 interface MainService {
@@ -129,7 +131,7 @@ interface MainService {
     suspend fun historyRampcheck(
         token: String,
         params: HistoryRampcheckRequestDTO
-    ): MainGenericResponse<HistoryRampcheckDTO>
+    ): MainGenericResponse<List<HistoryRampcheckDTOItem>>
 
     suspend fun negativeAnswer(
         token: String,
@@ -153,5 +155,10 @@ interface MainService {
         token: String,
         params : UploadVideoRequestDTO
     ): Boolean
+
+    suspend fun uploadChunkFile(
+        token: String,
+        request: UploadChunkRequestDTO
+    ): MainGenericResponse<UploadChunkResponseDTO>
 
 }

@@ -7,20 +7,21 @@ import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.MainService
 import business.datasource.network.main.request.HistoryRampcheckRequestDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTO
+import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 
 class HistoryRampcheckUseCase(
     private val service: MainService,
     private val appDataStoreManager: AppDataStore,
-) : BaseUseCase<HistoryRampcheckRequestDTO, HistoryRampcheckDTO, HistoryRampcheckDTO>(appDataStoreManager) {
+) : BaseUseCase<HistoryRampcheckRequestDTO, List<HistoryRampcheckDTOItem>, List<HistoryRampcheckDTOItem>>(appDataStoreManager) {
     override suspend fun run(
         params: HistoryRampcheckRequestDTO,
         token: String
-    ): MainGenericResponse<HistoryRampcheckDTO> = service.historyRampcheck(
+    ): MainGenericResponse<List<HistoryRampcheckDTOItem>> = service.historyRampcheck(
         token = token,
         params = params
     )
 
-    override fun mapApiResponse(apiResponse: MainGenericResponse<HistoryRampcheckDTO>?): HistoryRampcheckDTO? = apiResponse?.result
+    override fun mapApiResponse(apiResponse: MainGenericResponse<List<HistoryRampcheckDTOItem>>?): List<HistoryRampcheckDTOItem>? = apiResponse?.result
 
     override val progressBarType = ProgressBarState.FullScreenLoading
     override val needNetworkState = false

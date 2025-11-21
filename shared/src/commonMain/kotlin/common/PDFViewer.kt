@@ -5,6 +5,6 @@ import androidx.compose.ui.Modifier
 
 @Composable
 expect fun Base64PdfViewer(
-    base64Pdf: String,
+    url: String,
     modifier: Modifier = Modifier
 )

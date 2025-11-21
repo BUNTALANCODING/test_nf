@@ -37,6 +37,8 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(libs.findLibrary("turbine.turbine").get())
                         implementation(libs.findLibrary("mockk.io").get())
 
+
+
                         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                         implementation(composeDeps.uiTest)
                     }
@@ -84,13 +86,13 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("dev.icerock.moko:permissions-location:0.19.1")
                         implementation("dev.icerock.moko:permissions-notifications:0.19.1")
                         implementation("dev.icerock.moko:permissions-storage:0.19.1")
-
-
+                        implementation("io.github.vinceglb:filekit-compose:0.8.7")
 
                         // compose multiplatform
                         api("dev.icerock.moko:permissions-compose:0.19.1")
                         implementation(libs.findLibrary("camerak").get())
                         implementation(libs.findLibrary("camerak-image-saver").get())
+                        implementation("com.squareup.okio:okio:3.9.0")
 
                     }
                 }
@@ -125,6 +127,9 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("androidx.work:work-runtime-ktx:2.9.0")
                         implementation("io.insert-koin:koin-androidx-workmanager:4.0.0")
                         implementation("io.insert-koin:koin-android:4.0.0")
+                        implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
+                        implementation("io.ktor:ktor-client-cio:2.3.12")
+
                     }
                 }
 

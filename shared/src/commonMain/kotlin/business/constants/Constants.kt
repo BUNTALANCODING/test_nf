@@ -16,3 +16,8 @@ const val KARTU_UJI_TYPE = "1"
 const val KP_REGULER_TYPE = "2"
 const val KP_CADANGAN_TYPE = "3"
 const val SIM_PENGEMUDI_TYPE = "4"
+
+//STATUS RIWAYAT
+const val BELUM_SELESAI = 1
+const val SELESAI = 2
+const val GAGAL = 3

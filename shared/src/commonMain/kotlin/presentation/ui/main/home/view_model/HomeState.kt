@@ -102,7 +102,7 @@ data class HomeState(
     val kemenhubName : String = "",
     val nipKemenhub : String = "",
     val rampcheckId : Int = 0,
-    val base64PreviewBA : String = "",
+    val urlPreviewBA : String = "",
 
     val showDialogSuccessSubmitSignature: UIComponentState = UIComponentState.Hide,
 

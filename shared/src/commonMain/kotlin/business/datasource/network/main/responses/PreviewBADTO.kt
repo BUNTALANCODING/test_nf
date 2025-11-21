@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PreviewBADTO(
     @SerialName("file") val file: String?,
-    @SerialName("file_base64") val base64: String?,
+    @SerialName("file_url") val file_url: String?,
 )

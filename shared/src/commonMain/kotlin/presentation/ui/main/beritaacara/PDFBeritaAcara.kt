@@ -105,7 +105,7 @@ private fun PDFBeritaAcaraContent(
         Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                 Base64PdfViewer(
-                    base64Pdf = state.base64PreviewBA,
+                    url = state.urlPreviewBA,
                     modifier = Modifier.fillMaxSize()
                         .padding(16.dp)
                 )

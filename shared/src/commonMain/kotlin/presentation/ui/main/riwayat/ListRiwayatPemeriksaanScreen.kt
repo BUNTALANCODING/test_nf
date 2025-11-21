@@ -1,11 +1,8 @@
 package presentation.ui.main.riwayat
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,40 +20,34 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.compose.resources.painterResource
 import presentation.component.DefaultScreenUI
 import presentation.component.ExaminationCard
-import presentation.component.ExaminationItem
 import presentation.component.Spacer_16dp
-import presentation.component.Spacer_8dp
-import presentation.ui.main.datapemeriksaan.fotokendaraan.ButtonNextSection
-import presentation.ui.main.datapemeriksaan.fotopetugas.GuideRow
-import presentation.ui.main.home.view_model.HomeEvent
-import presentation.ui.main.home.view_model.HomeState
+import presentation.ui.main.riwayat.viewmodel.RiwayatEvent
+import presentation.ui.main.riwayat.viewmodel.RiwayatState
 import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.ic_bus_guide
-import rampcheck.shared.generated.resources.ic_guie_teknis_utama
 import rampcheck.shared.generated.resources.ic_kemenhub
 
 @Composable
 fun ListRiwayatPemeriksaanScreen(
-    state: HomeState,
-    events: (HomeEvent) -> Unit,
+    state: RiwayatState,
+    events: (RiwayatEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToPreview: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -69,7 +60,7 @@ fun ListRiwayatPemeriksaanScreen(
         ListRiwayatPemeriksaanContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToPreview = navigateToPreview
         )
 
     }
@@ -77,27 +68,37 @@ fun ListRiwayatPemeriksaanScreen(
 
 @Composable
 private fun ListRiwayatPemeriksaanContent(
-    state: HomeState,
-    events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    state: RiwayatState,
+    events: (RiwayatEvent) -> Unit,
+    navigateToPreview: () -> Unit
 ) {
-    val riwayatList = listOf(
-        ExaminationItem("AA 1234 BC", "26/08/2025"),
-        ExaminationItem("B 1234 BC", "25/08/2025")
-        // Tambahkan item lain jika diperlukan
-    )
+
+    LaunchedEffect(Unit) {
+        events(RiwayatEvent.GetListRiwayat)
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            RiwayatSection(riwayatList)
+//            state.dataRiwayat.historyRampcheckDTO?.let {
+
+                RiwayatSection(state.listRiwayat ?: listOf(), { data ->
+                    events(RiwayatEvent.UpdateStatusRiwayat(data))
+
+                }, {
+                    events(RiwayatEvent.OnUpdateRampcheckId(it.rampcheckId ?: 0))
+                    navigateToPreview()
+                }
+                )
+//            }
         }
     }
 }
 
 @Composable
-fun RiwayatSection(list: List<ExaminationItem>) {
+fun RiwayatSection(list: List<HistoryRampcheckDTOItem?> = listOf(), onClickTab: (Int) -> Unit, onClick: (HistoryRampcheckDTOItem) -> Unit) {
     // 0 is "Belum Selesai", 1 is "Selesai"
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Belum Selesai", "Selesai")
+    val tabs = listOf("Belum Selesai", "Selesai", "Gagal")
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -119,7 +120,12 @@ fun RiwayatSection(list: List<ExaminationItem>) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
+                        onClick = {
+                            selectedTabIndex = index
+
+
+                            onClickTab(index + 1)
+                        },
                         text = {
                             Text(
                                 text = title,
@@ -153,12 +159,22 @@ fun RiwayatSection(list: List<ExaminationItem>) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    when (selectedTabIndex) {
-                        0 -> items(list) { item ->
-                            ExaminationCard(item = item)
+                    if(list.isNotEmpty()){
+                        items(list) { item ->
+                            ExaminationCard(item = item!!, selectedTabIndex, onClick = {
+
+                                when(selectedTabIndex){
+                                    1 -> {
+                                        onClick(item)
+                                    }
+                                }
+
+                            })
+
                         }
 
-                        1 -> item {
+                    } else {
+                        item {
                             // Tampilan untuk tab "Selesai"
                             Text(
                                 "Tidak ada data ",
@@ -167,7 +183,9 @@ fun RiwayatSection(list: List<ExaminationItem>) {
                                 color = Color.Gray
                             )
                         }
+
                     }
+
                 }
             }
         }

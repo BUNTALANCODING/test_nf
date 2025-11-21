@@ -678,7 +678,7 @@ class HomeViewModel(
             onSuccess = { data, status, code ->
                 data?.let {
                     setState {
-                        copy(base64PreviewBA = data.base64 ?: "")
+                        copy(urlPreviewBA = data.file_url ?: "")
                     }
                 }
             },
@@ -687,6 +687,7 @@ class HomeViewModel(
             },
         )
     }
+
     private fun onUpdateLastCode(value: String) {
         setState { copy(lastCodeValue = value) }
     }

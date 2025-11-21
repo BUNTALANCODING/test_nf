@@ -27,6 +27,12 @@ sealed interface HomeNavigation {
     data object Pemeriksaan : HomeNavigation
 
     @Serializable
+    data object RiwayatPemeriksaan : HomeNavigation
+
+    @Serializable
+    data object PreviewRiwayatPDF : HomeNavigation
+
+    @Serializable
     data object GuideFotoPetugas : HomeNavigation
 
     @Serializable
@@ -62,6 +68,8 @@ sealed interface HomeNavigation {
     @Serializable
     data object HasilTeknisUtama : HomeNavigation
 
+    @Serializable
+    data object UploadFile : HomeNavigation
 
 }
 

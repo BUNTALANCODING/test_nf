@@ -74,7 +74,9 @@ fun HomeScreen(
     events: (HomeEvent) -> Unit = {},
     errors: Flow<UIComponent>,
     navigateToPemeriksaan: () -> Unit,
+    navigateToRiwayatPemeriksaan: () -> Unit,
     navigateToLogin: () -> Unit,
+    navigateToUploadDemo: () -> Unit,
 ) {
 //    val homeState = rememberHomeScreenState(state)
 
@@ -97,6 +99,8 @@ fun HomeScreen(
             events = events,
             navigateToLogin = navigateToLogin,
             navigateToPemeriksaan = navigateToPemeriksaan,
+            navigateToRiwayatPemeriksaan = navigateToRiwayatPemeriksaan,
+            navigateToUploadDemo = navigateToUploadDemo
         )
     }
 }
@@ -107,6 +111,8 @@ private fun HomeContent(
     events: (HomeEvent) -> Unit,
     navigateToLogin: () -> Unit,
     navigateToPemeriksaan: () -> Unit,
+    navigateToRiwayatPemeriksaan: () -> Unit,
+    navigateToUploadDemo: () -> Unit,
 
     ) {
 
@@ -124,9 +130,12 @@ private fun HomeContent(
 
             PemeriksaanSection(navigateToPemeriksaan)
 
-            RiwayatPemeriksaanSection()
+            RiwayatPemeriksaanSection(navigateToRiwayatPemeriksaan)
+
+            //REMOVE THIS WHEN READY TO DEPLOY
+            FileUploaderDemo(navigateToUploadDemo)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonSection()
+            ButtonSection(navigateToLogin)
         }
     }
 
@@ -237,7 +246,7 @@ fun PemeriksaanSection(navigateToPemeriksaan: () -> Unit) {
 }
 
 @Composable
-fun RiwayatPemeriksaanSection() {
+fun RiwayatPemeriksaanSection(navigateToRiwayatPemeriksaan: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -246,7 +255,11 @@ fun RiwayatPemeriksaanSection() {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(96.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth().height(96.dp)
+            .noRippleClickable {
+                navigateToRiwayatPemeriksaan()
+            }) {
 
             Row(
                 modifier = Modifier
@@ -272,13 +285,55 @@ fun RiwayatPemeriksaanSection() {
 }
 
 @Composable
-private fun ButtonSection() {
+fun FileUploaderDemo(navigateToUploadDemo: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = yellowBackground),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(modifier = Modifier
+            .fillMaxWidth().height(96.dp)
+            .noRippleClickable {
+                navigateToUploadDemo()
+            }) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_riwayat_pemeriksaan),
+                    contentDescription = null
+                )
+                Spacer_8dp()
+                Text(
+                    "Demo Upload",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun ButtonSection(navigateToLogin: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 64.dp, start = 16.dp, end = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         IconButton(
             modifier = Modifier.width(158.dp).height(DEFAULT__BUTTON_SIZE_EXTRA),
             text = "KELUAR",
-            onClick = { },
+            onClick = {
+                navigateToLogin()
+            },
             shape = MaterialTheme.shapes.small,
             icon = vectorResource(Res.drawable.ic_logout),
             color = ButtonDefaults.buttonColors(

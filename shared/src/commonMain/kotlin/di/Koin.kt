@@ -12,12 +12,14 @@ import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetVehicleUseCase
+import business.interactors.main.HistoryRampcheckUseCase
 import business.interactors.main.LogoutUseCase
 import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
 import business.interactors.main.SubmitSignatureUseCase
+import business.interactors.main.UploadChunkUseCase
 import business.interactors.main.UploadPetugasUseCase
 import business.interactors.main.VehiclePhotoUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
@@ -32,6 +34,8 @@ import presentation.SharedViewModel
 import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
+import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.util.BackgroundScheduler
 
 fun appModule(context: Context) = module {
@@ -43,8 +47,11 @@ fun appModule(context: Context) = module {
     single<MainService> { MainServiceImpl(get()) }
     single<AppDataStore> { AppDataStoreManager(context) }
     single<BackgroundScheduler> { get() }
+    factory { UploadViewModel(get()) }
     factory { SharedViewModel(get()) }
+//    factory { UploadChunkViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(), get()) }
+    factory { RiwayatViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
@@ -64,6 +71,8 @@ fun appModule(context: Context) = module {
     single { NegativeAnswerUseCase(get(),get()) }
     single { PreviewBAUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
+    single { HistoryRampcheckUseCase(get(), get()) }
+    single { UploadChunkUseCase(get(), get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 
 }

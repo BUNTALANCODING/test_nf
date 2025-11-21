@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import business.core.AppDataStoreManager
 import common.ChangeStatusBarColors
 import common.Context
 import kotlinx.coroutines.delay
@@ -84,6 +85,11 @@ import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.PemeriksaanSIMP
 import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
+import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
+import presentation.ui.main.riwayat.RiwayatPDFScreen
+import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
+import presentation.ui.main.uploadChunk.UploadFileScreen
+import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.ui.splash.SplashScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,6 +102,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
     val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = owner)*/
     val viewModel: HomeViewModel = koinViewModel()
     val viewModelLogin: LoginViewModel = koinViewModel()
+    val viewModelRiwayat: RiwayatViewModel = koinViewModel()
+    val viewModelUpload: UploadViewModel = koinViewModel()
 
     val currentRoute = navBackStackEntry?.destination?.route
 //    val showBottomBar = currentRoute == BottomNavigation.Home.route ||
@@ -124,7 +132,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 is HomeAction.Navigation.NavigateToMain -> {
                     delay(2000)
                     navigator.navigate(BottomNavigation.Home.route) {
-                        popUpTo(navigator.graph.findStartDestination().id) {
+
+                        popUpTo(HomeNavigation.Login) {
                             inclusive = true
                         }
                     }
@@ -133,7 +142,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 is HomeAction.Navigation.NavigateToLogin -> {
                     navigator.navigate(HomeNavigation.Login) {
 
-                        popUpTo(navigator.graph.findStartDestination().id) {
+                        popUpTo(HomeNavigation.Login) {
                             inclusive = true
                         }
                     }
@@ -178,7 +187,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 is LoginAction.Navigation.NavigateToMain -> {
 
                     navigator.navigate(BottomNavigation.Home.route) {
-                        popUpTo(navigator.graph.findStartDestination().id) {
+                        popUpTo(HomeNavigation.Login) {
                             inclusive = true
                         }
                     }
@@ -186,7 +195,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 
                 is LoginAction.Navigation.NavigateToLogin -> {
                     navigator.navigate(HomeNavigation.Login) {
-                        popUpTo(navigator.graph.findStartDestination().id) {
+                        popUpTo(HomeNavigation.Login) {
                             inclusive = true
                         }
                     }
@@ -227,15 +236,29 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToPemeriksaan = {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
-//                            navigator.navigate(HomeNavigation.Pemeriksaan)
+                            navigator.navigate(HomeNavigation.Pemeriksaan)
 //                            navigator.navigate(HomeNavigation.FotoKendaraan)
 //                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
 //                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
 //                            navigator.navigate(BANavigation.FormBeritaAcara)
-                            navigator.navigate(AdministrasiNavigation.PemeriksaanKartuUji)
+//                            navigator.navigate(AdministrasiNavigation.PemeriksaanKartuUji)
+                        },
+                        navigateToRiwayatPemeriksaan = {
+                            navigator.navigate(HomeNavigation.RiwayatPemeriksaan)
+
+                        },
+                        navigateToUploadDemo = {
+                            navigator.navigate(HomeNavigation.UploadFile)
                         },
                     )
                 }
+
+                composable<HomeNavigation.UploadFile> {
+                    UploadFileScreen(
+                        viewModel = viewModelUpload
+                    )
+                }
+
                 composable<HomeNavigation.Pemeriksaan> {
                     FormDataPemeriksaanScreen(
 
@@ -247,7 +270,41 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                             navigator.navigate(HomeNavigation.GuideFotoPetugas)
                         }
                     )
+
+//                    ListRiwayatPemeriksaanScreen(
+//                        state = viewModelRiwayat.state.value,
+//                        events = viewModelRiwayat::onTriggerEvent,
+//                        errors = viewModelRiwayat.errors,
+//                        popup = { navigator.popBackStack() },
+//                        navigateToCameraFace = {
+//                            //TODO NAVIGATE TO NEXT PAGE
+//                        }
+//                    )
                 }
+
+                composable<HomeNavigation.PreviewRiwayatPDF> {
+                    RiwayatPDFScreen(
+                        errors = viewModelRiwayat.errors,
+                        state = viewModelRiwayat.state.value,
+                        events = viewModelRiwayat::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                    )
+                }
+
+                composable<HomeNavigation.RiwayatPemeriksaan> {
+
+
+                    ListRiwayatPemeriksaanScreen(
+                        state = viewModelRiwayat.state.value,
+                        events = viewModelRiwayat::onTriggerEvent,
+                        errors = viewModelRiwayat.errors,
+                        popup = { navigator.popBackStack() },
+                        navigateToPreview = {
+                            navigator.navigate(HomeNavigation.PreviewRiwayatPDF)
+                        }
+                    )
+                }
+
 
                 composable<HomeNavigation.GuideFotoPetugas> {
                     GuideFotoPetugasScreen(

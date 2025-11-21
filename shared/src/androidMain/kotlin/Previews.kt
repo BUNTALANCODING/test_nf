@@ -11,6 +11,7 @@ import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUji
 import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
 import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
+import presentation.ui.main.riwayat.viewmodel.RiwayatState
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_bus_guide
 import rampcheck.shared.generated.resources.ic_email
@@ -108,7 +109,7 @@ fun HomeScreen() {
 fun Previews() {
     AppTheme {
         ListRiwayatPemeriksaanScreen(
-            state = HomeState(),
+            state = RiwayatState(),
             events = {},
             errors = MutableSharedFlow(),
             popup = {},
