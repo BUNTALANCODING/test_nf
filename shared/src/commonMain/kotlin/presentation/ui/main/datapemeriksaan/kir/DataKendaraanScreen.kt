@@ -223,6 +223,7 @@ fun ButtonNextSection(label: String, state: HomeState, onClick: () -> Unit, enab
             onClick = {
                 onClick()
             },
+            progressBarState = state.progressBarState,
             enabled = enabled,
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = label,

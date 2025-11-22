@@ -13,11 +13,13 @@ import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.HistoryRampcheckUseCase
+import business.interactors.main.IdentifyUseCase
 import business.interactors.main.LogoutUseCase
 import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SubmitQuestionUseCase
 import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadChunkUseCase
 import business.interactors.main.UploadPetugasUseCase
@@ -52,7 +54,7 @@ fun appModule(context: Context) = module {
 //    factory { UploadChunkViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(), get()) }
     factory { RiwayatViewModel(get(), get()) }
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -70,6 +72,8 @@ fun appModule(context: Context) = module {
     single { SubmitSignatureUseCase(get(),get()) }
     single { NegativeAnswerUseCase(get(),get()) }
     single { PreviewBAUseCase(get(),get()) }
+    single { IdentifyUseCase(get(),get()) }
+    single { SubmitQuestionUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
     single { HistoryRampcheckUseCase(get(), get()) }
     single { UploadChunkUseCase(get(), get()) }

@@ -10,4 +10,5 @@ data class VehiclePhotoRequestDTO(
     @SerialName("right_image") val rightImage: String?,
     @SerialName("left_image") val leftImage: String?,
     @SerialName("nrkb_image") val nrkbImage: String?,
+    @SerialName("step") val step: String?,
 )

@@ -73,7 +73,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun CameraKartuUjiScreen(
+fun CameraTidakSesuaiKartuUjiScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
@@ -204,11 +204,9 @@ private fun CameraKartuUjiContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                events(HomeEvent.OnUpdateKartuUjiImageBitmap(image))
-                                events(HomeEvent.OnUpdateKartuUjiBase64(base64))
-                                if(state.kartuUjiBase64 != null){
-                                    events(HomeEvent.IdentifyKartuUji)
-                                }
+                                events(HomeEvent.OnUpdateTidakSesuaiBitmap(image))
+                                events(HomeEvent.OnUpdateTidakSesuaiBase64(base64))
+                                navigateToHasilKameraUji()
                                 imageBitmap = null
                             }
                         }
@@ -318,32 +316,5 @@ private suspend fun handleImageCapture(
         is ImageCaptureResult.Error -> {
             println("Image Capture Error: ${result.exception.message}")
         }
-    }
-}
-@Composable
-fun RectangleFocusOverlay(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        val rectWidth = canvasWidth * 0.8f
-        val rectHeight = canvasHeight * 0.3f
-
-        val topLeft = Offset(
-            x = (canvasWidth - rectWidth) / 2f,
-            y = canvasHeight * 0.35f
-        )
-
-        val dashStroke = Stroke(
-            width = 4.dp.toPx(),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-        )
-
-        drawRect(
-            color = Color.Yellow,
-            topLeft = topLeft,
-            size = Size(rectWidth, rectHeight),
-            style = dashStroke
-        )
     }
 }

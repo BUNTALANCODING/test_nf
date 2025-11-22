@@ -12,4 +12,5 @@ data class CheckQRDTO(
     @SerialName("route") val route: String? = "",
     @SerialName("stuk_no") val stukNo: String? = "",
     @SerialName("status") val status: String? = "",
+    @SerialName("match") val match: Boolean? = false,
 )

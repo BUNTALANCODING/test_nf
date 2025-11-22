@@ -13,4 +13,5 @@ data class SubmitSignatureRequestDTO(
     @SerialName("kemenhub_officer_nip") val kemenhubNip: String?,
     @SerialName("kemenhub_officer_name") val kemenhubName: String?,
     @SerialName("kemenhub_officer_signature") val kemenhubSignature: String?,
+    @SerialName("step") val step: String?,
     )

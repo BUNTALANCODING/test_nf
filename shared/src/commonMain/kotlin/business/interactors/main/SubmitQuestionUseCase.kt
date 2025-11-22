@@ -5,22 +5,23 @@ import business.core.BaseUseCase
 import business.core.ProgressBarState
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.MainService
-import business.datasource.network.main.responses.GetVehicleDTO
+import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 
-class GetVehicleUseCase(
+class SubmitQuestionUseCase(
     private val service: MainService,
     private val appDataStoreManager: AppDataStore,
-) : BaseUseCase<Unit, List<GetVehicleDTO>, List<GetVehicleDTO>>(appDataStoreManager) {
+) : BaseUseCase<SubmitQuestionsRequestDTO, String, String>(appDataStoreManager) {
     override suspend fun run(
-        params: Unit,
+        params: SubmitQuestionsRequestDTO,
         token: String
-    ): MainGenericResponse<List<GetVehicleDTO>> = service.getVehicle(
-        token = token
+    ): MainGenericResponse<String> = service.submitQuestion(
+        token = token,
+        requestDTO = params
     )
 
-    override fun mapApiResponse(apiResponse: MainGenericResponse<List<GetVehicleDTO>>?): List<GetVehicleDTO>? = apiResponse?.result
+    override fun mapApiResponse(apiResponse: MainGenericResponse<String>?): String? = apiResponse?.result
 
-    override val progressBarType = ProgressBarState.Idle
+    override val progressBarType = ProgressBarState.ButtonLoading
     override val needNetworkState = false
     override val createException = false
     override val checkToken = true

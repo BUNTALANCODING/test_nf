@@ -8,6 +8,7 @@ import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
 import presentation.ui.main.home.view_model.HomeState
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kpreguler.KpRegulerSection
 import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
 import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
@@ -104,32 +105,45 @@ fun HomeScreen() {
     }
 }*/
 
+//@Composable
+//@Preview
+//fun Previews() {
+//    AppTheme {
+//        ListRiwayatPemeriksaanScreen(
+//            state = RiwayatState(),
+//            events = {},
+//            errors = MutableSharedFlow(),
+//            popup = {},
+//        ) { }
+//    }
+//}
+
 @Composable
 @Preview
 fun Previews() {
     AppTheme {
-        ListRiwayatPemeriksaanScreen(
-            state = RiwayatState(),
-            events = {},
-            errors = MutableSharedFlow(),
-            popup = {},
-        ) { }
+        KpRegulerSection(
+            selectedId = 1,
+            onOptionSelected = {}
+        ) {
+
+        }
     }
 }
 
-@Composable
-@Preview
-fun SendEmail() {
-    AppTheme {
-        SendEmailDialog(
-            iconRes = Res.drawable.ic_email,
-            title = "Kirim Berita Acara ke Email",
-            subtitle = "pppp",
-            isButtonVertical = false,
-            isButtonVisible = true
-        ) { }
-    }
-}
+//@Composable
+//@Preview
+//fun SendEmail() {
+//    AppTheme {
+//        SendEmailDialog(
+//            iconRes = Res.drawable.ic_email,
+//            title = "Kirim Berita Acara ke Email",
+//            subtitle = "pppp",
+//            isButtonVertical = false,
+//            isButtonVisible = true
+//        ) { }
+//    }
+//}
 
 //@Composable
 //@Preview

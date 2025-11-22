@@ -7,23 +7,26 @@ import business.constants.DataStoreKeys
 import business.core.AppDataStore
 import business.core.BaseViewModel
 import business.core.UIComponentState
+import business.datasource.network.main.request.AnswersItem
 import business.datasource.network.main.request.CheckQRRequestDTO
-import business.datasource.network.main.request.GetStepRequestDTO
+import business.datasource.network.main.request.IdentifyRequestDTO
 import business.datasource.network.main.request.NegativeAnswerRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
-import business.interactors.main.GetStepUseCase
 import business.interactors.main.GetVehicleUseCase
+import business.interactors.main.IdentifyUseCase
 import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SubmitQuestionUseCase
 import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadPetugasUseCase
 import business.interactors.main.VehiclePhotoUseCase
@@ -44,6 +47,8 @@ class HomeViewModel(
     private val submitSignatureUseCase: SubmitSignatureUseCase,
     private val previewBAUseCase: PreviewBAUseCase,
     private val negativeAnswerUseCase: NegativeAnswerUseCase,
+    private val identifyUseCase: IdentifyUseCase,
+    private val submitQuestionUseCase: SubmitQuestionUseCase,
     private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -55,12 +60,15 @@ class HomeViewModel(
             is HomeEvent.GetHomeContent -> {
 //                getHome()
             }
+
             is HomeEvent.RampcheckStart -> {
                 rampcheckStart()
             }
+
             is HomeEvent.UploadOfficerImage -> {
                 uploadFotoPetugas()
             }
+
             is HomeEvent.CheckQR -> {
                 checkQR()
             }
@@ -112,6 +120,7 @@ class HomeViewModel(
             is HomeEvent.OnValidateField -> {
 
             }
+
             is HomeEvent.OnUpdateQrUrl -> {
                 onUpdateQrUrl(event.value)
             }
@@ -131,6 +140,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateLastCode -> {
                 onUpdateLastCode(event.value)
             }
+
             is HomeEvent.OnShowDialogKartuTidakAda -> {
                 onShowDialogKartuTidakAda(event.value)
             }
@@ -138,12 +148,15 @@ class HomeViewModel(
             is HomeEvent.OnUpdateKeteranganKartuTidakAda -> {
                 onUpdateKeteranganKartuTidakAda(event.value)
             }
+
             is HomeEvent.OnUpdateMiddleCode -> {
                 onUpdateMiddleCode(event.value)
             }
+
             is HomeEvent.OnUpdateConditionSelection -> {
                 onUpdateConditionSelection(event.cardId, event.selection)
             }
+
             is HomeEvent.OnUpdateListLocation -> {
 //                onUpdateListLocation(event.value)
             }
@@ -151,9 +164,11 @@ class HomeViewModel(
             is HomeEvent.OnUpdateTidakSesuai -> {
                 onUpdateTidakSesuai(event.value)
             }
+
             is HomeEvent.OnUpdateTidakSesuaiBitmap -> {
                 onUpdateTidakSesuaiBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateNoRangka -> {
                 onUpdateNoRangka(event.value)
             }
@@ -193,6 +208,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateNik -> {
                 onUpdateNik(event.value)
             }
+
             is HomeEvent.OnUpdatePin -> {
                 onUpdatePin(event.value)
             }
@@ -204,6 +220,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateNamaLengkap -> {
                 onUpdateNamaLengkap(event.value)
             }
+
             is HomeEvent.OnShowDialogPajak -> {
                 onShowDialogPajak(event.value)
             }
@@ -211,6 +228,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateClearTrigger -> {
                 onUpdateClearTrigger(event.value)
             }
+
             is HomeEvent.OnShowDialogDatePicker -> {
                 onShowDialogDatePicker(event.value)
             }
@@ -222,6 +240,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateLocation -> {
                 onUpdateLocation(event.value)
             }
+
             is HomeEvent.OnUpdateLocationId -> {
                 onUpdateLocationId(event.value)
             }
@@ -238,6 +257,7 @@ class HomeViewModel(
             is HomeEvent.OnUpdateOfficerImage -> {
                 onUpdateOfficerByteArray(event.value)
             }
+
             is HomeEvent.OnUpdateOfficerImageImageBitmap -> {
                 onUpdateOfficerImageBitmap(event.value)
             }
@@ -253,70 +273,91 @@ class HomeViewModel(
             is HomeEvent.OnUpdateBackImageBitmap -> {
                 onUpdateBackImageBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateFrontImageBitmap -> {
                 onUpdateFrontImageBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateImageTypes -> {
                 onUpdateImageTypes(event.value)
             }
+
             is HomeEvent.UploadVideo -> {
                 startVideoUpload(event.value)
             }
+
             is HomeEvent.OnUpdateLeftImageBitmap -> {
                 onUpdateLeftImageBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateNrkbImageBitmap -> {
                 onUpdateNrkbImageBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateRightImageBitmap -> {
                 onUpdateRightImageBitmap(event.value)
             }
+
             is HomeEvent.OnShowDialogTandaTanganKemenhub -> {
                 onShowDialogTandaTanganKemenhub(event.value)
             }
+
             is HomeEvent.OnShowDialogTandaTanganPengemudi -> {
                 onShowDialogTandaTanganPengemudi(event.value)
             }
+
             is HomeEvent.OnShowDialogTandaTanganPenguji -> {
                 onShowDialogTandaTanganPenguji(event.value)
             }
+
             is HomeEvent.OnUpdateTTDKemenhub -> {
                 onUpdateTTDKemenhub(event.value)
             }
+
             is HomeEvent.OnUpdateTTDPengemudi -> {
                 onUpdateTTDPengemudi(event.value)
             }
+
             is HomeEvent.OnUpdateTTDPenguji -> {
                 onUpdateTTDPenguji(event.value)
             }
+
             is HomeEvent.OnUpdateTTDKemenhubBitmap -> {
                 onUpdateTTDKemenhubBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateTTDPengemudiBitmap -> {
                 onUpdateTTDPengemudiBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateTTDPengujiBitmap -> {
                 onUpdateTTDPengujiBitmap(event.value)
             }
+
             is HomeEvent.OnShowDialogSubmitSignature -> {
                 onShowDialogSubmitSignature(event.value)
             }
+
             is HomeEvent.OnUpdateDriverName -> {
                 onUpdateDriverName(event.value)
             }
+
             is HomeEvent.OnUpdateKemenhubNIP -> {
                 onUpdateKemenhubNIP(event.value)
             }
+
             is HomeEvent.OnUpdateKemenhubName -> {
                 onUpdateKemenhubName(event.value)
             }
 
-            is HomeEvent.OnUpdateOfficerNIP ->  {
+            is HomeEvent.OnUpdateOfficerNIP -> {
                 onUpdateOfficerNIP(event.value)
             }
+
             is HomeEvent.OnUpdateOfficerName -> {
                 onUpdateOfficerName(event.value)
             }
+
             is HomeEvent.OnUpdateRampcheckId -> {
                 onUpdateRampcheckId(event.value)
             }
@@ -332,21 +373,60 @@ class HomeViewModel(
             is HomeEvent.OnUpdateCardAvailable -> {
                 onUpdateAvailableCard(event.value)
             }
+
+            is HomeEvent.IdentifyKartuUji -> {
+                identifyKartuUji()
+            }
+
+            is HomeEvent.IdentifySIM -> {
+                identifySIM()
+            }
+
+            is HomeEvent.SubmitQuestion -> {
+                submitQuestionKartuUji()
+            }
+
+            is HomeEvent.SubmitQuestionSIM -> {
+                submitQuestionSIM()
+            }
+
+            is HomeEvent.OnUpdateKartuUjiBase64 -> {
+                onUpdateKartuUjiBase64(event.value)
+            }
+            is HomeEvent.OnUpdateKartuUjiImageBitmap -> {
+                onUpdateKartuUjiBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateSimPengemudiBAse64 -> {
+                onUpdateSimPengemudiBase64(event.value)
+            }
+            is HomeEvent.OnUpdateSimPengemudiImageBitmap -> {
+                onUpdateSimPengemudiImageBitmap(event.value)
+            }
+            is HomeEvent.OnUpdateTidakSesuaiBase64 -> {
+                onUpdateTidakSesuaiBase64(event.value)
+            }
+            is HomeEvent.OnUpdateListSubmitQuestion -> {
+                onUpdateListSubmitQuestion(event.value)
+            }
         }
     }
 
     private fun onUpdateCityCode(value: String) {
         setState { copy(cityCodeValue = value) }
     }
+
     private fun onUpdateTidakSesuai(value: String) {
         setState { copy(tidakSesuai = value) }
     }
+
     private fun onUpdateTidakSesuaiBitmap(value: ImageBitmap) {
         setState { copy(tidakSesuaiBitmap = value) }
     }
+
     private fun onUpdateMiddleCode(value: String) {
         setState { copy(middleCodeValue = value) }
     }
+
     private fun onUpdateConditionSelection(cardId: String, selection: Int) {
         setState {
             val currentList = technicalConditions
@@ -361,6 +441,7 @@ class HomeViewModel(
             copy(technicalConditions = updatedList)
         }
     }
+
     private fun getLocation() {
         executeUseCase(
             getLocationUseCase.execute(
@@ -381,23 +462,27 @@ class HomeViewModel(
             },
         )
     }
+
     private fun negativeAnswerKartuUji() {
         executeUseCase(
             negativeAnswerUseCase.execute(
                 params = NegativeAnswerRequestDTO(
                     type = state.value.typeCard,
-                    condition = state.value.keteranganKartuTidakAda
+                    condition = state.value.keteranganKartuTidakAda,
+                    step = "4"
                 ),
             ),
             onSuccess = { data, status, code ->
-                status?.let {
-                    setState {
-                        copy(
-                            typeCard = "",
-                            keteranganKartuTidakAda = ""
-                        )
+                status?.let {s->
+                    if(s){
+                        setState {
+                            copy(
+                                typeCard = "",
+                                keteranganKartuTidakAda = ""
+                            )
+                        }
+                        setAction { HomeAction.Navigation.NavigateToKPReguler }
                     }
-                    setAction { HomeAction.Navigation.NavigateToKPReguler }
                 }
             },
             onLoading = {
@@ -405,12 +490,14 @@ class HomeViewModel(
             },
         )
     }
+
     private fun negativeAnswerKPReguler() {
         executeUseCase(
             negativeAnswerUseCase.execute(
                 params = NegativeAnswerRequestDTO(
                     type = state.value.typeCard,
-                    condition = state.value.keteranganKartuTidakAda
+                    condition = state.value.keteranganKartuTidakAda,
+                    step = "5"
                 ),
             ),
             onSuccess = { data, status, code ->
@@ -429,12 +516,14 @@ class HomeViewModel(
             },
         )
     }
+
     private fun negativeAnswerKPCadangan() {
         executeUseCase(
             negativeAnswerUseCase.execute(
                 params = NegativeAnswerRequestDTO(
                     type = state.value.typeCard,
-                    condition = state.value.keteranganKartuTidakAda
+                    condition = state.value.keteranganKartuTidakAda,
+                    step = "7"
                 ),
             ),
             onSuccess = { data, status, code ->
@@ -453,12 +542,14 @@ class HomeViewModel(
             },
         )
     }
+
     private fun negativeAnswerSIM() {
         executeUseCase(
             negativeAnswerUseCase.execute(
                 params = NegativeAnswerRequestDTO(
                     type = state.value.typeCard,
-                    condition = state.value.keteranganKartuTidakAda
+                    condition = state.value.keteranganKartuTidakAda,
+                    step = "6"
                 ),
             ),
             onSuccess = { data, status, code ->
@@ -469,6 +560,7 @@ class HomeViewModel(
                             keteranganKartuTidakAda = ""
                         )
                     }
+                    setAction { HomeAction.Navigation.NavigateToTeknisUtama }
                 }
             },
             onLoading = {
@@ -476,6 +568,7 @@ class HomeViewModel(
             },
         )
     }
+
     private fun rampcheckStart() {
         executeUseCase(
             rampcheckStartUseCase.execute(
@@ -488,7 +581,7 @@ class HomeViewModel(
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
-                    if(s){
+                    if (s) {
                         setAction {
                             HomeAction.Navigation.NavigateToGuide
                         }
@@ -501,7 +594,7 @@ class HomeViewModel(
         )
     }
 
-    private fun  setStateValue(){
+    private fun setStateValue() {
         viewModelScope.launch {
             val officerName = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NAME)
             val officerNIP = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NIP)
@@ -528,15 +621,19 @@ class HomeViewModel(
                     driverSignature = state.value.ttdPengemudi,
                     kemenhubNip = state.value.nipKemenhub,
                     kemenhubName = state.value.kemenhubName,
-                    kemenhubSignature = state.value.ttdKemenhub
+                    kemenhubSignature = state.value.ttdKemenhub,
+                    step = "9"
                 ),
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
-                    if(s){
-                        setState {
-                            copy(showDialogSuccessSubmitSignature = UIComponentState.Show)
+                    if (s) {
+                        data.let{
+                            setState {
+                                copy(showDialogSuccessSubmitSignature = UIComponentState.Show, rampcheckId = data?.rampcheckId!!.toInt())
+                            }
                         }
+
                     }
                 }
             },
@@ -555,19 +652,18 @@ class HomeViewModel(
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
-                    if(s){
+                    if (s) {
+                        data?.let { dataHasil ->
+                            setState {
+                                copy(
+                                    dataHasilEKIR = dataHasil,
+                                )
+                            }
+                        }
                         setAction {
                             HomeAction.Navigation.NavigateToResultScreen
                         }
                     }
-                }
-                data?.let { dataHasil ->
-                    setState {
-                        copy(
-                            dataHasilEKIR = dataHasil,
-                        )
-                    }
-
                 }
             },
             onLoading = {
@@ -597,6 +693,118 @@ class HomeViewModel(
         )
     }
 
+    private fun identifyKartuUji() {
+        executeUseCase(
+            identifyUseCase.execute(
+                params = IdentifyRequestDTO(
+                    questionName = "kartu uji/stuk",
+                    imageBase64 = state.value.kartuUjiBase64,
+                    step = "4"
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {s->
+                    if(s){
+                        data?.let { listIdentify ->
+                            val identifyDTOItem = listIdentify[0]
+                            setState {
+                                copy(
+                                    listIdentifyKartuUji = listIdentify,
+                                    identifyKartuUji = identifyDTOItem
+                                )
+                            }
+                        }
+                        setAction { HomeAction.Navigation.NavigateHasilKartuUji }
+                    } else {
+                        setAction { HomeAction.Navigation.NavigateToBack }
+                    }
+
+                }
+
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun identifySIM() {
+        executeUseCase(
+            identifyUseCase.execute(
+                params = IdentifyRequestDTO(
+                    questionName = "sim pengemudi",
+                    imageBase64 = state.value.simPengemudiBase64,
+                    step = "6"
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {s->
+                    if(s){
+                        data?.let { listIdentify ->
+                            setState {
+                                copy(
+                                    listIdentifySIM = listIdentify,
+                                )
+                            }
+                        }
+                        setAction { HomeAction.Navigation.NavigateHasilSIMPengemudi }
+                    } else {
+                        setAction { HomeAction.Navigation.NavigateToBack }
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun submitQuestionKartuUji() {
+        executeUseCase(
+            submitQuestionUseCase.execute(
+                params = SubmitQuestionsRequestDTO(
+                    step = "4",
+                    answers = state.value.listSubmitQuestion,
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {s->
+                    if(s){
+                        setState { copy(listSubmitQuestion = listOf()) }
+                        setAction { HomeAction.Navigation.NavigateToKPReguler }
+                    }
+
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun submitQuestionSIM() {
+        executeUseCase(
+            submitQuestionUseCase.execute(
+                params = SubmitQuestionsRequestDTO(
+                    step = "6",
+                    answers = state.value.listSubmitQuestion,
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let {s->
+                    if(s){
+                        setState { copy(listSubmitQuestion = listOf()) }
+                        setAction { HomeAction.Navigation.NavigateToTeknisUtama }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
     private fun vehiclePhoto() {
         executeUseCase(
             vehiclePhotoUseCase.execute(
@@ -605,12 +813,13 @@ class HomeViewModel(
                     backImage = state.value.backImage?.toBytes()?.toBase64(),
                     rightImage = state.value.rightImage?.toBytes()?.toBase64(),
                     leftImage = state.value.leftImage?.toBytes()?.toBase64(),
-                    nrkbImage = state.value.nrkbImage?.toBytes()?.toBase64()
+                    nrkbImage = state.value.nrkbImage?.toBytes()?.toBase64(),
+                    step = "3"
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let {s ->
-                    if (s){
+                status?.let { s ->
+                    if (s) {
                         setAction {
                             HomeAction.Navigation.NavigateToPemeriksaanAdministrasi
                         }
@@ -627,12 +836,13 @@ class HomeViewModel(
         executeUseCase(
             uploadPetugasUseCase.execute(
                 params = UploadPetugasRequestDTO(
-                    officerImage = state.value.officer_image_bitmap?.toBytes()?.toBase64()
+                    officerImage = state.value.officer_image_bitmap?.toBytes()?.toBase64(),
+                    step = "1"
                 )
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
-                    if(s){
+                    if (s) {
                         setAction {
                             HomeAction.Navigation.NavigateToKIR
                         }
@@ -650,12 +860,13 @@ class HomeViewModel(
             platKIRUseCase.execute(
                 params = PlatKIRRequestDTO(
                     platNumber = state.value.selectedPlatNumber,
-                    kirImage = state.value.kirImage?.toBytes()?.toBase64()
+                    kirImage = state.value.kirImage?.toBytes()?.toBase64(),
+                    step = "2"
                 )
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
-                    if(s){
+                    if (s) {
                         setAction {
                             HomeAction.Navigation.NavigateToQRKIR
                         }
@@ -707,58 +918,100 @@ class HomeViewModel(
     private fun onUpdateNoRangka(value: String) {
         setState { copy(noRangka = value) }
     }
+
     private fun onUpdateSelectedOption(value: Int) {
         setState { copy(selectedOption = value) }
     }
+
     private fun onUpdateSelectedTab(value: Int) {
         setState { copy(selectedTab = value) }
     }
+
     private fun onUpdateTanggalPemeriksaan(value: String) {
         setState { copy(tanggalPemeriksaan = value) }
     }
+
     private fun onUpdateLocation(value: String) {
         setState { copy(location = value) }
     }
+
     private fun onUpdateLocationId(value: String) {
         setState { copy(locationId = value) }
     }
+
     private fun onUpdateLatitude(value: String) {
         setState { copy(latitude = value) }
     }
+
     private fun onUpdateLongitude(value: String) {
         setState { copy(longitude = value) }
     }
+
     private fun onLocationTrigger(value: Boolean) {
         setState { copy(locationTrigger = value) }
     }
+
     private fun onUpdateStatusMessage(value: String) {
         setState { copy(statusMessage = value) }
     }
+
     private fun onUpdateSelectedTabListrik(value: Int) {
         setState { copy(selectedTabListrik = value) }
     }
-    private fun onUpdateSelectedMethod(value: Pair<Int,Int>) {
+
+    private fun onUpdateSelectedMethod(value: Pair<Int, Int>) {
         setState { copy(selectedMethod = value) }
     }
+
     private fun onShowDialogPajak(value: UIComponentState) {
         setState { copy(showDialogPajak = value) }
     }
+
     private fun onUpdatePin(value: String) {
         setState { copy(pin = value) }
     }
+
+    private fun onUpdateKartuUjiBase64(value: String) {
+        setState { copy(kartuUjiBase64 = value) }
+    }
+
+    private fun onUpdateKartuUjiBitmap(value: ImageBitmap) {
+        setState { copy(kartuUjiBitmap = value) }
+    }
+
+    private fun onUpdateSimPengemudiBase64(value: String) {
+        setState { copy(simPengemudiBase64 = value) }
+    }
+
+    private fun onUpdateTidakSesuaiBase64(value: String) {
+        setState { copy(tidakSesuaiBase64 = value) }
+    }
+
+    private fun onUpdateListSubmitQuestion(value: List<AnswersItem>) {
+        setState { copy(listSubmitQuestion = value) }
+    }
+
+    private fun onUpdateSimPengemudiImageBitmap(value: ImageBitmap) {
+        setState { copy(simPengemudiBitmap = value) }
+    }
+
     private fun onUpdateNik(value: String) {
         setState { copy(nikValue = value) }
     }
+
     private fun onUpdateSearch(value: String) {
         setState { copy(searchValue = value) }
     }
+
     private fun onUpdateNamaLengkap(value: String) {
         setState { copy(namaLengkap = value) }
     }
-    private fun onUpdateClearTrigger(value: Boolean){
+
+    private fun onUpdateClearTrigger(value: Boolean) {
         setState { copy(clearTrigger = value) }
     }
-    private fun onUpdateSelectedPlatNumber(value: String){
+
+    private fun onUpdateSelectedPlatNumber(value: String) {
         setState { copy(selectedPlatNumber = value) }
     }
 
@@ -789,17 +1042,20 @@ class HomeViewModel(
     private fun onUpdateBackImageBitmap(value: ImageBitmap) {
         setState { copy(backImage = value) }
     }
+
     private fun onUpdateLeftImageBitmap(value: ImageBitmap) {
         setState { copy(leftImage = value) }
     }
+
     private fun onUpdateRightImageBitmap(value: ImageBitmap) {
         setState { copy(rightImage = value) }
     }
+
     private fun onUpdateNrkbImageBitmap(value: ImageBitmap) {
         setState { copy(nrkbImage = value) }
     }
 
-    private fun onUpdateImageTypes(value: String){
+    private fun onUpdateImageTypes(value: String) {
         setState { copy(imageTypes = value) }
     }
 
@@ -810,49 +1066,59 @@ class HomeViewModel(
     private fun onShowDialogTandaTanganPenguji(value: UIComponentState) {
         setState { copy(showDialogTandaTanganPenguji = value) }
     }
+
     private fun onShowDialogTandaTanganKemenhub(value: UIComponentState) {
         setState { copy(showDialogTandaTanganKemenhub = value) }
     }
-    private fun onUpdateTTDPenguji(value: String){
+
+    private fun onUpdateTTDPenguji(value: String) {
         setState { copy(ttdPenguji = value) }
     }
-    private fun onUpdateTTDPengemudi(value: String){
+
+    private fun onUpdateTTDPengemudi(value: String) {
         setState { copy(ttdPengemudi = value) }
     }
-    private fun onUpdateTTDKemenhub(value: String){
+
+    private fun onUpdateTTDKemenhub(value: String) {
         setState { copy(ttdKemenhub = value) }
     }
-    private fun onUpdateTTDPengujiBitmap(value: ImageBitmap){
+
+    private fun onUpdateTTDPengujiBitmap(value: ImageBitmap) {
         setState { copy(ttdPengujiBitmap = value) }
     }
-    private fun onUpdateTTDPengemudiBitmap(value: ImageBitmap){
+
+    private fun onUpdateTTDPengemudiBitmap(value: ImageBitmap) {
         setState { copy(ttdPengemudiBitmap = value) }
     }
-    private fun onUpdateTTDKemenhubBitmap(value: ImageBitmap){
+
+    private fun onUpdateTTDKemenhubBitmap(value: ImageBitmap) {
         setState { copy(ttdKemenhubBitmap = value) }
     }
 
-    private fun onUpdateDriverName(value: String){
+    private fun onUpdateDriverName(value: String) {
         setState { copy(driverName = value) }
     }
-    private fun onUpdateKemenhubName(value: String){
+
+    private fun onUpdateKemenhubName(value: String) {
         setState { copy(kemenhubName = value) }
     }
 
-    private fun onUpdateKemenhubNIP(value: String){
+    private fun onUpdateKemenhubNIP(value: String) {
         setState { copy(nipKemenhub = value) }
     }
 
-    private fun onUpdateOfficerName(value: String){
+    private fun onUpdateOfficerName(value: String) {
         setState { copy(officerName = value) }
     }
 
-    private fun onUpdateOfficerNIP(value: String){
+    private fun onUpdateOfficerNIP(value: String) {
         setState { copy(officerNip = value) }
     }
-    private fun onUpdateRampcheckId(value: Int){
+
+    private fun onUpdateRampcheckId(value: Int) {
         setState { copy(rampcheckId = value) }
     }
+
     private fun onShowDialogSubmitSignature(value: UIComponentState) {
         setState { copy(showDialogSuccessSubmitSignature = value) }
     }
@@ -861,7 +1127,7 @@ class HomeViewModel(
         setState { copy(selectionKartuUji = value) }
     }
 
-    private fun onUpdateFilePath(value: String){
+    private fun onUpdateFilePath(value: String) {
         setState { copy(filePath = value) }
     }
 
@@ -869,11 +1135,11 @@ class HomeViewModel(
         setState { copy(officer_image = value) }
     }
 
-    private fun onUpdateTypeCard(value: String){
+    private fun onUpdateTypeCard(value: String) {
         setState { copy(typeCard = value) }
     }
 
-    private fun onUpdateAvailableCard(value: Int){
+    private fun onUpdateAvailableCard(value: Int) {
         setState { copy(availableCard = value) }
     }
 
@@ -910,13 +1176,11 @@ class HomeViewModel(
 //    }
 
 
-
     private fun onErrorDialogState(value: UIComponentState) {
         setState {
             copy(errorDialogState = value)
         }
     }
-
 
 
 }

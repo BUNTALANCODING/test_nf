@@ -26,6 +26,14 @@ sealed class HomeAction : ViewSingleAction {
         data object NavigateToKPCadangan : Navigation()
 
         data object NavigateToSIMPengemudi : Navigation()
+
+        data object NavigateHasilKartuUji : Navigation()
+
+        data object NavigateHasilSIMPengemudi : Navigation()
+
+        data object NavigateToBack : Navigation()
+
+        data object NavigateToTeknisUtama : Navigation()
     }
 
 }

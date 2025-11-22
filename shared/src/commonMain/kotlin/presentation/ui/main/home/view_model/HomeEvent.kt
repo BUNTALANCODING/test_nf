@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import business.core.NetworkState
 import business.core.UIComponentState
 import business.core.ViewEvent
+import business.datasource.network.main.request.AnswersItem
 import business.datasource.network.main.responses.GetLocationDTO
 
 sealed class HomeEvent : ViewEvent {
@@ -27,6 +28,14 @@ sealed class HomeEvent : ViewEvent {
     data object NegativeAnswerKPCadangan : HomeEvent()
 
     data object NegativeAnswerSIM : HomeEvent()
+
+    data object IdentifyKartuUji : HomeEvent()
+
+    data object IdentifySIM : HomeEvent()
+
+    data object SubmitQuestion : HomeEvent()
+
+    data object SubmitQuestionSIM : HomeEvent()
 
     data object CheckQR : HomeEvent()
 
@@ -61,6 +70,10 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateTidakSesuai(val value: String) : HomeEvent()
 
     data class OnUpdateTidakSesuaiBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateTidakSesuaiBase64(val value: String) : HomeEvent()
+
+    data class OnUpdateListSubmitQuestion(val value: List<AnswersItem>) : HomeEvent()
 
     data class OnUpdateTypeCard(val value: String) : HomeEvent()
 
@@ -159,6 +172,14 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateImageTypes(val value: String) : HomeEvent()
 
     data class OnUpdateTokenFCM(val value: String) : HomeEvent()
+
+    data class OnUpdateKartuUjiBase64(val value: String) : HomeEvent()
+
+    data class OnUpdateKartuUjiImageBitmap(val value: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateSimPengemudiBAse64(val value: String) : HomeEvent()
+
+    data class OnUpdateSimPengemudiImageBitmap(val value: ImageBitmap) : HomeEvent()
 
     data class OnUpdateSelectionKartuUji(val value: Int) : HomeEvent()
 

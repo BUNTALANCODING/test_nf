@@ -7,4 +7,5 @@ import kotlinx.serialization.Serializable
 data class NegativeAnswerRequestDTO(
     @SerialName("type") val type: String?,
     @SerialName("condition") val condition: String?,
+    @SerialName("step") val step: String?,
 )

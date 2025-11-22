@@ -7,4 +7,5 @@ import kotlinx.serialization.Serializable
 data class IdentifyRequestDTO(
     @SerialName("question_name") val questionName: String?,
     @SerialName("image_base64") val imageBase64: String?,
+    @SerialName("step") val step: String?,
 )

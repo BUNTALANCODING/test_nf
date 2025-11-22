@@ -310,6 +310,7 @@ fun ButtonLocationSection(state: HomeState, event: (HomeEvent) -> Unit) {
 fun ButtonNextSection(state: HomeState,event: (HomeEvent) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         DefaultButton(
+            progressBarState = state.progressBarState,
             onClick = { event(HomeEvent.RampcheckStart) },
             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
             text = "LANJUT",

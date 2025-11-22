@@ -71,6 +71,7 @@ import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.pemeriksaanadministrasi.GuidePemeriksaanAdministrasiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.CameraKartuUjiScreen
+import presentation.ui.main.pemeriksaanadministrasi.kartuuji.CameraTidakSesuaiKartuUjiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kpcadangan.CameraKPCadanganScreen
@@ -176,6 +177,22 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 }
                 is HomeAction.Navigation.NavigateToSIMPengemudi -> {
                     navigator.navigate(AdministrasiNavigation.PemeriksaanSIM)
+                }
+
+                is HomeAction.Navigation.NavigateHasilKartuUji -> {
+                    navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKartuUji)
+                }
+
+                is HomeAction.Navigation.NavigateHasilSIMPengemudi -> {
+                    navigator.navigate(AdministrasiNavigation.HasilPemeriksaanSIM)
+                }
+
+                is HomeAction.Navigation.NavigateToBack -> {
+                    navigator.popBackStack()
+                }
+
+                is HomeAction.Navigation.NavigateToTeknisUtama -> {
+                    navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
                 }
             }
         }
@@ -362,7 +379,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToDetail = {},
+                        navigateToUnggahFotoKendaraan = {
+                            navigator.navigate(HomeNavigation.FotoKendaraan)
+                        },
                     )
                 }
 
@@ -460,7 +479,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToCameraFace = {},
+                        navigateToCameraNegative = {
+                            navigator.navigate(AdministrasiNavigation.CameraKartuUjiNegative)
+                        },
                     )
                 }
 
@@ -487,6 +508,18 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
                         navigateToHasilKPRegular = {
                             navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPReguler)
+                        },
+                    )
+                }
+
+                composable<AdministrasiNavigation.CameraKartuUjiNegative> {
+                    CameraTidakSesuaiKartuUjiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToHasilKameraUji = {
+                            navigator.popBackStack()
                         },
                     )
                 }
@@ -612,7 +645,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
                         navigateToTeknisPenunjang = {
-                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisPenunjang)
+                            navigator.navigate(BANavigation.FormBeritaAcara)
                         },
                     )
                 }

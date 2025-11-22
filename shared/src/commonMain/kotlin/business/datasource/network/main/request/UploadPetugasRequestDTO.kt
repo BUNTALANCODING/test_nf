@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UploadPetugasRequestDTO(
     @SerialName("officer_image") val officerImage: String?,
+    @SerialName("step") val step: String?,
 )

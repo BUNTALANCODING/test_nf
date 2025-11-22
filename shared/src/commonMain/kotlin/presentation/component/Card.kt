@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import business.constants.SELESAI
 import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTOItem
+import business.datasource.network.main.responses.IdentifyDTOItem
 import business.datasource.network.main.responses.QuestionsItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
@@ -218,7 +219,7 @@ data class ConditionItem(
     val selection: Int = 0
 )
 @Composable
-fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit, onClickCamera : () -> Unit){
+fun ConditionCard(item: ConditionItem, events: (HomeEvent) -> Unit){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,7 +228,96 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
             .padding(16.dp),
     ) {
         Text(
-            item.questionName ?: "",
+            item.title,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer_8dp()
+        Divider(thickness = 1.dp, color = Color.Gray)
+        Spacer_8dp()
+
+        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically){
+            RadioButton(
+                selected = item.selection == 1,
+                onClick = { events(HomeEvent.OnUpdateConditionSelection(item.id, 1)) }
+            )
+            Text(
+                "Ya, Sesuai",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
+            )
+            Spacer_16dp()
+            RadioButton(
+                selected = item.selection == 2,
+                onClick = {
+                    events(HomeEvent.OnUpdateConditionSelection(item.id, 2))
+
+                }
+            )
+            Text(
+                "Tidak Sesuai",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal),
+            )
+        }
+        AnimatedVisibility(
+            visible = item.selection == 2,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+
+            Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+
+
+                DefaultTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "",
+                    onValueChange = {},
+                    placeholder = "Masukkan Kondisi Sebenarnya"
+                )
+
+                Spacer_8dp()
+
+                DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        androidx.compose.material.Icon(
+                            imageVector = vectorResource(Res.drawable.ic_camera),
+                            modifier = Modifier.size(24.dp)
+                                .align(Alignment.CenterHorizontally),
+                            contentDescription = null,
+                            tint = Color.Black
+                        )
+                        Spacer_8dp()
+                        Text(
+                            "Foto",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = Color.Black
+                            ),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ConditionCardItem(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit, onClickCamera : () -> Unit){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(16.dp),
+    ) {
+        Text(
+            "Kartu Uji/ STUK : " + (item.questionName ?: "-"),
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -240,9 +330,9 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
 
             // ✅ SELESAI — kalau API bilang selection = 1 → YA
             RadioButton(
-                selected = state.selectionKartuUji == 1,
+                selected = state.selectionKartuUji == 0,
                 onClick = {
-                    events(HomeEvent.OnUpdateSelectionKartuUji(1))
+                    events(HomeEvent.OnUpdateSelectionKartuUji(0))
                 }
             )
             Text("Ya, Sesuai")
@@ -251,16 +341,16 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
 
             // ✅ SELESAI — kalau API bilang selection = 2 → TIDAK
             RadioButton(
-                selected = state.selectionKartuUji == 2,
+                selected = state.selectionKartuUji == 1,
                 onClick = {
-                    events(HomeEvent.OnUpdateSelectionKartuUji(2))
+                    events(HomeEvent.OnUpdateSelectionKartuUji(1))
                 }
             )
             Text("Tidak Sesuai")
         }
 
         AnimatedVisibility(
-            visible = state.selectionKartuUji == 2,
+            visible = state.selectionKartuUji == 1,
             enter = expandVertically(expandFrom = Alignment.Top),
             exit = shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
@@ -302,6 +392,108 @@ fun ConditionCard(item: QuestionsItem, events: (HomeEvent) -> Unit, state: HomeS
                         )
                     }
                 }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun ConditionKartuUjiCard(item: IdentifyDTOItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit, onClickCamera : () -> Unit){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(16.dp),
+    ) {
+        Text(
+            "Kartu Uji/ STUK : " + (item.answerName ?: "-"),
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer_8dp()
+        Divider(thickness = 1.dp, color = Color.Gray)
+        Spacer_8dp()
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            // ✅ SELESAI — kalau API bilang selection = 1 → YA
+            RadioButton(
+                selected = state.selectionKartuUji == 0,
+                onClick = {
+                    events(HomeEvent.OnUpdateSelectionKartuUji(0))
+                }
+            )
+            Text("Ya, Sesuai")
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            // ✅ SELESAI — kalau API bilang selection = 2 → TIDAK
+            RadioButton(
+                selected = state.selectionKartuUji == 1,
+                onClick = {
+                    events(HomeEvent.OnUpdateSelectionKartuUji(1))
+                }
+            )
+            Text("Tidak Sesuai")
+        }
+
+        AnimatedVisibility(
+            visible = state.selectionKartuUji == 1,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+
+            Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+
+
+                DefaultTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = value,
+                    onValueChange = {
+                        onValueChange(it)
+                    },
+                    placeholder = "Masukkan Kondisi Sebenarnya"
+                )
+
+                Spacer_8dp()
+
+                if(state.tidakSesuaiBitmap != null){
+                    state.kartuUjiBitmap?.let {
+                        Image(
+                            contentDescription = null,
+                            modifier = Modifier.width(100.dp).height(70.dp).clickable { onClickCamera() },
+                            bitmap = it
+                        )
+                    }
+                }else{
+                    DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp).clickable { onClickCamera() }) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            androidx.compose.material.Icon(
+                                imageVector = vectorResource(Res.drawable.ic_camera),
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentDescription = null,
+                                tint = Color.Black
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = Color.Black
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                }
+
 
             }
         }

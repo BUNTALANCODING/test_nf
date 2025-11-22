@@ -30,6 +30,7 @@ import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ConditionCard
+import presentation.component.ConditionCardItem
 import presentation.component.DefaultScreenUI
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
@@ -128,7 +129,7 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
             Spacer_16dp()
             items?.forEach { item ->
-                ConditionCard(
+                ConditionCardItem(
                     item = item!!, events = events, state = state,
                     value = state.tidakSesuai,
                     onValueChange = {

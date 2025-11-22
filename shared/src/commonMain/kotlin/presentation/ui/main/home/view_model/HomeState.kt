@@ -6,10 +6,13 @@ import business.core.ProgressBarState
 import business.core.UIComponentState
 import business.core.ViewState
 import business.datasource.network.common.JAlertResponse
+import business.datasource.network.main.request.AnswersItem
 import business.datasource.network.main.responses.CheckQRDTO
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
+import business.datasource.network.main.responses.IdentifyDTO
+import business.datasource.network.main.responses.IdentifyDTOItem
 import business.datasource.network.main.responses.ProfileDTO
 import coil3.Bitmap
 import kotlinx.datetime.Clock
@@ -61,11 +64,23 @@ data class HomeState(
 
     val listVehicle: List<GetVehicleDTO> = listOf(),
 
+    val listIdentifyKartuUji: List<IdentifyDTOItem> = listOf(),
+    val identifyKartuUji: IdentifyDTOItem = IdentifyDTOItem(),
+
+    val listIdentifySIM: List<IdentifyDTOItem> = listOf(),
+    val identifySIM: IdentifyDTOItem = IdentifyDTOItem(),
+
+    val listSubmitQuestion: List<AnswersItem> = listOf(),
+
     val keteranganKartuTidakAda : String? = "",
     val kartuUjiBitmap : ImageBitmap? = null,
+    val kartuUjiBase64 : String? = "",
+    val simPengemudiBitmap : ImageBitmap? = null,
+    val simPengemudiBase64 : String? = "",
     val getStepKartuUJi : GetStepDTO = GetStepDTO(),
     val tidakSesuai : String = "",
     val tidakSesuaiBitmap : ImageBitmap? = null,
+    val tidakSesuaiBase64 : String? = "",
     val selectionKartuUji : Int = 0,
 
     val typeCard : String = "",

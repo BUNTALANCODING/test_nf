@@ -40,7 +40,7 @@ fun DetailHasilScanScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToUnggahFotoKendaraan: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -54,7 +54,7 @@ fun DetailHasilScanScreen(
         DataKendaraanContent(
             state = state,
             events = events,
-            navigateToDetail = navigateToDetail
+            navigateToUnggahFotoKendaraan = navigateToUnggahFotoKendaraan
         )
 
     }
@@ -64,7 +64,7 @@ fun DetailHasilScanScreen(
 private fun DataKendaraanContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToUnggahFotoKendaraan: () -> Unit
 ) {
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -72,7 +72,9 @@ private fun DataKendaraanContent(
             HeadlineSectionDetail()
             DetailKendaraanSection(state,events)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonNextSection("MULAI PEMERIKSAAN", state = state, onClick = {})
+            ButtonNextSection("MULAI PEMERIKSAAN", state = state, onClick = {
+                navigateToUnggahFotoKendaraan()
+            })
         }
     }
 
@@ -115,15 +117,15 @@ fun DetailKendaraanSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     .padding(16.dp),
             ) {
 
-                InformasiRow("Nomor Kendaraan", state.platNumber)
+                InformasiRow("Nomor Kendaraan", state.dataHasilEKIR.platNumber ?: "-")
                 Spacer_8dp()
-                InformasiRow("Nama Perusahaan Angkutan", state.operatorName)
+                InformasiRow("Nama Perusahaan Angkutan", state.dataHasilEKIR.operatorName ?: "-")
                 Spacer_8dp()
-                InformasiRow("Jenis Angkutan", state.cargoName)
+                InformasiRow("Jenis Angkutan", state.dataHasilEKIR.cargoName ?: "-")
                 Spacer_8dp()
-                InformasiRow("Trayek", state.route)
+                InformasiRow("Trayek", state.dataHasilEKIR.route ?: "-")
                 Spacer_8dp()
-                InformasiRow("Nomor STUK", state.stukNo)
+                InformasiRow("Nomor STUK", state.dataHasilEKIR.stukNo ?: "-")
                 Spacer_8dp()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -139,7 +141,7 @@ fun DetailKendaraanSection(state: HomeState, events: (HomeEvent) -> Unit) {
                     )
 
                     Text(
-                        state.status,
+                        state.dataHasilEKIR.status ?: "-",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = SuccessColor

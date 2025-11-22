@@ -118,7 +118,9 @@ private fun HasilPemeriksaanKPCadanganContent(
                 enabled = true,
                 enableElevation = false,
                 text = "SIMPAN",
-                onClick = {}
+                onClick = {
+                    navigateToTeknisPenunjang()
+                }
             )
         }
     }
@@ -160,7 +162,7 @@ private fun SistemPeneranganSection(state: HomeState, events: (HomeEvent) -> Uni
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -185,7 +187,7 @@ private fun SistemPengeremanSection(state: HomeState, events: (HomeEvent) -> Uni
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -210,7 +212,7 @@ private fun BadanKendaraanSection(state: HomeState, events: (HomeEvent) -> Unit)
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -235,7 +237,7 @@ private fun KondisiBanSection(state: HomeState, events: (HomeEvent) -> Unit) {
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -260,7 +262,7 @@ private fun PerlengkapanSection(state: HomeState, events: (HomeEvent) -> Unit) {
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -285,7 +287,7 @@ private fun PengukurKecepatanSection(state: HomeState, events: (HomeEvent) -> Un
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -310,7 +312,7 @@ private fun WiperSection(state: HomeState, events: (HomeEvent) -> Unit) {
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }
@@ -335,7 +337,7 @@ private fun TanggapDaruratSection(state: HomeState, events: (HomeEvent) -> Unit)
         }
         Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
             items.forEach { item ->
-//                ConditionCard(item = item, events = events)
+                ConditionCard(item = item, events = events)
                 Spacer_8dp()
             }
         }

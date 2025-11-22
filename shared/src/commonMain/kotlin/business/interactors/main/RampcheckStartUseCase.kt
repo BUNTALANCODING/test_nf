@@ -34,7 +34,7 @@ class RampcheckStartUseCase(
 
     override fun mapApiResponse(apiResponse: MainGenericResponse<RampcheckStartDTO>?): RampcheckStartDTO? = apiResponse?.result
 
-    override val progressBarType = ProgressBarState.FullScreenLoading
+    override val progressBarType = ProgressBarState.ButtonLoading
     override val needNetworkState = false
     override val createException = false
     override val checkToken = true

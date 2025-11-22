@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import business.constants.CARD_NOT_AVAILABLE
 import business.constants.SECTION_KARTU_UJI
 import business.core.UIComponent
+import business.datasource.network.main.request.AnswersItem
 import common.toBase64
 import common.toBytes
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ConditionCard
+import presentation.component.ConditionKartuUjiCard
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
@@ -69,7 +71,7 @@ fun HasilPemeriksaanKartuUjiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraNegative: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -83,9 +85,8 @@ fun HasilPemeriksaanKartuUjiScreen(
         PemeriksaanKartuUjiContent(
             state = state,
             events = events,
-            navigateToCameraFace = navigateToCameraFace
+            navigateToCameraNegative = navigateToCameraNegative
         )
-
     }
 }
 
@@ -93,13 +94,13 @@ fun HasilPemeriksaanKartuUjiScreen(
 private fun PemeriksaanKartuUjiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToCameraFace: () -> Unit
+    navigateToCameraNegative: () -> Unit
 ) {
     var base64 by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(state.tidakSesuaiBitmap){
-        if(state.tidakSesuaiBitmap != null){
+    LaunchedEffect(state.tidakSesuaiBitmap) {
+        if (state.tidakSesuaiBitmap != null) {
             coroutineScope.launch {
                 base64 = withContext(Dispatchers.Default) {
                     state.tidakSesuaiBitmap.toBytes().toBase64()
@@ -111,11 +112,14 @@ private fun PemeriksaanKartuUjiContent(
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection(state)
-            CardSection(state, events)
+            CardSection(state, events, navigateToCameraNegative = navigateToCameraNegative)
             Spacer(Modifier.weight(1f))
             ButtonNextSection("LANJUT", state, onClick = {
-                if (state.keteranganKartuTidakAda != null){
+
+                if (state.availableCard == CARD_NOT_AVAILABLE) {
                     events(HomeEvent.NegativeAnswerUji)
+                } else {
+                    events(HomeEvent.SubmitQuestion)
                 }
             })
         }
@@ -123,9 +127,13 @@ private fun PemeriksaanKartuUjiContent(
 }
 
 @Composable
-private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
-    if(state.availableCard == CARD_NOT_AVAILABLE){
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
+private fun CardSection(
+    state: HomeState,
+    events: (HomeEvent) -> Unit,
+    navigateToCameraNegative: () -> Unit
+) {
+    if (state.availableCard == CARD_NOT_AVAILABLE) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
                 style = MaterialTheme.typography.labelMedium.copy(
@@ -156,7 +164,7 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             }
         }
     } else {
-        val items = state.getStepKartuUJi.questions?.filter { it?.questionId == 183 }
+        val items = state.listIdentifyKartuUji
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
@@ -165,15 +173,28 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
                 )
             )
             Spacer_16dp()
-            items?.forEach { item ->
-                ConditionCard(
-                    item = item!!, events = events, state = state,
+            items.forEach { item ->
+                ConditionKartuUjiCard(
+                    item = item, events = events, state = state,
                     value = state.tidakSesuai,
                     onValueChange = {
                         events(HomeEvent.OnUpdateTidakSesuai(it))
+                        events(
+                            HomeEvent.OnUpdateListSubmitQuestion(
+                                listOf(
+                                    AnswersItem(
+                                        answerId = state.identifyKartuUji.answerId,
+                                        answerCondition = state.tidakSesuai,
+                                        answerFile = state.tidakSesuaiBase64,
+                                        answerOptionId = state.selectionKartuUji,
+                                        questionId = state.identifyKartuUji.questionId
+                                    )
+                                )
+                            )
+                        )
                     },
                     onClickCamera = {
-
+                        navigateToCameraNegative()
                     }
                 )
                 Spacer_8dp()
@@ -201,18 +222,20 @@ private fun HeaderSection(state: HomeState) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                if(state.availableCard == CARD_NOT_AVAILABLE){
+                if (state.availableCard == CARD_NOT_AVAILABLE) {
                     Image(
                         painter = painterResource(Res.drawable.ic_kartu_not_available),
                         modifier = Modifier.height(110.dp),
                         contentDescription = null
                     )
                 } else {
-                    Image(
-                        painter = painterResource(Res.drawable.kartu_uji),
-                        modifier = Modifier.height(110.dp),
-                        contentDescription = null
-                    )
+                    state.kartuUjiBitmap?.let {
+                        Image(
+                            contentDescription = null,
+                            modifier = Modifier.width(223.dp).height(320.dp),
+                            bitmap = it
+                        )
+                    }
                 }
 
             }

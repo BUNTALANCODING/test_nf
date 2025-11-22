@@ -179,6 +179,7 @@ private fun ButtonSectionVerify(popup: () -> Unit, state: HomeState, events: (Ho
             onClick = {
                 events(HomeEvent.UploadOfficerImage)
             },
+            progressBarState = state.progressBarState,
             enabled = true,
             modifier = Modifier.width(240.dp).height(DEFAULT__BUTTON_SIZE),
             colors = ButtonDefaults.buttonColors(

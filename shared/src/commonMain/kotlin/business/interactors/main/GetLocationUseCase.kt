@@ -27,7 +27,7 @@ class GetLocationUseCase(
     )
     override fun mapApiResponse(apiResponse: MainGenericResponse<List<GetLocationDTO>>?) = apiResponse?.result
 
-    override val progressBarType = ProgressBarState.ButtonLoading
+    override val progressBarType = ProgressBarState.Idle
     override val needNetworkState = false
     override val createException = false
     override val checkToken = true

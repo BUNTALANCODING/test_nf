@@ -23,6 +23,7 @@ import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
+import business.datasource.network.main.responses.IdentifyDTOItem
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.PreviewBADTO
@@ -126,7 +127,7 @@ interface MainService {
     suspend fun identity(
         token: String,
         params: IdentifyRequestDTO
-    ): MainGenericResponse<IdentifyDTO>
+    ): MainGenericResponse<List<IdentifyDTOItem>>
 
     suspend fun historyRampcheck(
         token: String,

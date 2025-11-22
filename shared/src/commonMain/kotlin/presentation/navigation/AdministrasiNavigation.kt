@@ -21,6 +21,9 @@ sealed interface AdministrasiNavigation {
     data object PemeriksaanKPReguler : AdministrasiNavigation
 
     @Serializable
+    data object CameraKartuUjiNegative : AdministrasiNavigation
+
+    @Serializable
     data object CameraKPReguler : AdministrasiNavigation
 
     @Serializable
