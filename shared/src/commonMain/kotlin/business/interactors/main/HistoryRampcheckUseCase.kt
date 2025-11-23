@@ -23,7 +23,7 @@ class HistoryRampcheckUseCase(
 
     override fun mapApiResponse(apiResponse: MainGenericResponse<List<HistoryRampcheckDTOItem>>?): List<HistoryRampcheckDTOItem>? = apiResponse?.result
 
-    override val progressBarType = ProgressBarState.FullScreenLoading
+    override val progressBarType = ProgressBarState.LoadingWithLogo
     override val needNetworkState = false
     override val createException = false
     override val checkToken = true

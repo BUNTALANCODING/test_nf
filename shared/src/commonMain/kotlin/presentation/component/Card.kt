@@ -419,7 +419,6 @@ fun ConditionKartuUjiCard(item: IdentifyDTOItem, events: (HomeEvent) -> Unit, st
 
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-            // ✅ SELESAI — kalau API bilang selection = 1 → YA
             RadioButton(
                 selected = state.selectionKartuUji == 0,
                 onClick = {
@@ -430,7 +429,6 @@ fun ConditionKartuUjiCard(item: IdentifyDTOItem, events: (HomeEvent) -> Unit, st
 
             Spacer(modifier = Modifier.width(20.dp))
 
-            // ✅ SELESAI — kalau API bilang selection = 2 → TIDAK
             RadioButton(
                 selected = state.selectionKartuUji == 1,
                 onClick = {
