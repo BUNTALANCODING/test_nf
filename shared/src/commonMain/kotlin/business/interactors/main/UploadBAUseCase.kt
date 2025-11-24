@@ -1,36 +1,53 @@
 package business.interactors.main
 
-import business.core.AppDataStore
-import business.core.BaseUseCase
-import business.core.ProgressBarState
-import business.datasource.network.common.MainGenericResponse
+import business.core.DataState
+import business.core.UIComponent
 import business.datasource.network.main.MainService
-import business.datasource.network.main.request.UploadChunkRequestDTO
-import business.datasource.network.main.responses.UploadChunkResponseDTO
+import business.datasource.network.main.responses.ChunkResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class UploadChunkUseCase(
-    private val service: MainService,
-    private val appDataStoreManager: AppDataStore
-) : BaseUseCase<UploadChunkRequestDTO, UploadChunkResponseDTO, UploadChunkResponseDTO>(appDataStoreManager) {
+    private val mainService: MainService
+) {
+    fun execute(
+        token: String,
+        fileName: String,
+        uniqueKey: String,
+        chunkIndex: Int,
+        totalChunks: Int,
+        chunk: ByteArray
+    ): Flow<DataState<ChunkResponse>> = flow {
 
-    override suspend fun run(
-        params: UploadChunkRequestDTO,
-        token: String
-    ): MainGenericResponse<UploadChunkResponseDTO>? {
+        emit(DataState.Loading())
 
-        return service.uploadChunkFile(
-            token = token,
-            request = params
-        )
+        try {
+            val res = mainService.uploadChunkFile(
+                token = token,
+                fileName = fileName,
+                uniqueKey = uniqueKey,
+                chunkIndex = chunkIndex,
+                totalChunks = totalChunks,
+                chunk = chunk
+            )
+
+            emit(
+                DataState.Data(
+                    data = res,
+                    status = res.status,
+                    code = res.code
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(
+                DataState.Response(
+                    UIComponent.DialogSimple(
+                        title = "Upload chunk gagal",
+                        description = e.message ?: "Terjadi kesalahan"
+                    )
+                )
+            )
+        }
     }
-
-    override fun mapApiResponse(apiResponse: MainGenericResponse<UploadChunkResponseDTO>?): UploadChunkResponseDTO? =
-        apiResponse?.result
-
-    override val progressBarType = ProgressBarState.DialogLoading
-    override val needNetworkState = false
-    override val createException = false
-    override val checkToken = true
-    override val showDialog = false
 }
-

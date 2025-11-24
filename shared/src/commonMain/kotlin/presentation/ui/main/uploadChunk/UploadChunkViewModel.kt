@@ -4,153 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import business.constants.DataStoreKeys
 import business.core.AppDataStore
-import business.core.BaseViewModel
 import business.core.DataState
-import business.core.NetworkState
-import business.datasource.network.main.MainService
-import business.datasource.network.main.request.UploadChunkRequestDTO
+import business.datasource.network.main.responses.ChunkResponse
 import business.interactors.main.UploadChunkUseCase
 import common.FileContainer
-import common.NetworkClient
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
+import io.ktor.util.date.getTimeMillis
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import logger.Logger
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-//class UploadChunkViewModel(
-//    private val uploadChunkUseCase: UploadChunkUseCase,
-//    private val mainService: MainService
-//) : BaseViewModel<UploadEvent, UploadState, UploadAction>() {
-//
-//    private var uploadJob: Job? = null
-//    private var isPaused = false
-//    private var isCanceled = false
-//
-//    override fun setInitialState() = UploadState()
-//
-//    override fun onTriggerEvent(event: UploadEvent) {
-//        when(event) {
-//            is UploadEvent.UploadFile -> startUpload(event)
-//            is UploadEvent.PauseUpload -> isPaused = true
-//            is UploadEvent.ResumeUpload -> isPaused = false
-//            is UploadEvent.CancelUpload -> {
-//                isCanceled = true
-//                uploadJob?.cancel()
-//                setState { copy(isUploading = false, progressPercent = 0f) }
-//            }
-//        }
-//    }
-//
-//    private fun startUpload(event: UploadEvent.UploadFile) {
-//        isPaused = false
-//        isCanceled = false
-//
-//        setState {
-//            copy(
-//                isUploading = true,
-//                totalChunks = event.totalChunks,
-//                lastUploadedChunk = 0,
-//                progressPercent = 0f,
-//                errorMessage = ""
-//            )
-//        }
-//
-//        val chunkSize = 1024 * 1024 // 1MB
-//
-//        uploadJob = viewModelScope.launch {
-//            for (chunkIndex in 1..event.totalChunks) {
-//
-//                if (isCanceled) {
-//                    println("DEBUG_UPLOAD: Upload canceled at chunk $chunkIndex")
-//                    break
-//                }
-//
-//                // Pause handling
-//                while (isPaused) {
-//                    println("DEBUG_UPLOAD: Upload paused at chunk $chunkIndex")
-//                    delay(500)
-//                    if (isCanceled) break
-//                }
-//                if (isCanceled) break
-//
-//                // Slice chunk
-//                val start = (chunkIndex - 1) * chunkSize
-//                val end = minOf(chunkIndex * chunkSize, event.file.size)
-//                val chunk = event.file.copyOfRange(start, end)
-//
-//                val request = UploadChunkRequestDTO(
-//                    uniqueKey = event.uniqueKey,
-//                    file = chunk,
-//                    chunkIndex = chunkIndex,
-//                    totalChunks = event.totalChunks
-//                )
-//
-//                println("DEBUG_UPLOAD: Uploading chunk $chunkIndex / ${event.totalChunks}...")
-//
-//                try {
-//                    // Sequentially collect Flow for this chunk
-//                    var chunkSuccess = false
-//                    uploadChunkUseCase.execute(request).collect { dataState ->
-//                        println("DEBUG_UPLOAD: Chunk $chunkIndex emitted -> $dataState")
-//                        when (dataState) {
-//                            is DataState.Loading -> setState { copy(progressBarState = dataState.progressBarState) }
-//                            is DataState.Data -> {
-//                                chunkSuccess = true
-//                                setState {
-//                                    copy(
-//                                        lastUploadedChunk = chunkIndex,
-//                                        progressPercent = chunkIndex.toFloat() / event.totalChunks.toFloat()
-//                                    )
-//                                }
-//                            }
-//                            is DataState.Response -> {
-//                                println("DEBUG_UPLOAD: Chunk $chunkIndex failed: ${dataState.uiComponent}")
-//                                setError { dataState.uiComponent }
-//                                chunkSuccess = false
-//                            }
-//                            is DataState.NetworkStatus -> {
-//                                if (dataState.networkState != NetworkState.Good) {
-//                                    println("DEBUG_UPLOAD: Network issue at chunk $chunkIndex")
-//                                    chunkSuccess = false
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                    if (!chunkSuccess) {
-//                        println("DEBUG_UPLOAD: Stopping upload due to failure at chunk $chunkIndex")
-//                        isCanceled = true
-//                        setState { copy(isUploading = false, errorMessage = "Upload failed at chunk $chunkIndex") }
-//                        break
-//                    }
-//
-//                } catch (e: Exception) {
-//                    println("DEBUG_UPLOAD: Exception at chunk $chunkIndex: ${e.message}")
-//                    e.printStackTrace()
-//                    isCanceled = true
-//                    setState { copy(isUploading = false, errorMessage = "Exception at chunk $chunkIndex") }
-//                    break
-//                }
-//            }
-//
-//            if (!isCanceled) {
-//                println("DEBUG_UPLOAD: All chunks uploaded successfully!")
-//                setState {
-//                    copy(
-//                        isUploading = false,
-//                        progressPercent = 1f,
-//                        lastUploadedChunk = event.totalChunks
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
+import kotlinx.coroutines.launch
 
 class UploadViewModel(
+    private val uploadChunkUseCase: UploadChunkUseCase,
     private val appDataStore: AppDataStore
 ) : ViewModel() {
 
@@ -162,8 +28,8 @@ class UploadViewModel(
     private var uploadJob: Job? = null
 
     fun setFile(container: FileContainer) {
-        this.fileContainer = container
-        this.controller = UploadController()
+        fileContainer = container
+        controller = UploadController()
 
         _state.value = _state.value.copy(
             fileName = container.fileName,
@@ -176,41 +42,164 @@ class UploadViewModel(
     fun startUploadInterior() {
         val container = fileContainer ?: return
 
+        // 🔍 CEK SIZE 0
+        val totalBytes = container.size
+        if (totalBytes <= 0L) {
+            _state.value = _state.value.copy(
+                status = "File kosong (0 byte), tidak bisa diupload",
+                isUploading = false,
+                progress = 0
+            )
+            return
+        }
+
+        // 🔍 LIMIT 1GB
+        val oneGbInBytes = 1_073_741_824L // 1GB = 1024^3
+        if (totalBytes > oneGbInBytes) {
+            _state.value = _state.value.copy(
+                status = "Ukuran file melebihi 1 GB",
+                isUploading = false,
+                progress = 0
+            )
+            return
+        }
+
+        // cancel upload lama jika masih jalan
+        uploadJob?.cancel()
+
         _state.value = _state.value.copy(
             status = "Uploading...",
-            isUploading = true
+            isUploading = true,
+            progress = 0
         )
-
 
         uploadJob = viewModelScope.launch {
 
-            val rawToken = appDataStore.readValue(DataStoreKeys.TOKEN) ?: ""
+            // 🔑 AMBIL TOKEN DARI DATASTORE
+            val token = appDataStore.readValue(DataStoreKeys.TOKEN) ?: ""
+            println("VM_UPLOAD: TOKEN FROM DATASTORE = '$token'")
 
-            if (rawToken.isEmpty()) {
+            if (token.isBlank()) {
                 _state.value = _state.value.copy(
-                    status = "Error: Not Logged In",
-                    isUploading = false
+                    status = "Token kosong, user belum login / token belum tersimpan",
+                    isUploading = false,
+                    progress = 0,
                 )
                 return@launch
             }
 
-            val result = NetworkClient.uploadVideoInterior(
-                token = rawToken,
-                container = container,
-                controller = controller
-            ) { percent ->
+            val chunkSize = 5_000_000 // 1 MB
+            val totalChunks = ((totalBytes + chunkSize - 1) / chunkSize).toInt()
+
+            val uniqueKey = "${container.fileName}_${getTimeMillis()}"
+
+            var uploadedBytes = 0L
+            var chunkIndex = 0 // 0-based
+
+            // cuma buat statistik, tidak dipakai untuk stop loop
+            var failedChunks = 0
+
+            try {
+                container.forEachChunk(chunkSize) { chunk ->
+
+                    if (controller.isCancelled()) {
+                        throw CancellationException("User cancelled")
+                    }
+
+                    controller.waitIfPaused()
+
+                    val currentIndex = chunkIndex
+                    println("VM_UPLOAD: sending chunk $currentIndex / ${totalChunks - 1}")
+
+                    try {
+                        uploadChunkUseCase.execute(
+                            token = token,               // kirim token ke usecase
+                            fileName = container.fileName,
+                            uniqueKey = uniqueKey,
+                            chunkIndex = currentIndex,
+                            totalChunks = totalChunks,
+                            chunk = chunk
+                        ).collect { dataState ->
+
+                            when (dataState) {
+                                is DataState.Loading -> {
+                                    // optional: global loading
+                                }
+
+                                is DataState.Data -> {
+                                    val apiResponse: ChunkResponse? = dataState.data
+                                    println("VM_UPLOAD: chunk $currentIndex OK -> $apiResponse")
+
+                                    // tetap naikkan progress walaupun status di response false
+                                    uploadedBytes += chunk.size
+                                    val percent = ((uploadedBytes.toFloat() / totalBytes.toFloat()) * 100).toInt()
+
+                                    _state.value = _state.value.copy(
+                                        progress = percent.coerceIn(0, 100),
+                                        status = "Uploading...",
+                                        isUploading = true
+                                    )
+                                }
+
+                                is DataState.Response -> {
+                                    // ada error dari server (timeout, dll)
+                                    println("VM_UPLOAD: chunk $currentIndex failed -> ${dataState.uiComponent}")
+                                    failedChunks += 1
+
+                                    // TIDAK STOP, TIDAK SET isUploading = false
+                                    // cukup tulis status sementara
+                                    _state.value = _state.value.copy(
+                                        status = "Beberapa chunk gagal (chunk $currentIndex), lanjut upload...",
+                                        isUploading = true
+                                    )
+                                }
+
+                                is DataState.NetworkStatus -> {
+                                    // optional: bisa log disini
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Error per chunk (misal timeout dari Ktor)
+                        e.printStackTrace()
+                        failedChunks += 1
+                        println("VM_UPLOAD: Exception di chunk $currentIndex -> ${e.message}")
+
+                        _state.value = _state.value.copy(
+                            status = "Exception di chunk $currentIndex, lanjut upload...",
+                            isUploading = true
+                        )
+                    }
+
+                    chunkIndex++
+                }
+
+                // SELESAI SEMUA CHUNK
+                val finalStatus = if (failedChunks == 0) {
+                    "Upload completed!"
+                } else {
+                    "Upload selesai, tapi $failedChunks chunk gagal dikirim"
+                }
+
                 _state.value = _state.value.copy(
-                    progress = percent
-                    // We do not update lastUploadedChunk/totalChunks
-                    // because we decided not to track them in the NetworkClient
+                    status = finalStatus,
+                    isUploading = false,
+                    progress = 100,
+                    uniqueKey = uniqueKey
+                )
+
+            } catch (e: CancellationException) {
+                _state.value = _state.value.copy(
+                    status = "Cancelled",
+                    isUploading = false
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _state.value = _state.value.copy(
+                    status = "Error: ${e.message}",
+                    isUploading = false
                 )
             }
-
-            _state.value = _state.value.copy(
-                status = result,
-                isUploading = false,
-                progress = 100
-            )
         }
     }
 
@@ -227,6 +216,9 @@ class UploadViewModel(
     fun cancel() {
         controller.cancel()
         uploadJob?.cancel()
-        _state.value = _state.value.copy(status = "Cancelled", isUploading = false)
+        _state.value = _state.value.copy(
+            status = "Cancelled",
+            isUploading = false
+        )
     }
 }

@@ -1,28 +1,33 @@
 package presentation.ui.main.uploadChunk
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.delay
+import kotlin.concurrent.Volatile
 
 class UploadController {
-    private val pauseMutex = Mutex(locked = false)
-    private var _cancelled = false
 
-    fun cancel() {
-        _cancelled = true
-        if (pauseMutex.isLocked) pauseMutex.unlock() // unlock if paused
-    }
+    @Volatile
+    private var paused: Boolean = false
 
-    fun isCancelled() = _cancelled
-
-    suspend fun waitIfPaused() {
-        pauseMutex.withLock { /* unlocked → continue */ }
-    }
+    @Volatile
+    private var cancelled: Boolean = false
 
     fun pause() {
-        if (!pauseMutex.isLocked) pauseMutex.tryLock()  // lock to pause
+        paused = true
     }
 
     fun resume() {
-        if (pauseMutex.isLocked) pauseMutex.unlock()
+        paused = false
+    }
+
+    fun cancel() {
+        cancelled = true
+    }
+
+    fun isCancelled(): Boolean = cancelled
+
+    suspend fun waitIfPaused() {
+        while (paused && !cancelled) {
+            delay(200)
+        }
     }
 }

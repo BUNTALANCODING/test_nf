@@ -10,12 +10,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +34,17 @@ import business.constants.CARD_NOT_AVAILABLE
 import business.constants.SECTION_KARTU_UJI
 import business.constants.SECTION_SIM_PENGEMUDI
 import business.core.UIComponent
+import business.datasource.network.main.request.AnswersItem
+import common.toBase64
+import common.toBytes
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.ConditionCard
 import presentation.component.ConditionCardItem
+import presentation.component.ConditionKartuUjiCard
 import presentation.component.DefaultScreenUI
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
@@ -73,20 +87,37 @@ private fun HasilPemeriksaanSIMPengemudiContent(
     events: (HomeEvent) -> Unit,
     navigateToPemeriksaanTeknis: () -> Unit
 ) {
+    var base64 by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(state.tidakSesuaiBitmap) {
+        if (state.tidakSesuaiBitmap != null) {
+            coroutineScope.launch {
+                base64 = withContext(Dispatchers.Default) {
+                    state.tidakSesuaiBitmap.toBytes().toBase64()
+                }
+            }
+        }
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection(state)
             CardSection(state, events)
             Spacer(Modifier.weight(1f))
             ButtonNextSection("LANJUT", state, onClick = {
-                events(HomeEvent.NegativeAnswerSIM)
-            })
+                if (state.availableCard == CARD_NOT_AVAILABLE) {
+                    events(HomeEvent.NegativeAnswerSIM)
+                } else {
+                    events(HomeEvent.SubmitQuestionSIM)
+                }            })
+
         }
     }
 }
 
 @Composable
 private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
+
     if(state.availableCard == CARD_NOT_AVAILABLE){
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
             Text(
@@ -119,7 +150,7 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             }
         }
     } else {
-        val items = state.getStepKartuUJi.questions?.filter { it?.questionId == 183 }
+        val items = state.listIdentifySIM
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
@@ -128,15 +159,28 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
                 )
             )
             Spacer_16dp()
-            items?.forEach { item ->
-                ConditionCardItem(
-                    item = item!!, events = events, state = state,
+            items.forEach { item ->
+                ConditionKartuUjiCard(
+                    item = item, events = events, state = state,
                     value = state.tidakSesuai,
                     onValueChange = {
                         events(HomeEvent.OnUpdateTidakSesuai(it))
+                        events(
+                            HomeEvent.OnUpdateListSubmitQuestion(
+                                listOf(
+                                    AnswersItem(
+                                        answerId = state.identifySIM.answerId,
+                                        answerCondition = state.tidakSesuai,
+                                        answerFile = state.tidakSesuaiBase64,
+                                        answerOptionId = state.selectionKartuUji,
+                                        questionId = state.identifySIM.questionId
+                                    )
+                                )
+                            )
+                        )
                     },
                     onClickCamera = {
-
+//                        navigateToCameraNegative()
                     }
                 )
                 Spacer_8dp()
@@ -163,18 +207,20 @@ private fun HeaderSection(state: HomeState) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                if(state.availableCard == CARD_NOT_AVAILABLE){
+                if (state.availableCard == CARD_NOT_AVAILABLE) {
                     Image(
                         painter = painterResource(Res.drawable.ic_kartu_not_available),
                         modifier = Modifier.height(110.dp),
                         contentDescription = null
                     )
                 } else {
-                    Image(
-                        painter = painterResource(Res.drawable.kartu_uji),
-                        modifier = Modifier.height(110.dp),
-                        contentDescription = null
-                    )
+                    state.kartuUjiBitmap?.let {
+                        Image(
+                            contentDescription = null,
+                            modifier = Modifier.width(223.dp).height(320.dp),
+                            bitmap = it
+                        )
+                    }
                 }
             }
             Spacer_8dp()

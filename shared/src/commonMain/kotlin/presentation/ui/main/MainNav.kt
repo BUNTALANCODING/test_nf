@@ -89,9 +89,12 @@ import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
 import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
 import presentation.ui.main.riwayat.RiwayatPDFScreen
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
-import presentation.ui.main.uploadChunk.UploadFileScreen
+//import presentation.ui.main.uploadChunk.UploadFileScreen
 import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.ui.splash.SplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.toRoute
+import presentation.ui.main.pemeriksaanteknis.HasilTeknisViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,6 +108,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
     val viewModelLogin: LoginViewModel = koinViewModel()
     val viewModelRiwayat: RiwayatViewModel = koinViewModel()
     val viewModelUpload: UploadViewModel = koinViewModel()
+    val hasilTeknisViewModel: HasilTeknisViewModel = koinViewModel()
+
 
     val currentRoute = navBackStackEntry?.destination?.route
 //    val showBottomBar = currentRoute == BottomNavigation.Home.route ||
@@ -257,24 +262,24 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToPemeriksaan = {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
-//                            navigator.navigate(HomeNavigation.Pemeriksaan)
-                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPReguler)
+                            navigator.navigate(HomeNavigation.Pemeriksaan)
+//                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPReguler)
                         },
                         navigateToRiwayatPemeriksaan = {
                             navigator.navigate(HomeNavigation.RiwayatPemeriksaan)
 
                         },
                         navigateToUploadDemo = {
-                            navigator.navigate(HomeNavigation.UploadFile)
+                            navigator.navigate(TeknisNavigation.CameraTeknisUtama)
                         },
                     )
                 }
 
-                composable<HomeNavigation.UploadFile> {
-                    UploadFileScreen(
-                        viewModel = viewModelUpload
-                    )
-                }
+//                composable<HomeNavigation.UploadFile> {
+//                    UploadFileScreen(
+//                        viewModel = viewModelUpload
+//                    )
+//                }
 
                 composable<HomeNavigation.Pemeriksaan> {
                     FormDataPemeriksaanScreen(
@@ -496,6 +501,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToHasilKPReguler = {
                             navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPReguler)
+                        },
+                        navigateToSim = {
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanSIM)
                         }
                     )
                 }
@@ -507,7 +515,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
                         navigateToHasilKPRegular = {
-                            navigator.navigate(AdministrasiNavigation.HasilPemeriksaanKPReguler)
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPReguler)
                         },
                     )
                 }
@@ -532,6 +540,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         popup = { navigator.popBackStack() },
 //                        navigateToKPCadangan = {
 //                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPCadangan)
+//                        },
+//                        navigateToSim  = {
+//                            navigator.navigate(AdministrasiNavigation.PemeriksaanSIM)
 //                        },
                     )
                 }
@@ -626,29 +637,69 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     )
                 }
 
+
+
+//                composable<TeknisNavigation.CameraTeknisUtama> {
+//
+//                    CameraTeknisUtamaScreen(
+//                        errors = viewModel.errors,
+//                        state = viewModel.state.value,
+//                        events = viewModel::onTriggerEvent,
+//                        popup = { navigator.popBackStack() },
+//                        navigateToQuestionTeknisUtama = {
+//                            navigator.navigate(TeknisNavigation.QuestionTeknisUtama)
+//                        },
+//                        uploadViewModel = viewModelUpload   // ⬅️ pakai yg dari koinViewModel()
+//                    )
+//                }
                 composable<TeknisNavigation.CameraTeknisUtama> {
+
                     CameraTeknisUtamaScreen(
                         errors = viewModel.errors,
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
                         popup = { navigator.popBackStack() },
-                        navigateToQuestionTeknisUtama = {
-                            navigator.navigate(TeknisNavigation.QuestionTeknisUtama)
+
+                        navigateToQuestionTeknisUtama = { uniqueKey ->
+
+                            navigator.navigate(
+                            TeknisNavigation.QuestionTeknisUtama(
+                                uniqueKey = uniqueKey
+                            )
+                        )
                         },
+
+                        uploadViewModel = viewModelUpload
                     )
                 }
 
-                composable<TeknisNavigation.QuestionTeknisUtama> {
+
+
+
+
+                composable<TeknisNavigation.QuestionTeknisUtama> { backStackEntry ->
+
+                    // ⬅️ Decode argumen dari route → jadi object Kotlin
+                    val args: TeknisNavigation.QuestionTeknisUtama = backStackEntry.toRoute()
+
+                    // Ini dia uniqueKey-nya
+                    val uniqueKey = args.uniqueKey
+
                     HasilPemeriksaanTeknisUtamaScreen(
-                        errors = viewModel.errors,
+                        uniqueKey = uniqueKey,                 // ⬅️ kirim ke screen
                         state = viewModel.state.value,
                         events = viewModel::onTriggerEvent,
+                        errors = viewModel.errors,
                         popup = { navigator.popBackStack() },
                         navigateToTeknisPenunjang = {
                             navigator.navigate(BANavigation.FormBeritaAcara)
                         },
+                        hasilViewModel = hasilTeknisViewModel
                     )
                 }
+
+
+
 
                 composable<BANavigation.FormBeritaAcara> {
                     FormBeritaAcaraScreen(

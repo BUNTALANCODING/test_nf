@@ -14,9 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,9 +34,11 @@ import business.constants.SECTION_PENGUKUR_KECEPATAN
 import business.constants.SECTION_PERLENGKAPAN
 import business.constants.SECTION_TANGGAP_DARURAT
 import business.constants.SECTION_WIPER
+import business.core.ProgressBarState
 import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import presentation.component.ConditionCard
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
@@ -50,14 +55,78 @@ import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_kemenhub
 import rampcheck.shared.generated.resources.kartu_uji
 
+//@Composable
+//fun HasilPemeriksaanTeknisUtamaScreen(
+//    state: HomeState,
+//    events: (HomeEvent) -> Unit,
+//    errors: Flow<UIComponent>,
+//    popup: () -> Unit,
+//    navigateToTeknisPenunjang: () -> Unit
+//) {
+//
+//    DefaultScreenUI(
+//        errors = errors,
+//        progressBarState = state.progressBarState,
+//        titleToolbar = "Pemeriksaan Teknis Utama",
+//        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
+//        onClickStartIconToolbar = { popup() },
+//        endIconToolbar = Res.drawable.ic_kemenhub
+//    ) {
+//        HasilPemeriksaanKPCadanganContent(
+//            state = state,
+//            events = events,
+//            navigateToTeknisPenunjang = navigateToTeknisPenunjang
+//        )
+//
+//    }
+//}
+
 @Composable
 fun HasilPemeriksaanTeknisUtamaScreen(
+    uniqueKey: String,
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToTeknisPenunjang: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit,
+    hasilViewModel: HasilTeknisViewModel = koinViewModel()
 ) {
+    val hasilStateState = hasilViewModel.state.collectAsState()
+    val hasilState = hasilStateState.value
+
+    LaunchedEffect(uniqueKey) {
+        println("SCREEN_HASIL: start loadHasil($uniqueKey)")
+        hasilViewModel.loadHasil(uniqueKey)
+    }
+
+    val currentStatus = hasilState.data?.data?.status?.lowercase()
+
+    val stillWaiting =
+        hasilState.error == null && (
+                hasilState.isLoading ||
+                        currentStatus == "sent" ||
+                        currentStatus == "processing" ||
+                        currentStatus.isNullOrBlank()
+                )
+
+    LaunchedEffect(hasilState.data, hasilState.isLoading) {
+        val dto = hasilState.data ?: return@LaunchedEffect
+        val data = dto.data
+        val response = data.response ?: emptyList()
+
+        if (!hasilState.isLoading &&
+            hasilState.error == null &&
+            data.status.equals("completed", ignoreCase = true) &&
+            response.isNotEmpty()
+        ) {
+            println("SCREEN_HASIL: apply result to HomeViewModel")
+            events(
+                HomeEvent.ApplyTeknisResultFromApi(
+                    apiSubcategories = response
+                )
+            )
+        }
+    }
 
     DefaultScreenUI(
         errors = errors,
@@ -67,14 +136,46 @@ fun HasilPemeriksaanTeknisUtamaScreen(
         onClickStartIconToolbar = { popup() },
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
-        HasilPemeriksaanKPCadanganContent(
-            state = state,
-            events = events,
-            navigateToTeknisPenunjang = navigateToTeknisPenunjang
-        )
 
+        // 🔹 Dialog error khusus hasil teknis
+        if (hasilState.error != null) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(
+                        onClick = { popup() }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                title = { Text("Gagal mengambil hasil") },
+                text = { Text(hasilState.error ?: "") }
+            )
+        }
+
+        if (stillWaiting) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Spacer_8dp()
+                    Text("Menunggu hasil identifikasi...")
+                }
+            }
+        } else {
+            HasilPemeriksaanKPCadanganContent(
+                state = state,
+                events = events,
+                navigateToTeknisPenunjang = navigateToTeknisPenunjang
+            )
+        }
     }
 }
+
 
 @Composable
 private fun HasilPemeriksaanKPCadanganContent(
@@ -344,3 +445,261 @@ private fun TanggapDaruratSection(state: HomeState, events: (HomeEvent) -> Unit)
     }
 }
 
+
+//package presentation.ui.main.pemeriksaanteknis
+//
+//import androidx.compose.foundation.background
+//import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.lazy.LazyColumn
+//import androidx.compose.foundation.lazy.items
+//import androidx.compose.material.icons.Icons
+//import androidx.compose.material.icons.automirrored.filled.ArrowBack
+//import androidx.compose.material3.Card
+//import androidx.compose.material3.CardDefaults
+//import androidx.compose.material3.CircularProgressIndicator
+//import androidx.compose.material3.MaterialTheme
+//import androidx.compose.material3.Text
+//import androidx.compose.runtime.*
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.Modifier
+//import androidx.compose.ui.graphics.Color
+//import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.unit.dp
+//import business.core.ProgressBarState
+//import business.core.UIComponent
+//import kotlinx.coroutines.flow.emptyFlow
+//import business.datasource.network.main.responses.HasilTeknisDTO
+//import business.datasource.network.main.responses.SubcategoryResponse
+//import business.datasource.network.main.responses.QuestionResponse
+//import kotlinx.coroutines.flow.Flow
+//import org.koin.compose.viewmodel.koinViewModel
+//import presentation.component.DEFAULT__BUTTON_SIZE
+//import presentation.component.DefaultButton
+//import presentation.component.DefaultScreenUI
+//import presentation.theme.PrimaryColor
+//import rampcheck.shared.generated.resources.Res
+//import rampcheck.shared.generated.resources.ic_kemenhub
+//
+//@Composable
+//fun HasilPemeriksaanTeknisUtamaScreen(
+//    errors: Flow<UIComponent>,
+//    popup: () -> Unit,
+//    navigateToTeknisPenunjang: () -> Unit,
+//    viewModel: HasilTeknisViewModel = koinViewModel()
+//) {
+//    val state by viewModel.state.collectAsState()
+//
+//    DefaultScreenUI(
+//        errors = errors,
+//        // Kalau mau, bisa ganti: if (state.isLoading) ProgressBarState.Loading else ProgressBarState.Idle
+//        progressBarState = ProgressBarState.Idle,
+//        titleToolbar = "Pemeriksaan Teknis Utama",
+//        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
+//        onClickStartIconToolbar = { popup() },
+//        endIconToolbar = Res.drawable.ic_kemenhub
+//    ) {
+//        when {
+//            state.isLoading -> LoadingUI()
+//            state.error != null -> ErrorUI(state.error!!)
+//            state.data != null -> HasilContent(
+//                hasil = state.data!!,
+//                navigateToTeknisPenunjang = navigateToTeknisPenunjang
+//            )
+//            else -> {
+//                // optional: kosong / initial state
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun LoadingUI() {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//            CircularProgressIndicator()
+//            Spacer(Modifier.height(8.dp))
+//            Text("Mengambil hasil pemeriksaan...")
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun ErrorUI(msg: String) {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Text("Terjadi kesalahan: $msg")
+//    }
+//}
+//
+//@Composable
+//private fun HasilContent(
+//    hasil: HasilTeknisDTO,
+//    navigateToTeknisPenunjang: () -> Unit
+//) {
+//    val data = hasil.data
+//
+//    Box(modifier = Modifier.fillMaxSize()) {
+//
+//        LazyColumn(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentPadding = PaddingValues(bottom = 80.dp),
+//            verticalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            item { HeaderSection() }
+//
+//            // Info file & status
+//            item {
+//                Column(
+//                    Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 16.dp)
+//                ) {
+//                    Text("File: ${data.filename}")
+//                    Text("Status: ${data.status}")
+//                    Text("Dibuat: ${data.created_at}")
+//                    Spacer(Modifier.height(8.dp))
+//
+//                    // ⬇ kalau response belum ada, kasih info ke user
+//                    if (data.response.isNullOrEmpty()) {
+//                        Text(
+//                            "Masih dalam proses identifikasi, silakan tunggu...",
+//                            style = MaterialTheme.typography.bodyMedium.copy(
+//                                fontWeight = FontWeight.SemiBold,
+//                                color = Color.Gray
+//                            )
+//                        )
+//                    }
+//                }
+//            }
+//
+//            // ⬇ Render list subcategory hanya kalau response sudah ada
+//            if (!data.response.isNullOrEmpty()) {
+//                items(data.response!!) { sub ->
+//                    SubcategorySection(sub)
+//                }
+//            }
+//        }
+//
+//        // kalau mau aktifkan tombol di bawah:
+//        // BottomButton(
+//        //     modifier = Modifier
+//        //         .align(Alignment.BottomCenter),
+//        //     navigateToTeknisPenunjang = navigateToTeknisPenunjang
+//        // )
+//    }
+//}
+//
+//@Composable
+//private fun HeaderSection() {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(16.dp),
+//    ) {
+//        Text(
+//            "Hasil Pemeriksaan",
+//            style = MaterialTheme.typography.labelLarge.copy(
+//                fontWeight = FontWeight.Bold,
+//            )
+//        )
+//    }
+//}
+//
+//@Composable
+//private fun SubcategorySection(sub: SubcategoryResponse) {
+//    Column(Modifier.fillMaxWidth()) {
+//
+//        // header kategori (mirip SECTION_PENERANGAN, dll)
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(Color(0xFFF3E9FF))
+//        ) {
+//            Text(
+//                sub.subcategory_name,
+//                style = MaterialTheme.typography.labelMedium.copy(
+//                    fontWeight = FontWeight.Bold,
+//                    color = PrimaryColor
+//                ),
+//                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+//            )
+//        }
+//
+//        // isi pertanyaan + jawaban
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+//        ) {
+//            sub.questions.forEach { q ->
+//                QuestionCard(q)
+//                Spacer(modifier = Modifier.height(8.dp))
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun QuestionCard(q: QuestionResponse) {
+//    // warna jawaban: sesuai / ada = hijau, lainnya merah
+//    val isOk = q.answer_name == "Sesuai" || q.answer_name == "Ada"
+//    val statusColor = if (isOk) Color(0xFF1B5E20) else Color(0xFFB71C1C)
+//
+//    Card(
+//        modifier = Modifier.fillMaxWidth(),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+//    ) {
+//        Column(modifier = Modifier.padding(12.dp)) {
+//            Text(
+//                text = q.question_name,
+//                style = MaterialTheme.typography.bodyMedium.copy(
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//            )
+//            Spacer(Modifier.height(4.dp))
+//            Text(
+//                text = q.answer_name,
+//                style = MaterialTheme.typography.bodySmall.copy(
+//                    fontWeight = FontWeight.Bold,
+//                    color = statusColor
+//                )
+//            )
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun BottomButton(
+//    modifier: Modifier = Modifier,
+//    navigateToTeknisPenunjang: () -> Unit
+//) {
+//    Box(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//            .padding(16.dp),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        DefaultButton(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(DEFAULT__BUTTON_SIZE),
+//            enabled = true,
+//            enableElevation = false,
+//            text = "SIMPAN",
+//            onClick = navigateToTeknisPenunjang
+//        )
+//    }
+//}
+//
+//
+//

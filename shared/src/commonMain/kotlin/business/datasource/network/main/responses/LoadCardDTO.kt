@@ -5,10 +5,10 @@ import kotlinx.serialization.SerialName
 
 @Serializable
 data class LoadCardDTO(
-
-	@SerialName("LoadCardDTO")
-	val loadCardDTO: List<LoadCardDTOItem?>? = null
+    @SerialName("data")
+    val data: List<LoadCardDTOItem?>? = null
 )
+
 
 @Serializable
 data class LoadCardDTOItem(

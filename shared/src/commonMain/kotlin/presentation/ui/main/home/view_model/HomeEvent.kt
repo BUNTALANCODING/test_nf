@@ -6,6 +6,9 @@ import business.core.UIComponentState
 import business.core.ViewEvent
 import business.datasource.network.main.request.AnswersItem
 import business.datasource.network.main.responses.GetLocationDTO
+import business.datasource.network.main.responses.SubcategoryResponse
+
+
 
 sealed class HomeEvent : ViewEvent {
 
@@ -78,6 +81,8 @@ sealed class HomeEvent : ViewEvent {
     data class OnUpdateTidakSesuaiBase64(val value: String) : HomeEvent()
 
     data class OnUpdateListSubmitQuestion(val value: List<AnswersItem>) : HomeEvent()
+
+    data class OnUpdateListSubmitQuestionSIM(val value: List<AnswersItem>) : HomeEvent()
 
     data class OnUpdateTypeCard(val value: String) : HomeEvent()
 
@@ -181,13 +186,43 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateKartuUjiImageBitmap(val value: ImageBitmap) : HomeEvent()
 
-    data class OnUpdateSimPengemudiBAse64(val value: String) : HomeEvent()
+    data class OnUpdateSimPengemudiBase64(val value: String) : HomeEvent()
 
     data class OnUpdateSimPengemudiImageBitmap(val value: ImageBitmap) : HomeEvent()
 
     data class OnUpdateSelectionKartuUji(val value: Int) : HomeEvent()
 
     data object OnValidateField : HomeEvent()
+
+    data class ApplyTeknisResultFromApi(
+        val apiSubcategories: List<SubcategoryResponse>
+    ) : HomeEvent()
+
+    data class OnUpdateSelectedOptionKPReguler(val id: Int) : HomeEvent()
+    data class OnUpdateSelectedOptionKPCadangan(val id: Int) : HomeEvent()
+
+    data class OnUpdateKeteranganKPReguler(val value: String) : HomeEvent()
+    data class OnUpdateKeteranganKPCadangan(val value: String) : HomeEvent()
+
+    data class OnUpdateImageKPReguler(val bitmap: ImageBitmap) : HomeEvent()
+    data class OnUpdateImageKPCadangan(val bitmap: ImageBitmap) : HomeEvent()
+
+    data class OnUpdateImageKPRegulerBase64(val value: String) : HomeEvent()
+    data class OnUpdateImageKPCadanganBase64(val value: String) : HomeEvent()
+
+    data class OnUpdateKpType(val value: Int) : HomeEvent()
+
+    data class ListSubmitQuestionKp(val value: List<AnswersItem>) : HomeEvent()
+
+    data class SubmitQuestionKp(val value: List<AnswersItem>) : HomeEvent()
+
+
+
+
+
+
+
+
 
     /**
      * Booking Screen

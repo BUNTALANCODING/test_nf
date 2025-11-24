@@ -18,14 +18,17 @@ import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.UploadVideoRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.CheckQRDTO
+import business.datasource.network.main.responses.ChunkResponse
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
+import business.datasource.network.main.responses.HasilTeknisDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.IdentifyDTOItem
 import business.datasource.network.main.responses.ItemsItemLoadCard
 import business.datasource.network.main.responses.KIRCompareDTO
+import business.datasource.network.main.responses.LoadCardDTOItem
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.PreviewBADTO
 import business.datasource.network.main.responses.ProfileDTO
@@ -34,7 +37,6 @@ import business.datasource.network.main.responses.RampcheckStartDTO
 import business.datasource.network.main.responses.SendEmailBADTO
 import business.datasource.network.main.responses.SubmitSignatureDTO
 import business.datasource.network.main.responses.UploadPetugasDTO
-import business.datasource.network.main.responses.UploadChunkResponseDTO
 import business.datasource.network.main.responses.VehiclePhotoDTO
 
 interface MainService {
@@ -62,6 +64,11 @@ interface MainService {
         const val GETSTEP = "getstep"
         const val IDENTIFY = "identify"
         const val NEGATIVE_ANSWER = "negativeanswer"
+
+        const val INTERIOR_IDENTIFY = "interioridentify"
+
+        const val GET_RESULT = "getresult"
+
         const val LOAD_CARD = "loadcard"
     }
 
@@ -137,8 +144,9 @@ interface MainService {
     ): MainGenericResponse<List<HistoryRampcheckDTOItem>>
 
     suspend fun loadCard(
-        token: String,
-    ): MainGenericResponse<List<ItemsItemLoadCard>>
+        token: String
+    ): MainGenericResponse<List<LoadCardDTOItem>>
+
 
 
     suspend fun negativeAnswer(
@@ -166,7 +174,20 @@ interface MainService {
 
     suspend fun uploadChunkFile(
         token: String,
-        request: UploadChunkRequestDTO
-    ): MainGenericResponse<UploadChunkResponseDTO>
+        fileName: String,
+        uniqueKey: String,
+        chunkIndex: Int,
+        totalChunks: Int,
+        chunk: ByteArray
+    ): ChunkResponse
+
+    suspend fun getInteriorResult(
+        token: String,
+        uniqueKey: String
+    ): HasilTeknisDTO
+
+
+
+
 
 }

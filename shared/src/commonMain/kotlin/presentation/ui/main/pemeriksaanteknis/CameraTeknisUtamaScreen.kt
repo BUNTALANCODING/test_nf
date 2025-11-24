@@ -1,46 +1,32 @@
 package presentation.ui.main.pemeriksaanteknis
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import business.constants.GetContext
 import business.core.UIComponent
-import com.kashif.cameraK.enums.Directory
 import com.kashif.cameraK.permissions.Permissions
 import com.kashif.cameraK.permissions.providePermissions
-import com.kashif.imagesaverplugin.ImageSaverConfig
-import com.kashif.imagesaverplugin.rememberImageSaverPlugin
 import common.PermissionCallback
 import common.PermissionStatus
 import common.PermissionType
-import common.PlatformFile
-import common.VideoUploader
 import common.camera.ActualCameraVideoView
-import common.copyUriToTempFile
+import common.FileContainer
 import common.createPermissionsManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import presentation.component.DefaultScreenUI
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
+import presentation.ui.main.uploadChunk.UploadViewModel
 
 @Composable
 fun CameraTeknisUtamaScreen(
@@ -48,9 +34,9 @@ fun CameraTeknisUtamaScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToQuestionTeknisUtama: () -> Unit
+    navigateToQuestionTeknisUtama: (String) -> Unit,
+    uploadViewModel: UploadViewModel,
 ) {
-
     DefaultScreenUI(
         errors = errors,
         progressBarState = state.progressBarState,
@@ -63,9 +49,9 @@ fun CameraTeknisUtamaScreen(
             state = state,
             events = events,
             popup = popup,
-            navigateToQuestionTeknisUtama = navigateToQuestionTeknisUtama
+            navigateToQuestionTeknisUtama = navigateToQuestionTeknisUtama,
+            uploadViewModel = uploadViewModel
         )
-
     }
 }
 
@@ -74,61 +60,43 @@ private fun CameraTeknisUtamaContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     popup: () -> Unit,
-    navigateToQuestionTeknisUtama: () -> Unit
+    navigateToQuestionTeknisUtama: (String) -> Unit,
+    uploadViewModel: UploadViewModel
 ) {
-
     val permissions: Permissions = providePermissions()
 
-
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var isRecording by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
     var showPermissionRequest by remember { mutableStateOf(false) }
     var isCameraGranted by remember { mutableStateOf(permissions.hasCameraPermission()) }
     var showDeniedDialog by remember { mutableStateOf(false) }
-    var launchCamera by mutableStateOf(false)
+    var launchCamera by remember { mutableStateOf(false) }
 
     val context = GetContext.context
     val scope = rememberCoroutineScope()
 
+    val uploadState by uploadViewModel.state.collectAsState()
+    var showUploadDialog by remember { mutableStateOf(false) }
 
+    LaunchedEffect(uploadState.isUploading) {
+        if (!uploadState.isUploading && showUploadDialog) {
+            showUploadDialog = false
+            uploadState.uniqueKey?.let { key ->
+                navigateToQuestionTeknisUtama(key)
+            }
+        }
+    }
     val permissionsManager = createPermissionsManager(object : PermissionCallback {
         override fun onPermissionStatus(permissionType: PermissionType, status: PermissionStatus) {
             when (status) {
                 PermissionStatus.GRANTED -> {
-                    when (permissionType) {
-                        PermissionType.CAMERA -> {
-                            launchCamera = true
-                        }
-
-                        PermissionType.GALLERY -> {}
-                        PermissionType.NOTIFICATION -> {}
+                    if (permissionType == PermissionType.CAMERA) {
+                        launchCamera = true
                     }
                 }
-
                 else -> showDeniedDialog = true
             }
         }
     })
-
-// request storage permission sekali
-    val storagePermissionState = remember { mutableStateOf(permissions.hasStoragePermission()) }
-    if (!storagePermissionState.value) {
-        permissions.RequestStoragePermission(
-            onGranted = { storagePermissionState.value = true },
-            onDenied = { println("Storage Permission Denied") }
-        )
-    }
-
-    val imageSaverPlugin = rememberImageSaverPlugin(
-        config = ImageSaverConfig(
-            isAutoSave = false,
-            prefix = "MyApp",
-            directory = Directory.PICTURES,
-            customFolderName = "MyAppPhotos"
-        )
-    )
-
 
     if (launchCamera) {
         if (permissionsManager.isPermissionGranted(PermissionType.CAMERA)) {
@@ -139,80 +107,81 @@ private fun CameraTeknisUtamaContent(
         launchCamera = false
     }
 
-
-// Custom denied dialog
     if (showDeniedDialog) {
         AlertDialog(
             onDismissRequest = { showDeniedDialog = false },
             title = { Text("Camera Permission Denied") },
-            text = { Text("Camera access is required. Would you like to grant it now or open settings?") },
+            text = { Text("Camera access is required!") },
             confirmButton = {
                 TextButton(onClick = {
                     showDeniedDialog = false
                     showPermissionRequest = true
-                }) { Text("Grant Now") }
+                }) { Text("Okay") }
             }
         )
     }
 
-// Main camera UI
     if (isCameraGranted) {
-        ActualCameraVideoView( // Pastikan Anda mengimpor atau menggunakan fully qualified name
+        ActualCameraVideoView(
             onBack = { popup() },
             onCaptureClick = {
-
                 isRecording = !isRecording
             },
             isRecording = isRecording,
             label = if (isRecording) "Merekam video..." else "Pastikan video terlihat jelas.",
-            onVideoRecorded = {videoUri ->
-                println("video saaved: $videoUri")
+            onVideoRecorded = { videoUri ->
+                println("video saved: $videoUri")
 
                 scope.launch {
                     try {
+                        // DI SINI: bikin FileContainer dari Uri (String)
+                        val container = FileContainer(
+                            context = context,
+                            rawUri = videoUri.toString()
+                        )
 
-                        val tempFile = copyUriToTempFile(videoUri)
+                        uploadViewModel.setFile(container)
+                        uploadViewModel.startUploadInterior()
 
-                        // Dapatkan path yang dibutuhkan oleh WorkManager
-                        val filePath = tempFile
-
-                        println("File path for upload: $filePath")
-
-                        // **LANGKAH 2: Panggil Event ViewModel**
-                        // Ini akan memicu HomeViewModel untuk mendapatkan token dan menjadwalkan WorkManager.
-                        events(HomeEvent.UploadVideo(filePath))
-
-                        // **LANGKAH 3: Navigasi**
-                        // Setelah WorkManager diantrikan, kita bisa navigasi atau menutup kamera.
-                        navigateToQuestionTeknisUtama()
+                        showUploadDialog = true
 
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        // Tampilkan error ke pengguna (misal: "Gagal menyiapkan file untuk unggah")
+                        // TODO: tampilkan snackbar / dialog error kalau mau
                     }
-                    /*try {
-                        val tempFile = copyUriToTempFile(videoUri)
-                        val uploader = VideoUploader(context)
-                        val uploadToken =
-
-                        val workId = uploader.uploadVideo(tempFile, uploadToken)
-                        println("Upload started with WorkId = $workId")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }*/
                 }
             }
         )
-    } else {
-        // fallback UI
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Camera permission is required to proceed.")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { showPermissionRequest = true }) {
-                    Text("Request Camera Permission")
+    }
+
+    if (showUploadDialog) {
+        AlertDialog(
+            onDismissRequest = { /* jangan di-close manual */ },
+            title = { Text("Uploading ${uploadState.fileName}") },
+            text = {
+                Column {
+                    LinearProgressIndicator(
+                        progress = (uploadState.progress.coerceIn(0, 100)) / 100f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("${uploadState.progress}% Completed")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(uploadState.status)
+                }
+            },
+            confirmButton = {
+                Row {
+                    Button(onClick = { uploadViewModel.pause() }) { Text("Pause") }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { uploadViewModel.resume() }) { Text("Resume") }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = {
+                        uploadViewModel.cancel()
+                        showUploadDialog = false
+                    }) { Text("Cancel") }
                 }
             }
-        }
+        )
     }
 }

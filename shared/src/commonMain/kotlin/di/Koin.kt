@@ -11,6 +11,7 @@ import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
+import business.interactors.main.GetHasilTeknisUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.HistoryRampcheckUseCase
 import business.interactors.main.IdentifyUseCase
@@ -30,13 +31,13 @@ import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
 import common.Context
-import common.getImageSaveShare
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import presentation.SharedViewModel
 import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
+import presentation.ui.main.pemeriksaanteknis.HasilTeknisViewModel
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.util.BackgroundScheduler
@@ -50,10 +51,9 @@ fun appModule(context: Context) = module {
     single<MainService> { MainServiceImpl(get()) }
     single<AppDataStore> { AppDataStoreManager(context) }
     single<BackgroundScheduler> { get() }
-    factory { UploadViewModel(get()) }
     factory { SharedViewModel(get()) }
 //    factory { UploadChunkViewModel(get()) }
-    factory { LoginViewModel(get(), get(), get(), get()) }
+    factory { LoginViewModel(get(), get(), get(),get(), get()) }
     factory { RiwayatViewModel(get(), get()) }
     factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
@@ -77,8 +77,15 @@ fun appModule(context: Context) = module {
     single { SubmitQuestionUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
     single { HistoryRampcheckUseCase(get(), get()) }
+    single { UploadChunkUseCase(get()) } // (MainService, AppDataStore)
+    factory { UploadViewModel(get(), get()) }
+
+    single { GetHasilTeknisUseCase(get()) } // ⬅️ TAMBAHAN INI
+    factory { HasilTeknisViewModel(get(), get()) }
     single { LoadCardUseCase(get(), get()) }
-    single { UploadChunkUseCase(get(), get()) }
+    single { UploadChunkUseCase(get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 
+    single { GetHasilTeknisUseCase(get()) } // ⬅️ TAMBAHAN INI
+    factory { HasilTeknisViewModel(get(), get()) }
 }

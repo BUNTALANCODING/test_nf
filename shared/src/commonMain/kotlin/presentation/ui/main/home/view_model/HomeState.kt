@@ -72,6 +72,7 @@ data class HomeState(
     val identifySIM: IdentifyDTOItem = IdentifyDTOItem(),
 
     val listSubmitQuestion: List<AnswersItem> = listOf(),
+    val submitQuestionKp: List<AnswersItem> = listOf(),
 
     val keteranganKartuTidakAda : String? = "",
     val kartuUjiBitmap : ImageBitmap? = null,
@@ -83,6 +84,16 @@ data class HomeState(
     val tidakSesuaiBitmap : ImageBitmap? = null,
     val tidakSesuaiBase64 : String? = "",
     val selectionKartuUji : Int = 0,
+    val imageKPReguler: ImageBitmap? = null,
+    val imageKPCadangan: ImageBitmap? = null,
+
+    val imageUjiSim: ImageBitmap? = null,
+    val imageUjiSimBase64: String? = "",
+
+    val imageKPRegulerBase64 : String? = "",
+    val imageKPCadanganBase64 : String? = "",
+
+    val kpType : Int= 0,
 
     val typeCard : String = "",
 
@@ -138,7 +149,11 @@ data class HomeState(
     val time: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     val progressBarState: ProgressBarState = ProgressBarState.Idle,
     val networkState: NetworkState = NetworkState.Good,
-) : ViewState
+
+    val selectedOptionKPReguler: Int? = null,
+    val selectedOptionKPCadangan: Int? = null,
+
+    ) : ViewState
 
 fun initialTechnicalConditionsList(): List<ConditionItem> {
     return listOf(

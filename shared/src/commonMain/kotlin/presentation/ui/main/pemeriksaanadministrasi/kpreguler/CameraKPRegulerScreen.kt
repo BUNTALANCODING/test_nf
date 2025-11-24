@@ -204,6 +204,18 @@ private fun CameraKPRegulerContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
+
+                                when (state.kpType) {
+                                    1 -> {
+                                        events(HomeEvent.OnUpdateImageKPReguler(image))
+                                        events(HomeEvent.OnUpdateImageKPRegulerBase64(base64))                                    }
+                                    2 -> {
+                                        events(HomeEvent.OnUpdateImageKPCadangan(image))
+                                        events(HomeEvent.OnUpdateImageKPCadanganBase64(base64))
+                                    }
+                                }
+
+
                                 navigateToHasilKPRegular()
                                 imageBitmap = null
                             }

@@ -3,11 +3,11 @@ package business.datasource.network.main.responses
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class UploadChunkResponseDTO(
-    @SerialName("unique_key") val uniqueKey: String = "",
-    @SerialName("chunk_index") val chunkIndex: Int = 0
-)
+//@Serializable
+//data class UploadChunkResponseDTO(
+//    @SerialName("unique_key") val uniqueKey: String = "",
+//    @SerialName("chunk_index") val chunkIndex: Int = 0
+//)
 
 @Serializable
 data class ChunkResponse(

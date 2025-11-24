@@ -93,11 +93,11 @@ object KtorHttpClient {
             })
         }
 
-        if (BuildKonfig.debug) {
-            install(InspektifyKtor) {
-                shortcutEnabled = true
-            }
-        }
+//        if (BuildKonfig.debug) {
+//            install(InspektifyKtor) {
+//                shortcutEnabled = true
+//            }
+//        }
 
     }
 

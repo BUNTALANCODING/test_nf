@@ -2,6 +2,8 @@ package presentation.ui.main.auth.view_model
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
+import business.constants.DataStoreKeys
+import business.core.AppDataStore
 import business.core.BaseViewModel
 import business.core.NetworkState
 import business.interactors.splash.CheckTokenUseCase
@@ -18,6 +20,7 @@ class LoginViewModel(
     private val registerUseCase: RegisterUseCase,
     private val checkTokenUseCase: CheckTokenUseCase,
     private val tokenManager: TokenManager,
+    private val appDataStore: AppDataStore,
 //    private val updateDeviceTokenUseCase: UpdateDeviceTokenUseCase,
 ) : BaseViewModel<LoginEvent, LoginState, LoginAction>() {
 
@@ -197,6 +200,77 @@ class LoginViewModel(
         }
     }
 
+//    private fun login() {
+//        executeUseCase(
+//            loginUseCase.execute(
+//                LoginUseCase.Params(
+//                    email = state.value.usernameLogin,
+//                    password = state.value.passwordLogin,
+//                )
+//            ),
+//            onSuccess = { data, status, code ->
+//                data?.let {
+//                    setAction {
+//                        if (it.token.toString().isNotEmpty()) {
+////                            state.value.fcmToken.let { t -> updateTokenFCM(t) }
+//                            LoginAction.Navigation.NavigateToMain
+//                        } else {
+//                            LoginAction.Navigation.NavigateToLogin
+//                        }
+//                    }
+//                    setState {
+//                        copy(dataLogin = data)
+//                    }
+//                }
+//            },
+//            onLoading = {
+//                setState { copy(progressBarState = it) }
+//            }
+//        )
+//    }
+
+
+//    private fun login() {
+//        executeUseCase(
+//            loginUseCase.execute(
+//                LoginUseCase.Params(
+//                    email = state.value.usernameLogin,
+//                    password = state.value.passwordLogin,
+//                )
+//            ),
+//            onSuccess = { data, status, code ->
+//                data?.let { loginResponse ->
+//                    // token mentah dari API
+//                    val rawToken = loginResponse.token?.toString().orEmpty()
+//
+//                    // 🔥 BERSIHKAN SEMUA WHITESPACE (spasi, \n, \r, \t)
+//                    val cleanToken = rawToken.replace("\\s".toRegex(), "")
+//
+//                    println("🔥 [LoginViewModel] rawToken = '$rawToken'")
+//                    println("🔥 [LoginViewModel] cleanToken = '$cleanToken'")
+//
+//                    viewModelScope.launch {
+//                        if (cleanToken.isNotEmpty()) {
+//                            appDataStore.setValue(DataStoreKeys.TOKEN, cleanToken)
+//                        }
+//                    }
+//
+//                    setAction {
+//                        if (cleanToken.isNotEmpty()) {
+//                            LoginAction.Navigation.NavigateToMain
+//                        } else {
+//                            LoginAction.Navigation.NavigateToLogin
+//                        }
+//                    }
+//                    setState { copy(dataLogin = loginResponse) }
+//                }
+//            },
+//            onLoading = {
+//                setState { copy(progressBarState = it) }
+//            }
+//        )
+//    }
+
     private fun login() {
         executeUseCase(
             loginUseCase.execute(
@@ -225,6 +299,7 @@ class LoginViewModel(
             }
         )
     }
+
 
     private fun loginDummy() {
         setAction {

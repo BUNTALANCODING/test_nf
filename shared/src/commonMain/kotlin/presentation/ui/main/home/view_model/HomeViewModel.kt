@@ -18,6 +18,8 @@ import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
 import business.datasource.network.main.request.VehiclePhotoRequestDTO
+import business.datasource.network.main.responses.ItemsItemLoadCard
+import business.datasource.network.main.responses.SubcategoryResponse
 import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetVehicleUseCase
@@ -90,8 +92,9 @@ class HomeViewModel(
             }
 
             is HomeEvent.LoadCard -> {
-                //TODO
+                loadCard()
             }
+
 
             is HomeEvent.GetVehicle -> {
                 getVehicle()
@@ -398,13 +401,21 @@ class HomeViewModel(
                 submitQuestionSIM()
             }
 
+            is HomeEvent.ListSubmitQuestionKp -> {
+                listsubmitQuestionKp(event.value)
+            }
+            is HomeEvent.SubmitQuestionKp -> {
+                submitQuestionKp(event.value)
+            }
+
+
             is HomeEvent.OnUpdateKartuUjiBase64 -> {
                 onUpdateKartuUjiBase64(event.value)
             }
             is HomeEvent.OnUpdateKartuUjiImageBitmap -> {
                 onUpdateKartuUjiBitmap(event.value)
             }
-            is HomeEvent.OnUpdateSimPengemudiBAse64 -> {
+            is HomeEvent.OnUpdateSimPengemudiBase64 -> {
                 onUpdateSimPengemudiBase64(event.value)
             }
             is HomeEvent.OnUpdateSimPengemudiImageBitmap -> {
@@ -417,11 +428,129 @@ class HomeViewModel(
                 onUpdateListSubmitQuestion(event.value)
             }
 
+            is HomeEvent.ApplyTeknisResultFromApi -> {
+                applyTeknisResultFromApi(event.apiSubcategories)
+            }
+
             is HomeEvent.Logout -> {
                 logout()
             }
+
+            is HomeEvent.OnUpdateKeteranganKPReguler -> {
+                onUpdateKeteranganKPReguler(event.value)
+            }
+
+            is HomeEvent.OnUpdateKeteranganKPCadangan -> {
+                onUpdateKeteranganKPCadangan(event.value)
+            }
+
+            is HomeEvent.OnUpdateSelectedOptionKPReguler -> {
+                onUpdateSelectedOptionKPReguler(event.id)
+            }
+
+            is HomeEvent.OnUpdateSelectedOptionKPCadangan -> {
+                onUpdateSelectedOptionKPCadangan(event.id)
+            }
+
+            is HomeEvent.OnUpdateImageKPReguler -> {
+                onUpdateImageKPReguler(event.bitmap)
+            }
+
+            is HomeEvent.OnUpdateImageKPCadangan -> {
+                onUpdateImageKPCadangan(event.bitmap)
+            }
+
+            is HomeEvent.OnUpdateImageKPRegulerBase64 -> {
+                onUpdateImageKPRegulerBase64(event.value)
+            }
+
+            is HomeEvent.OnUpdateImageKPCadanganBase64 -> {
+                onUpdateImageKPCadanganBase64(event.value)
+            }
+
+            is HomeEvent.OnUpdateKpType -> {
+                onUpdateKpType(event.value)
+            }
+
+
+            else -> {}
         }
     }
+
+    private fun loadCard() {
+        executeUseCase(
+            loadCardUseCase.execute(
+                params = Unit
+            ),
+            onSuccess = { items, status, code ->
+                // items = List<ItemsItemLoadCard>?
+
+                items?.let {
+                    setState {
+                        copy(
+                            listLoadCard = it
+                        )
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            }
+        )
+    }
+
+
+    private fun applyTeknisResultFromApi(apiSubcategories: List<SubcategoryResponse>) {
+        setState {
+            val updatedList = technicalConditions.map { cond ->
+
+                val apiSub = apiSubcategories.firstOrNull { sub ->
+                    sub.subcategory_name.equals(cond.section, ignoreCase = true)
+                }
+
+                if (apiSub == null) {
+                    return@map cond
+                }
+
+                val normalizedTitle = cond.title.substringBefore(":").trim()
+
+                val apiQuestion = apiSub.questions.firstOrNull { q ->
+                    q.question_name.equals(normalizedTitle, ignoreCase = true)
+                }
+
+                if (apiQuestion == null) {
+                    return@map cond
+                }
+
+                val selectionFromApi = mapAnswerNameToSelection(apiQuestion.answer_name)
+
+                cond.copy(
+                    selection = selectionFromApi
+                )
+            }
+
+            copy(technicalConditions = updatedList)
+        }
+    }
+
+    private fun mapAnswerNameToSelection(answerName: String): Int {
+        val lower = answerName.lowercase()
+
+        return when {
+            lower.contains("sesuai") ||
+                    (lower.contains("ada") && !lower.contains("tidak")) ||
+                    (lower.contains("baik") && !lower.contains("tidak")) ||
+                    (lower.contains("berfungsi") && !lower.contains("tidak")) ||
+                    (lower.contains("laik") && !lower.contains("tidak")) ||
+                    lower.contains("berlaku") ||
+                    (lower.contains("menyala") && !lower.contains("tidak")) -> 1
+
+            lower.contains("tidak") -> 2
+
+            else -> 0
+        }
+    }
+
 
     private fun onUpdateCityCode(value: String) {
         setState { copy(cityCodeValue = value) }
@@ -590,26 +719,6 @@ class HomeViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude
                 ),
-            ),
-            onSuccess = { data, status, code ->
-                status?.let { s ->
-                    if (s) {
-                        setAction {
-                            HomeAction.Navigation.NavigateToGuide
-                        }
-                    }
-                }
-            },
-            onLoading = {
-                setState { copy(progressBarState = it) }
-            },
-        )
-    }
-
-    private fun loadCard() {
-        executeUseCase(
-            loadCardUseCase.execute(
-                params = Unit
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
@@ -1025,6 +1134,7 @@ class HomeViewModel(
         setState { copy(simPengemudiBase64 = value) }
     }
 
+
     private fun onUpdateTidakSesuaiBase64(value: String) {
         setState { copy(tidakSesuaiBase64 = value) }
     }
@@ -1223,6 +1333,75 @@ class HomeViewModel(
             copy(errorDialogState = value)
         }
     }
+
+    private fun onUpdateSelectedOptionKPReguler(id: Int) {
+        setState { copy(selectedOptionKPReguler = id) }
+    }
+
+    private fun onUpdateSelectedOptionKPCadangan(id: Int) {
+        setState { copy(selectedOptionKPCadangan = id) }
+    }
+
+    private fun onUpdateKeteranganKPReguler(value: String) {
+        setState { copy(keteranganKPReguler = value) }
+    }
+
+    private fun onUpdateKeteranganKPCadangan(value: String) {
+        setState { copy(keteranganKPCadangan = value) }
+    }
+
+    private fun onUpdateImageKPReguler(bitmap: ImageBitmap) {
+        setState { copy(imageKPReguler = bitmap) }
+    }
+
+    private fun onUpdateImageKPCadangan(bitmap: ImageBitmap) {
+        setState { copy(imageKPCadangan = bitmap) }
+    }
+
+    private fun onUpdateImageKPRegulerBase64(value: String) {
+        setState { copy(imageKPRegulerBase64 = value) }
+    }
+
+    private fun onUpdateImageKPCadanganBase64(value: String) {
+        setState { copy(imageKPCadanganBase64 = value) }
+    }
+
+    private fun onUpdateKpType(value: Int) {
+        setState { copy(kpType = value) }
+    }
+    private fun listsubmitQuestionKp(value: List<AnswersItem>) {
+
+        setState { copy(listSubmitQuestion = value) }
+
+
+    }
+
+    private fun submitQuestionKp(listAnswer: List<AnswersItem>) {
+        executeUseCase(
+            submitQuestionUseCase.execute(
+                params = SubmitQuestionsRequestDTO(
+                    step = "5",
+                    answers = listAnswer
+                )
+            ),
+            onSuccess = { data, status, code ->
+                if(status == true){
+                    setState { copy(
+                        submitQuestionKp = emptyList() // Clear setelah submit
+                    )}
+                    setAction { HomeAction.Navigation.NavigateToKPCadangan }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+
+
+
+
 
 
 }

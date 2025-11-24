@@ -186,6 +186,9 @@ private fun CameraSIMPengemudiContent(
         )
     }
 
+
+
+
 // Main camera UI
     if (isCameraGranted) {
         CameraView(
@@ -204,7 +207,13 @@ private fun CameraSIMPengemudiContent(
                                 val base64 = withContext(Dispatchers.Default) {
                                     image.toBytes().toBase64()
                                 }
-                                navigateToHasilSIM()
+
+                                events(HomeEvent.OnUpdateSimPengemudiImageBitmap(image))
+                                events(HomeEvent.OnUpdateSimPengemudiBase64(base64))
+
+                                if(state.simPengemudiBase64 != null){
+                                    events(HomeEvent.IdentifySIM)
+                                }
                                 imageBitmap = null
                             }
                         }
