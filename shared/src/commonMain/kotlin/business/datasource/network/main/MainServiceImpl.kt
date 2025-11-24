@@ -27,6 +27,7 @@ import business.datasource.network.main.responses.HistoryRampcheckDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.IdentifyDTOItem
+import business.datasource.network.main.responses.ItemsItemLoadCard
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.PreviewBADTO
@@ -361,6 +362,21 @@ class MainServiceImpl(
             }
             contentType(ContentType.Application.Json)
             setBody(params)
+        }.body()
+    }
+
+    override suspend fun loadCard(
+        token: String,
+    ): MainGenericResponse<List<ItemsItemLoadCard>> {
+        return httpClient.post {
+            url {
+                headers {
+                    append(HttpHeaders.Authorization, token)
+                }
+                takeFrom(BASE_URL)
+                encodedPath += MainService.LOAD_CARD
+            }
+            contentType(ContentType.Application.Json)
         }.body()
     }
 

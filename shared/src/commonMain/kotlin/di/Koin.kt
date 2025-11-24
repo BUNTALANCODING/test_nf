@@ -14,6 +14,7 @@ import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.HistoryRampcheckUseCase
 import business.interactors.main.IdentifyUseCase
+import business.interactors.main.LoadCardUseCase
 import business.interactors.main.LogoutUseCase
 import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
@@ -54,7 +55,7 @@ fun appModule(context: Context) = module {
 //    factory { UploadChunkViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(), get()) }
     factory { RiwayatViewModel(get(), get()) }
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -76,6 +77,7 @@ fun appModule(context: Context) = module {
     single { SubmitQuestionUseCase(get(),get()) }
     single { GetNotificationUseCase(get(), get()) }
     single { HistoryRampcheckUseCase(get(), get()) }
+    single { LoadCardUseCase(get(), get()) }
     single { UploadChunkUseCase(get(), get()) }
 //    single { UpdateDeviceTokenUseCase(get(), get()) }
 

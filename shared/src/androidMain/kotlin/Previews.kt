@@ -1,21 +1,6 @@
-import androidx.compose.runtime.Composable
-import kotlinx.coroutines.flow.MutableSharedFlow
+//import androidx.compose.runtime.Composable
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import presentation.component.ConditionCard
-import presentation.component.SendEmailDialog
 import presentation.theme.AppTheme
-import presentation.ui.main.beritaacara.FormBeritaAcaraScreen
-import presentation.ui.main.home.view_model.HomeState
-import presentation.ui.main.pemeriksaanadministrasi.kartuuji.HasilPemeriksaanKartuUjiScreen
-import presentation.ui.main.pemeriksaanadministrasi.kartuuji.PemeriksaanKartuUjiScreen
-import presentation.ui.main.pemeriksaanadministrasi.kpreguler.KpRegulerSection
-import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
-import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
-import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
-import presentation.ui.main.riwayat.viewmodel.RiwayatState
-import rampcheck.shared.generated.resources.Res
-import rampcheck.shared.generated.resources.ic_bus_guide
-import rampcheck.shared.generated.resources.ic_email
 
 /*@Composable
 @androidx.compose.ui.tooling.preview.Preview
@@ -118,18 +103,18 @@ fun HomeScreen() {
 //    }
 //}
 
-@Composable
-@Preview
-fun Previews() {
-    AppTheme {
-        KpRegulerSection(
-            selectedId = 1,
-            onOptionSelected = {}
-        ) {
-
-        }
-    }
-}
+//@Composable
+//@Preview
+//fun Previews() {
+//    AppTheme {
+//        KpRegulerSection(
+//            selectedId = 1,
+//            onOptionSelected = {}
+//        ) {
+//
+//        }
+//    }
+//}
 
 //@Composable
 //@Preview

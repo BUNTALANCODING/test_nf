@@ -17,6 +17,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object SubmitSignature : HomeEvent()
 
+    data object LoadCard : HomeEvent()
+
     data object UploadOfficerImage : HomeEvent()
 
     data object GetVehicle : HomeEvent()
@@ -46,6 +48,8 @@ sealed class HomeEvent : ViewEvent {
     data object SetStateValue : HomeEvent()
 
     data object PreviewBA : HomeEvent()
+
+    data object Logout : HomeEvent()
 
     data class OnUpdateCityCode(val value: String) : HomeEvent()
 

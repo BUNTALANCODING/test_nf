@@ -13,6 +13,7 @@ import business.datasource.network.main.responses.GetStepDTO
 import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.IdentifyDTOItem
+import business.datasource.network.main.responses.ItemsItemLoadCard
 import business.datasource.network.main.responses.ProfileDTO
 import coil3.Bitmap
 import kotlinx.datetime.Clock
@@ -126,6 +127,11 @@ data class HomeState(
     val isTokenValid: Boolean = false,
     val updateTokenFCM: String = "",
     val profile: ProfileDTO = ProfileDTO(),
+
+    val keteranganKPCadangan : String = "",
+    val keteranganKPReguler : String = "",
+    val listLoadCard : List<ItemsItemLoadCard> = listOf(),
+
 
     val errorResult: JAlertResponse = JAlertResponse(),
     val errorDialogState: UIComponentState = UIComponentState.Hide,

@@ -22,6 +22,8 @@ import business.interactors.main.CheckQRUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.IdentifyUseCase
+import business.interactors.main.LoadCardUseCase
+import business.interactors.main.LogoutUseCase
 import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
@@ -49,6 +51,8 @@ class HomeViewModel(
     private val negativeAnswerUseCase: NegativeAnswerUseCase,
     private val identifyUseCase: IdentifyUseCase,
     private val submitQuestionUseCase: SubmitQuestionUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val loadCardUseCase: LoadCardUseCase,
     private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -83,6 +87,10 @@ class HomeViewModel(
 
             is HomeEvent.SubmitSignature -> {
                 submitSignature()
+            }
+
+            is HomeEvent.LoadCard -> {
+                //TODO
             }
 
             is HomeEvent.GetVehicle -> {
@@ -408,6 +416,10 @@ class HomeViewModel(
             is HomeEvent.OnUpdateListSubmitQuestion -> {
                 onUpdateListSubmitQuestion(event.value)
             }
+
+            is HomeEvent.Logout -> {
+                logout()
+            }
         }
     }
 
@@ -578,6 +590,26 @@ class HomeViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude
                 ),
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if (s) {
+                        setAction {
+                            HomeAction.Navigation.NavigateToGuide
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun loadCard() {
+        executeUseCase(
+            loadCardUseCase.execute(
+                params = Unit
             ),
             onSuccess = { data, status, code ->
                 status?.let { s ->
@@ -897,6 +929,16 @@ class HomeViewModel(
                 setState { copy(progressBarState = it) }
             },
         )
+    }
+
+    private fun logout() {
+        executeUseCase(logoutUseCase.execute(Unit), onSuccess = { data, status,code ->
+            data?.let {
+                setAction { HomeAction.Navigation.Logout }
+            }
+        }, onLoading = {
+            setState { copy(progressBarState = it) }
+        })
     }
 
     private fun onUpdateLastCode(value: String) {

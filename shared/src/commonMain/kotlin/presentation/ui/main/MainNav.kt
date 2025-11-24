@@ -194,6 +194,10 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                 is HomeAction.Navigation.NavigateToTeknisUtama -> {
                     navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
                 }
+
+                is HomeAction.Navigation.Logout -> {
+                    navigator.navigate(HomeNavigation.Login)
+                }
             }
         }
     }
@@ -253,12 +257,8 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToPemeriksaan = {
 //                            navigator.navigate(HomeNavigation.CameraFotoKIR)
-                            navigator.navigate(HomeNavigation.Pemeriksaan)
-//                            navigator.navigate(HomeNavigation.FotoKendaraan)
-//                            navigator.navigate(HomeNavigation.GuideFotoPetugas)
-//                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
-//                            navigator.navigate(BANavigation.FormBeritaAcara)
-//                            navigator.navigate(AdministrasiNavigation.PemeriksaanKartuUji)
+//                            navigator.navigate(HomeNavigation.Pemeriksaan)
+                            navigator.navigate(AdministrasiNavigation.PemeriksaanKPReguler)
                         },
                         navigateToRiwayatPemeriksaan = {
                             navigator.navigate(HomeNavigation.RiwayatPemeriksaan)

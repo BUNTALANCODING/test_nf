@@ -24,6 +24,7 @@ import business.datasource.network.main.responses.GetVehicleDTO
 import business.datasource.network.main.responses.HistoryRampcheckDTOItem
 import business.datasource.network.main.responses.IdentifyDTO
 import business.datasource.network.main.responses.IdentifyDTOItem
+import business.datasource.network.main.responses.ItemsItemLoadCard
 import business.datasource.network.main.responses.KIRCompareDTO
 import business.datasource.network.main.responses.PlatKIRDTO
 import business.datasource.network.main.responses.PreviewBADTO
@@ -61,6 +62,7 @@ interface MainService {
         const val GETSTEP = "getstep"
         const val IDENTIFY = "identify"
         const val NEGATIVE_ANSWER = "negativeanswer"
+        const val LOAD_CARD = "loadcard"
     }
 
 
@@ -133,6 +135,11 @@ interface MainService {
         token: String,
         params: HistoryRampcheckRequestDTO
     ): MainGenericResponse<List<HistoryRampcheckDTOItem>>
+
+    suspend fun loadCard(
+        token: String,
+    ): MainGenericResponse<List<ItemsItemLoadCard>>
+
 
     suspend fun negativeAnswer(
         token: String,

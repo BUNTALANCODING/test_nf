@@ -135,7 +135,7 @@ private fun HomeContent(
             //REMOVE THIS WHEN READY TO DEPLOY
             FileUploaderDemo(navigateToUploadDemo)
             Spacer(modifier = Modifier.weight(1f))
-            ButtonSection(navigateToLogin)
+            ButtonSection(events, navigateToLogin)
         }
     }
 
@@ -325,13 +325,14 @@ fun FileUploaderDemo(navigateToUploadDemo: () -> Unit) {
 
 
 @Composable
-private fun ButtonSection(navigateToLogin: () -> Unit) {
+private fun ButtonSection(events: (HomeEvent) -> Unit, navigateToLogin: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 64.dp, start = 16.dp, end = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         IconButton(
             modifier = Modifier.width(158.dp).height(DEFAULT__BUTTON_SIZE_EXTRA),
             text = "KELUAR",
             onClick = {
+                events(HomeEvent.Logout)
                 navigateToLogin()
             },
             shape = MaterialTheme.shapes.small,
