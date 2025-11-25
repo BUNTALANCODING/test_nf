@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.core.UIComponentState
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.Directory
 import com.kashif.cameraK.permissions.Permissions
@@ -54,9 +55,12 @@ import common.createPermissionsManager
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import presentation.component.DefaultScreenUI
+import presentation.component.NotMatchDialog
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import qrscanner.QrScanner
+import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_not_match
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -94,6 +98,21 @@ private fun QRKIRScreen(
     popup: () -> Unit,
     navigateToVerifyPhotoKTP: () -> Unit
 ) {
+    if(state.showDialogNotMatch == UIComponentState.Show){
+        NotMatchDialog(
+            iconRes = Res.drawable.ic_not_match,
+            title = "Data Kendaraan Tidak Sesuai",
+            subtitle = "Nomor kendaraan tidak sesuai dengan data Nomor Kendaraan pada eKir",
+            isButtonVisible = true,
+            positiveLabel = "KEMBALI",
+            onClickPositive = {
+                events(HomeEvent.OnShowDialogNotMatch(UIComponentState.Hide))
+            },
+            onDismissRequest = {
+                events(HomeEvent.OnShowDialogNotMatch(UIComponentState.Hide))
+            }
+        )
+    }
 
     val permissions: Permissions = providePermissions()
     val cameraController = remember { mutableStateOf<CameraController?>(null) }

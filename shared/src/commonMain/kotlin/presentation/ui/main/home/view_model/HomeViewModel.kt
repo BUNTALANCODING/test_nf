@@ -428,6 +428,10 @@ class HomeViewModel(
                 onUpdateListSubmitQuestion(event.value)
             }
 
+            is HomeEvent.OnShowDialogNotMatch -> {
+                onShowDialogNotMatch(event.value)
+            }
+
             is HomeEvent.ApplyTeknisResultFromApi -> {
                 applyTeknisResultFromApi(event.apiSubcategories)
             }
@@ -795,15 +799,21 @@ class HomeViewModel(
                 status?.let { s ->
                     if (s) {
                         data?.let { dataHasil ->
-                            setState {
-                                copy(
-                                    dataHasilEKIR = dataHasil,
-                                )
+                            if(dataHasil.match == true){
+                                setState {
+                                    copy(
+                                        dataHasilEKIR = dataHasil,
+                                    )
+                                }
+                                setAction {
+                                    HomeAction.Navigation.NavigateToResultScreen
+                                }
+                            } else {
+                                setState { copy(showDialogNotMatch = UIComponentState.Show) }
                             }
+
                         }
-                        setAction {
-                            HomeAction.Navigation.NavigateToResultScreen
-                        }
+
                     }
                 }
             },
@@ -1169,6 +1179,10 @@ class HomeViewModel(
 
     private fun onShowDialogDatePicker(value: UIComponentState) {
         setState { copy(showDialogDatePicker = value) }
+    }
+
+    private fun onShowDialogNotMatch(value: UIComponentState) {
+        setState { copy(showDialogNotMatch = value) }
     }
 
     private fun onShowDialogLocation(value: UIComponentState) {

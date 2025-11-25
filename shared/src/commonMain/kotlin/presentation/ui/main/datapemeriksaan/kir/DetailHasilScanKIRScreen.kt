@@ -23,9 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
+import business.core.UIComponentState
 import kotlinx.coroutines.flow.Flow
+import presentation.component.AlertDialog
 import presentation.component.DefaultScreenUI
 import presentation.component.InformasiRow
+import presentation.component.NotMatchDialog
 import presentation.component.Spacer_8dp
 import presentation.theme.SuccessColor
 import presentation.theme.TextGray
@@ -33,6 +36,7 @@ import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_kemenhub
+import rampcheck.shared.generated.resources.ic_not_match
 
 @Composable
 fun DetailHasilScanScreen(
@@ -66,6 +70,8 @@ private fun DataKendaraanContent(
     events: (HomeEvent) -> Unit,
     navigateToUnggahFotoKendaraan: () -> Unit
 ) {
+
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {

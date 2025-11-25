@@ -76,15 +76,15 @@ fun AlertDialog(
     iconRes: DrawableResource = Res.drawable.ic_info_alert,
     title: String,
     subtitle: String,
-    isButtonVertical : Boolean = false,
-    isButtonVisible : Boolean = false,
-    positiveLabel : String,
-    negativeLabel : String,
-    onClickPositive : () -> Unit,
-    onClickNegative : () -> Unit,
+    isButtonVertical: Boolean = false,
+    isButtonVisible: Boolean = false,
+    positiveLabel: String,
+    negativeLabel: String,
+    onClickPositive: () -> Unit,
+    onClickNegative: () -> Unit,
     onDismissRequest: () -> Unit,
 
-) {
+    ) {
 
     CustomAlertDialog(
         onDismissRequest = onDismissRequest,
@@ -93,7 +93,8 @@ fun AlertDialog(
     ) {
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
             Image(
@@ -117,8 +118,8 @@ fun AlertDialog(
             )
             Spacer_32dp()
 
-            if(isButtonVisible){
-                if(isButtonVertical){
+            if (isButtonVisible) {
+                if (isButtonVertical) {
                     Column {
                         DefaultButton(
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
@@ -140,11 +141,17 @@ fun AlertDialog(
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.Black)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Black
+                            )
                         )
                     }
                 } else {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
                         DefaultButton(
                             modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
@@ -166,13 +173,14 @@ fun AlertDialog(
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor, contentColor = Color.White)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PrimaryColor,
+                                contentColor = Color.White
+                            )
                         )
                     }
                 }
             }
-
-
 
 
         }
@@ -181,12 +189,13 @@ fun AlertDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SendEmailDialog(
+fun NotMatchDialog(
     iconRes: DrawableResource = Res.drawable.ic_info_alert,
     title: String,
     subtitle: String,
-    isButtonVertical : Boolean = false,
-    isButtonVisible : Boolean = false,
+    isButtonVisible: Boolean = false,
+    positiveLabel: String,
+    onClickPositive: () -> Unit,
     onDismissRequest: () -> Unit,
 
     ) {
@@ -198,7 +207,72 @@ fun SendEmailDialog(
     ) {
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Image(
+                painter = painterResource(iconRes),
+                contentDescription = null
+            )
+            Spacer_32dp()
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Spacer_16dp()
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center
+                )
+            )
+            Spacer_32dp()
+
+            if (isButtonVisible) {
+
+                DefaultButton(
+                    modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
+                    onClick = onClickPositive,
+                    colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
+                    text = positiveLabel,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+        }
+
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SendEmailDialog(
+    iconRes: DrawableResource = Res.drawable.ic_info_alert,
+    title: String,
+    subtitle: String,
+    isButtonVertical: Boolean = false,
+    isButtonVisible: Boolean = false,
+    onDismissRequest: () -> Unit,
+
+    ) {
+
+    CustomAlertDialog(
+        onDismissRequest = onDismissRequest,
+        modifier = Modifier
+            .fillMaxWidth().background(MaterialTheme.colorScheme.background)
+    ) {
+
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
             Image(
@@ -230,7 +304,10 @@ fun SendEmailDialog(
                     placeholder = "Masukkan email"
                 )
                 Spacer_8dp()
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_plus),
                         contentDescription = null
@@ -249,7 +326,9 @@ fun SendEmailDialog(
 
                 var isChecked by remember { mutableStateOf(false) }
                 Row(
-                    modifier = Modifier.noRippleClickable { isChecked = !isChecked }, // Membuat seluruh Row bisa diklik
+                    modifier = Modifier.noRippleClickable {
+                        isChecked = !isChecked
+                    }, // Membuat seluruh Row bisa diklik
                     verticalAlignment = Alignment.Top
                 ) {
                     Checkbox(
@@ -286,8 +365,8 @@ fun SendEmailDialog(
 
             Spacer_8dp()
 
-            if(isButtonVisible){
-                if(isButtonVertical){
+            if (isButtonVisible) {
+                if (isButtonVertical) {
                     Column {
                         DefaultButton(
                             modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
@@ -309,15 +388,23 @@ fun SendEmailDialog(
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = Color.Black)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Black
+                            )
                         )
                     }
                 } else {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
                         DefaultButton(
-                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp).border(1.dp,
-                                PrimaryColor, shape = MaterialTheme.shapes.small),
+                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp).border(
+                                1.dp,
+                                PrimaryColor, shape = MaterialTheme.shapes.small
+                            ),
                             onClick = onDismissRequest,
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                             text = "BATAL",
@@ -336,13 +423,14 @@ fun SendEmailDialog(
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor, contentColor = Color.White)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PrimaryColor,
+                                contentColor = Color.White
+                            )
                         )
                     }
                 }
             }
-
-
 
 
         }
@@ -436,8 +524,6 @@ fun KartuTidakAdaDialog(
         }
     }
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -659,11 +745,12 @@ fun SignaturePad(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-object PastOrPresentSelectableDates: SelectableDates {
+object PastOrPresentSelectableDates : SelectableDates {
     // Use Indonesia timezone for calculating "today"
     private val indonesiaTimeZone = TimeZone.of("Asia/Jakarta")
     private val nowIndonesia = Clock.System.now().toLocalDateTime(indonesiaTimeZone).date
-    private val dayStartUtc = nowIndonesia.atTime(0, 0, 0, 0).toInstant(TimeZone.UTC).toEpochMilliseconds()
+    private val dayStartUtc =
+        nowIndonesia.atTime(0, 0, 0, 0).toInstant(TimeZone.UTC).toEpochMilliseconds()
 
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
         return utcTimeMillis >= dayStartUtc

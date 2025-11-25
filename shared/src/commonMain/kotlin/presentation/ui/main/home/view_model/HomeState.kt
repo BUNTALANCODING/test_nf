@@ -60,7 +60,7 @@ data class HomeState(
 
     val filePath : String? = "",
 
-
+    val showDialogNotMatch: UIComponentState = UIComponentState.Hide,
     val dataHasilEKIR: CheckQRDTO = CheckQRDTO(),
 
     val listVehicle: List<GetVehicleDTO> = listOf(),

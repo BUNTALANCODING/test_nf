@@ -88,6 +88,8 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateCardAvailable(val value: Int) : HomeEvent()
 
+    data class OnShowDialogNotMatch(val value: UIComponentState) : HomeEvent()
+
     data class OnUpdateListLocation(val value: List<GetLocationDTO>): HomeEvent()
 
     data class OnUpdateLatitude(val value: String) : HomeEvent()
