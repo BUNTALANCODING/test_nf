@@ -2,52 +2,31 @@ package presentation.ui.main
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import business.core.AppDataStoreManager
 import common.ChangeStatusBarColors
 import common.Context
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.navigation.AdministrasiNavigation
-import presentation.navigation.AppNavigation
 import presentation.navigation.BANavigation
 import presentation.navigation.BottomNavigation
 import presentation.navigation.HomeNavigation
-import presentation.navigation.ProfileNavigation
-import presentation.navigation.SplashNavigation
 import presentation.navigation.TeknisNavigation
-import presentation.theme.DefaultCardColorsTheme
-import presentation.theme.DefaultNavigationBarItemTheme
 import presentation.ui.main.auth.LoginScreen
-import presentation.ui.main.auth.RegisterScreen
 import presentation.ui.main.auth.SendEmailScreen
-import presentation.ui.main.auth.SuccessRegisterScreen
 import presentation.ui.main.auth.forgot.ForgotPasswordScreen
 import presentation.ui.main.auth.view_model.LoginAction
 import presentation.ui.main.auth.view_model.LoginViewModel
@@ -67,7 +46,6 @@ import presentation.ui.main.datapemeriksaan.kir.DetailHasilScanScreen
 import presentation.ui.main.datapemeriksaan.kir.QRKIRScreen
 import presentation.ui.main.home.HomeScreen
 import presentation.ui.main.home.view_model.HomeAction
-import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.pemeriksaanadministrasi.GuidePemeriksaanAdministrasiScreen
 import presentation.ui.main.pemeriksaanadministrasi.kartuuji.CameraKartuUjiScreen
@@ -91,10 +69,10 @@ import presentation.ui.main.riwayat.RiwayatPDFScreen
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 //import presentation.ui.main.uploadChunk.UploadFileScreen
 import presentation.ui.main.uploadChunk.UploadViewModel
-import presentation.ui.splash.SplashScreen
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
-import presentation.ui.main.pemeriksaanteknis.HasilTeknisViewModel
+import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraTidakSesuaiSIMPengemudiScreen
+import presentation.ui.main.pemeriksaanteknis.CameraTidakSesuaiTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -202,6 +180,10 @@ fun MainNav(context: Context?, logout: () -> Unit) {
 
                 is HomeAction.Navigation.Logout -> {
                     navigator.navigate(HomeNavigation.Login)
+                }
+
+                is HomeAction.Navigation.NavigateToBeritaAcara -> {
+                    navigator.navigate(BANavigation.FormBeritaAcara)
                 }
             }
         }
@@ -520,6 +502,18 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     )
                 }
 
+                composable<AdministrasiNavigation.CameraSIMNegative> {
+                    CameraTidakSesuaiSIMPengemudiScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToSIMPengemudi = {
+                            navigator.popBackStack()
+                        },
+                    )
+                }
+
                 composable<AdministrasiNavigation.CameraKartuUjiNegative> {
                     CameraTidakSesuaiKartuUjiScreen(
                         errors = viewModel.errors,
@@ -622,6 +616,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToPemeriksaanTeknis = {
                             navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
                         },
+                        navigateToCameraNegative = {
+                            navigator.popBackStack()
+                        },
                     )
                 }
 
@@ -694,7 +691,23 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToTeknisPenunjang = {
                             navigator.navigate(BANavigation.FormBeritaAcara)
                         },
-                        hasilViewModel = hasilTeknisViewModel
+                        hasilViewModel = hasilTeknisViewModel,
+                        navigateToCamera = {
+                            navigator.navigate(TeknisNavigation.CameraTidakSesuaiTeknisUtama)
+                        }
+                    )
+                }
+
+                composable<TeknisNavigation.CameraTidakSesuaiTeknisUtama> {
+
+                    CameraTidakSesuaiTeknisUtamaScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToSIMPengemudi = {
+                            navigator.popBackStack()
+                        },
                     )
                 }
 

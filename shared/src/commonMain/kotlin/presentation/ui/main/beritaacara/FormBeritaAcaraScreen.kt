@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +37,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import business.core.UIComponent
 import business.core.UIComponentState
+import common.rememberPdfDownloader
 import common.toBase64
 import common.toBytes
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.AlertDialog
 import presentation.component.DEFAULT__BUTTON_SIZE
@@ -112,6 +115,12 @@ private fun FormBeritaAcaraContent(
     LaunchedEffect(Unit){
         events(HomeEvent.SetStateValue)
     }
+    val scope = rememberCoroutineScope()
+
+    val downloader = rememberPdfDownloader()
+
+    // 1. Ambil URL dari state (asumsi nama field di state adalah pdfUrl)
+    val pdfUrl = state.urlPreviewBA
     if (state.showDialogTandaTanganPenguji == UIComponentState.Show) {
         Dialog(onDismissRequest = { events(HomeEvent.OnShowDialogTandaTanganPenguji(UIComponentState.Hide)) }) {
             SignaturePad(
@@ -173,7 +182,19 @@ private fun FormBeritaAcaraContent(
             },
             positiveLabel = "UNDUH DAN SELESAI",
             negativeLabel = "LIHAT PREVIEW",
-            onClickPositive = {},
+            onClickPositive = {
+                // 4. Perbaiki logika download untuk memanggil URL
+                if (pdfUrl.isNotEmpty()) {
+                    // downloader.download sekarang menerima URL!
+
+                    scope.launch {
+                        downloader.download(
+                            url = pdfUrl,
+                            fileName = "Laporan_${state.rampcheckId}.pdf"
+                        )
+                    }
+                }
+            },
             onClickNegative = navigateToPreviewBA
         )
     }

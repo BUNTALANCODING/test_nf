@@ -219,7 +219,8 @@ fun NotMatchDialog(
             Text(
                 title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
                 )
             )
             Spacer_16dp()
@@ -235,12 +236,12 @@ fun NotMatchDialog(
             if (isButtonVisible) {
 
                 DefaultButton(
-                    modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
+                    modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(280.dp),
                     onClick = onClickPositive,
-                    colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
                     text = positiveLabel,
                     style = MaterialTheme.typography.labelLarge.copy(
-                        color = PrimaryColor,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 )

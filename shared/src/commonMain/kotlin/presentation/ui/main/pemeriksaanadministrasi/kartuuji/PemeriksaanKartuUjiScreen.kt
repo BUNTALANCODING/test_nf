@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_AVAILABLE
 import business.constants.CARD_NOT_AVAILABLE
 import business.constants.KARTU_UJI_TYPE
 import business.core.UIComponent
@@ -102,7 +103,11 @@ private fun PemeriksaanKartuUjiContent(
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
                 negativeButtonLabel = "KARTU TIDAK ADA",
-                positiveButtonClick = { navigateToCameraKartuUji() },
+                positiveButtonClick = {
+                    events(HomeEvent.OnUpdateTypeCard(KARTU_UJI_TYPE))
+                    events(HomeEvent.OnUpdateCardAvailable(CARD_AVAILABLE))
+                    navigateToCameraKartuUji()
+                },
                 negativeButtonClick = { events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show)) }
             )
         }

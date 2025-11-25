@@ -400,30 +400,42 @@ class HomeViewModel(
             is HomeEvent.SubmitQuestionSIM -> {
                 submitQuestionSIM()
             }
-
-            is HomeEvent.ListSubmitQuestionKp -> {
-                listsubmitQuestionKp(event.value)
+            is HomeEvent.SubmitQuestionTeknisUtama -> {
+                submitQuestionTeknisUtama()
             }
+
+            is HomeEvent.ListSubmitQuestionKpReguler -> {
+                listsubmitQuestionKpReguler(event.value)
+            }
+
+            is HomeEvent.ListSubmitQuestionKpCadangan -> {
+                listsubmitQuestionKpCadangan(event.value)
+            }
+
             is HomeEvent.SubmitQuestionKp -> {
                 submitQuestionKp(event.value)
             }
 
-
             is HomeEvent.OnUpdateKartuUjiBase64 -> {
                 onUpdateKartuUjiBase64(event.value)
             }
+
             is HomeEvent.OnUpdateKartuUjiImageBitmap -> {
                 onUpdateKartuUjiBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateSimPengemudiBase64 -> {
                 onUpdateSimPengemudiBase64(event.value)
             }
+
             is HomeEvent.OnUpdateSimPengemudiImageBitmap -> {
                 onUpdateSimPengemudiImageBitmap(event.value)
             }
+
             is HomeEvent.OnUpdateTidakSesuaiBase64 -> {
                 onUpdateTidakSesuaiBase64(event.value)
             }
+
             is HomeEvent.OnUpdateListSubmitQuestion -> {
                 onUpdateListSubmitQuestion(event.value)
             }
@@ -432,8 +444,66 @@ class HomeViewModel(
                 onShowDialogNotMatch(event.value)
             }
 
+            is HomeEvent.OnSetActiveQuestion -> {
+                setState {
+                    copy(activeQuestionId = event.questionId)
+                }
+            }
+
+            is HomeEvent.OnUpdateTidakSesuaiListBitmap -> {
+                setState {
+                    copy(
+                        bitmapTidakSesuaiMap =
+                            bitmapTidakSesuaiMap.toMutableMap().apply {
+                                put(event.questionId, event.bitmap)
+                            }
+                    )
+                }
+            }
+
+
+
             is HomeEvent.ApplyTeknisResultFromApi -> {
-                applyTeknisResultFromApi(event.apiSubcategories)
+
+                if (state.value.answers.isNotEmpty()) return
+
+                val answers = event.apiSubcategories.flatMap { sub ->
+                    sub.questions.map { q ->
+                        AnswersItem(
+                            questionId = q.question_id ?: 0,
+                            answerId = q.answer_id
+                        )
+                    }
+                }
+
+                val selection = event.apiSubcategories
+                    .flatMap { it.questions }
+                    .associate { q ->
+                        (q.question_id ?: 0) to 0
+                    }
+
+                setState {
+                    copy(
+                        answers = answers,
+                        selectionMap = selection
+                    )
+                }
+//                applyTeknisResultFromApi(event.apiSubcategories)
+            }
+
+            is HomeEvent.OnSaveImage -> {
+                val updated = state.value.answers.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(answerFile = event.base64)
+                    } else it
+                }
+
+                setState {
+                    copy(
+                        answers = updated,
+                        currentCameraQuestionId = null
+                    )
+                }
             }
 
             is HomeEvent.Logout -> {
@@ -476,9 +546,71 @@ class HomeViewModel(
                 onUpdateKpType(event.value)
             }
 
+            is HomeEvent.OnUpdateSelectionSIM -> {
+                onUpdateSelectionSIM(event.value)
+            }
+
+            is HomeEvent.OnShowDialogSuccessAdministrasi -> {
+                onShowDialogSuccessAdministrasi(event.value)
+            }
+
+            is HomeEvent.OnUpdateSelection -> {
+                val newSelection = state.value.selectionMap.toMutableMap()
+                newSelection[event.questionId] = event.selection
+
+                val updatedAnswers = state.value.answers.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(
+                            answerOptionId = event.selection
+                        )
+                    } else it
+                }
+
+                setState {
+                    copy(
+                        selectionMap = newSelection,
+                        answers = updatedAnswers
+                    )
+                }
+            }
+
+            is HomeEvent.OnUpdateCondition -> {
+                val updatedAnswers = state.value.answers.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(answerCondition = event.value)
+                    } else it
+                }
+
+                setState { copy(answers = updatedAnswers) }
+            }
+
+            is HomeEvent.OnUpdateImage -> {
+                val updatedAnswers = state.value.answers.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(answerFile = event.base64)
+                    } else it
+                }
+
+                setState { copy(answers = updatedAnswers) }
+            }
+
 
             else -> {}
         }
+    }
+
+    private fun updateAnswer(
+        list: List<AnswersItem>,
+        questionId: Int,
+        transform: (AnswersItem) -> AnswersItem
+    ): List<AnswersItem> {
+        val existing = list.find { it.questionId == questionId }
+
+        return if (existing != null) {
+            list.map {
+                if (it.questionId == questionId) transform(it) else it
+            }
+        } else list
     }
 
     private fun loadCard() {
@@ -526,7 +658,7 @@ class HomeViewModel(
                     return@map cond
                 }
 
-                val selectionFromApi = mapAnswerNameToSelection(apiQuestion.answer_name)
+                val selectionFromApi = mapAnswerNameToSelection(apiQuestion.answer_name ?: "-")
 
                 cond.copy(
                     selection = selectionFromApi
@@ -618,8 +750,8 @@ class HomeViewModel(
                 ),
             ),
             onSuccess = { data, status, code ->
-                status?.let {s->
-                    if(s){
+                status?.let { s ->
+                    if (s) {
                         setState {
                             copy(
                                 typeCard = "",
@@ -773,9 +905,12 @@ class HomeViewModel(
             onSuccess = { data, status, code ->
                 status?.let { s ->
                     if (s) {
-                        data.let{
+                        data.let {
                             setState {
-                                copy(showDialogSuccessSubmitSignature = UIComponentState.Show, rampcheckId = data?.rampcheckId!!.toInt())
+                                copy(
+                                    showDialogSuccessSubmitSignature = UIComponentState.Show,
+                                    rampcheckId = data?.rampcheckId!!.toInt()
+                                )
                             }
                         }
 
@@ -799,7 +934,7 @@ class HomeViewModel(
                 status?.let { s ->
                     if (s) {
                         data?.let { dataHasil ->
-                            if(dataHasil.match == true){
+                            if (dataHasil.match == true) {
                                 setState {
                                     copy(
                                         dataHasilEKIR = dataHasil,
@@ -854,8 +989,8 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let {s->
-                    if(s){
+                status?.let { s ->
+                    if (s) {
                         data?.let { listIdentify ->
                             val identifyDTOItem = listIdentify[0]
                             setState {
@@ -889,12 +1024,14 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let {s->
-                    if(s){
+                status?.let { s ->
+                    if (s) {
                         data?.let { listIdentify ->
+                            val identifyDTOItem = listIdentify[0]
                             setState {
                                 copy(
                                     listIdentifySIM = listIdentify,
+                                    identifySIM = identifyDTOItem
                                 )
                             }
                         }
@@ -920,9 +1057,16 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let {s->
-                    if(s){
-                        setState { copy(listSubmitQuestion = listOf()) }
+                status?.let { s ->
+                    if (s) {
+                        setState {
+                            copy(
+                                listSubmitQuestion = listOf(),
+                                tidakSesuai = "",
+                                tidakSesuaiBitmap = null,
+                                tidakSesuaiBase64 = ""
+                            )
+                        }
                         setAction { HomeAction.Navigation.NavigateToKPReguler }
                     }
 
@@ -943,10 +1087,43 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                status?.let {s->
-                    if(s){
-                        setState { copy(listSubmitQuestion = listOf()) }
-                        setAction { HomeAction.Navigation.NavigateToTeknisUtama }
+                status?.let { s ->
+                    if (s) {
+                        setState {
+                            copy(
+                                listSubmitQuestion = listOf(),
+                                showDialogSuccessAdministrasi = UIComponentState.Show,
+                                tidakSesuai = "",
+                                tidakSesuaiBitmap = null,
+                                tidakSesuaiBase64 = ""
+                            )
+                        }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
+    private fun submitQuestionTeknisUtama() {
+        executeUseCase(
+            submitQuestionUseCase.execute(
+                params = SubmitQuestionsRequestDTO(
+                    step = "7",
+                    answers = state.value.answers,
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if (s) {
+                        setState {
+                            copy(
+                                answers = listOf(),
+                            )
+                        }
+                        setAction { HomeAction.Navigation.NavigateToBeritaAcara }
                     }
                 }
             },
@@ -1051,7 +1228,7 @@ class HomeViewModel(
     }
 
     private fun logout() {
-        executeUseCase(logoutUseCase.execute(Unit), onSuccess = { data, status,code ->
+        executeUseCase(logoutUseCase.execute(Unit), onSuccess = { data, status, code ->
             data?.let {
                 setAction { HomeAction.Navigation.Logout }
             }
@@ -1082,6 +1259,14 @@ class HomeViewModel(
 
     private fun onUpdateSelectedOption(value: Int) {
         setState { copy(selectedOption = value) }
+    }
+
+    private fun onUpdateSelectionSIM(value: Int) {
+        setState { copy(selectionSIM = value) }
+    }
+
+    private fun onShowDialogSuccessAdministrasi(value: UIComponentState) {
+        setState { copy(showDialogSuccessAdministrasi = value) }
     }
 
     private fun onUpdateSelectedTab(value: Int) {
@@ -1383,11 +1568,13 @@ class HomeViewModel(
     private fun onUpdateKpType(value: Int) {
         setState { copy(kpType = value) }
     }
-    private fun listsubmitQuestionKp(value: List<AnswersItem>) {
 
-        setState { copy(listSubmitQuestion = value) }
+    private fun listsubmitQuestionKpReguler(value: AnswersItem) {
+        setState { copy(listSubmitQuestionKPReguler = value) }
+    }
 
-
+    private fun listsubmitQuestionKpCadangan(value: AnswersItem) {
+        setState { copy(listSubmitQuestionKPCadangan = value) }
     }
 
     private fun submitQuestionKp(listAnswer: List<AnswersItem>) {
@@ -1399,11 +1586,13 @@ class HomeViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
-                if(status == true){
-                    setState { copy(
-                        submitQuestionKp = emptyList() // Clear setelah submit
-                    )}
-                    setAction { HomeAction.Navigation.NavigateToKPCadangan }
+                if (status == true) {
+                    setState {
+                        copy(
+                            submitQuestionKp = emptyList() // Clear setelah submit
+                        )
+                    }
+                    setAction { HomeAction.Navigation.NavigateToSIMPengemudi }
                 }
             },
             onLoading = {
@@ -1411,11 +1600,6 @@ class HomeViewModel(
             },
         )
     }
-
-
-
-
-
 
 
 }

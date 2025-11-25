@@ -165,6 +165,35 @@ private fun CardSection(
         }
     } else {
         val items = state.listIdentifyKartuUji
+        if(state.selectionKartuUji == 0){
+            events(
+                HomeEvent.OnUpdateListSubmitQuestion(
+                    listOf(
+                        AnswersItem(
+                            answerId = state.identifyKartuUji.answerId,
+                            answerCondition = null,
+                            answerFile = null,
+                            answerOptionId = state.selectionKartuUji,
+                            questionId = state.identifyKartuUji.questionId
+                        )
+                    )
+                )
+            )
+        } else {
+            events(
+                HomeEvent.OnUpdateListSubmitQuestion(
+                    listOf(
+                        AnswersItem(
+                            answerId = state.identifyKartuUji.answerId,
+                            answerCondition = state.tidakSesuai,
+                            answerFile = state.tidakSesuaiBase64,
+                            answerOptionId = state.selectionKartuUji,
+                            questionId = state.identifyKartuUji.questionId
+                        )
+                    )
+                )
+            )
+        }
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
@@ -179,19 +208,6 @@ private fun CardSection(
                     value = state.tidakSesuai,
                     onValueChange = {
                         events(HomeEvent.OnUpdateTidakSesuai(it))
-                        events(
-                            HomeEvent.OnUpdateListSubmitQuestion(
-                                listOf(
-                                    AnswersItem(
-                                        answerId = state.identifyKartuUji.answerId,
-                                        answerCondition = state.tidakSesuai,
-                                        answerFile = state.tidakSesuaiBase64,
-                                        answerOptionId = state.selectionKartuUji,
-                                        questionId = state.identifyKartuUji.questionId
-                                    )
-                                )
-                            )
-                        )
                     },
                     onClickCamera = {
                         navigateToCameraNegative()

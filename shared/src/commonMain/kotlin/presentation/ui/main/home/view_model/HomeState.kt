@@ -72,6 +72,8 @@ data class HomeState(
     val identifySIM: IdentifyDTOItem = IdentifyDTOItem(),
 
     val listSubmitQuestion: List<AnswersItem> = listOf(),
+    val listSubmitQuestionKPReguler: AnswersItem = AnswersItem(),
+    val listSubmitQuestionKPCadangan: AnswersItem = AnswersItem(),
     val submitQuestionKp: List<AnswersItem> = listOf(),
 
     val keteranganKartuTidakAda : String? = "",
@@ -84,6 +86,8 @@ data class HomeState(
     val tidakSesuaiBitmap : ImageBitmap? = null,
     val tidakSesuaiBase64 : String? = "",
     val selectionKartuUji : Int = 0,
+    val selectionSIM : Int = 0,
+    val showDialogSuccessAdministrasi : UIComponentState = UIComponentState.Hide,
     val imageKPReguler: ImageBitmap? = null,
     val imageKPCadangan: ImageBitmap? = null,
 
@@ -142,6 +146,14 @@ data class HomeState(
     val keteranganKPCadangan : String = "",
     val keteranganKPReguler : String = "",
     val listLoadCard : List<ItemsItemLoadCard> = listOf(),
+
+    val answers: List<AnswersItem> = emptyList(),
+    val selectionMap: Map<Int, Int> = emptyMap(),
+    val bitmapTidakSesuaiMap: Map<Int, ImageBitmap> = emptyMap(),
+    val activeQuestionId: Int? = null,
+
+    val currentCameraQuestionId: Int? = null,
+
 
 
     val errorResult: JAlertResponse = JAlertResponse(),

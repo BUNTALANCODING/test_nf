@@ -34,6 +34,7 @@ import business.constants.CARD_NOT_AVAILABLE
 import business.constants.SECTION_KARTU_UJI
 import business.constants.SECTION_SIM_PENGEMUDI
 import business.core.UIComponent
+import business.core.UIComponentState
 import business.datasource.network.main.request.AnswersItem
 import common.toBase64
 import common.toBytes
@@ -45,15 +46,19 @@ import org.jetbrains.compose.resources.painterResource
 import presentation.component.ConditionCard
 import presentation.component.ConditionCardItem
 import presentation.component.ConditionKartuUjiCard
+import presentation.component.ConditionSIMCard
 import presentation.component.DefaultScreenUI
+import presentation.component.NotMatchDialog
 import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
 import presentation.ui.main.datapemeriksaan.kir.ButtonNextSection
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_check_mark
 import rampcheck.shared.generated.resources.ic_kartu_not_available
 import rampcheck.shared.generated.resources.ic_kemenhub
+import rampcheck.shared.generated.resources.ic_not_match
 import rampcheck.shared.generated.resources.kartu_uji
 
 @Composable
@@ -62,7 +67,8 @@ fun HasilPemeriksaanSIMPengemudiScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToPemeriksaanTeknis: () -> Unit
+    navigateToPemeriksaanTeknis: () -> Unit,
+    navigateToCameraNegative: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -76,7 +82,8 @@ fun HasilPemeriksaanSIMPengemudiScreen(
         HasilPemeriksaanSIMPengemudiContent(
             state = state,
             events = events,
-            navigateToPemeriksaanTeknis = navigateToPemeriksaanTeknis
+            navigateToPemeriksaanTeknis = navigateToPemeriksaanTeknis,
+            navigateToCameraNegative = navigateToCameraNegative
         )
     }
 }
@@ -85,8 +92,24 @@ fun HasilPemeriksaanSIMPengemudiScreen(
 private fun HasilPemeriksaanSIMPengemudiContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToPemeriksaanTeknis: () -> Unit
+    navigateToPemeriksaanTeknis: () -> Unit,
+    navigateToCameraNegative: () -> Unit
 ) {
+    if (state.showDialogSuccessAdministrasi == UIComponentState.Show) {
+        NotMatchDialog(
+            iconRes = Res.drawable.ic_check_mark,
+            title = "Pemeriksaan Administrasi Berhasil",
+            subtitle = "Langkah berikutnya lakukan Pemeriksaan Teknis Utama",
+            isButtonVisible = true,
+            positiveLabel = "LANJUTKAN",
+            onClickPositive = {
+                events(HomeEvent.OnShowDialogSuccessAdministrasi(UIComponentState.Hide))
+                navigateToPemeriksaanTeknis()
+            },
+            onDismissRequest = {
+            }
+        )
+    }
     var base64 by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
@@ -102,24 +125,29 @@ private fun HasilPemeriksaanSIMPengemudiContent(
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection(state)
-            CardSection(state, events)
+            CardSection(state, events, navigateToCameraNegative = navigateToCameraNegative)
             Spacer(Modifier.weight(1f))
             ButtonNextSection("LANJUT", state, onClick = {
                 if (state.availableCard == CARD_NOT_AVAILABLE) {
                     events(HomeEvent.NegativeAnswerSIM)
                 } else {
                     events(HomeEvent.SubmitQuestionSIM)
-                }            })
+                }
+            })
 
         }
     }
 }
 
 @Composable
-private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
+private fun CardSection(
+    state: HomeState,
+    events: (HomeEvent) -> Unit,
+    navigateToCameraNegative: () -> Unit
+) {
 
-    if(state.availableCard == CARD_NOT_AVAILABLE){
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)){
+    if (state.availableCard == CARD_NOT_AVAILABLE) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
                 style = MaterialTheme.typography.labelMedium.copy(
@@ -151,6 +179,35 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
         }
     } else {
         val items = state.listIdentifySIM
+        if (state.selectionSIM == 0) {
+            events(
+                HomeEvent.OnUpdateListSubmitQuestion(
+                    listOf(
+                        AnswersItem(
+                            answerId = state.identifyKartuUji.answerId,
+                            answerCondition = null,
+                            answerFile = null,
+                            answerOptionId = state.selectionSIM,
+                            questionId = state.identifyKartuUji.questionId
+                        )
+                    )
+                )
+            )
+        } else {
+            events(
+                HomeEvent.OnUpdateListSubmitQuestion(
+                    listOf(
+                        AnswersItem(
+                            answerId = state.identifyKartuUji.answerId,
+                            answerCondition = state.tidakSesuai,
+                            answerFile = state.tidakSesuaiBase64,
+                            answerOptionId = state.selectionKartuUji,
+                            questionId = state.identifyKartuUji.questionId
+                        )
+                    )
+                )
+            )
+        }
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Hasil Pemeriksaan",
@@ -160,7 +217,7 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
             )
             Spacer_16dp()
             items.forEach { item ->
-                ConditionKartuUjiCard(
+                ConditionSIMCard(
                     item = item, events = events, state = state,
                     value = state.tidakSesuai,
                     onValueChange = {
@@ -180,7 +237,7 @@ private fun CardSection(state: HomeState, events: (HomeEvent) -> Unit) {
                         )
                     },
                     onClickCamera = {
-//                        navigateToCameraNegative()
+                        navigateToCameraNegative()
                     }
                 )
                 Spacer_8dp()
@@ -214,7 +271,7 @@ private fun HeaderSection(state: HomeState) {
                         contentDescription = null
                     )
                 } else {
-                    state.kartuUjiBitmap?.let {
+                    state.simPengemudiBitmap?.let {
                         Image(
                             contentDescription = null,
                             modifier = Modifier.width(223.dp).height(320.dp),

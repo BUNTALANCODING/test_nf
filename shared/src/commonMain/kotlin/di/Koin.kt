@@ -37,7 +37,7 @@ import presentation.SharedViewModel
 import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
-import presentation.ui.main.pemeriksaanteknis.HasilTeknisViewModel
+import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.util.BackgroundScheduler

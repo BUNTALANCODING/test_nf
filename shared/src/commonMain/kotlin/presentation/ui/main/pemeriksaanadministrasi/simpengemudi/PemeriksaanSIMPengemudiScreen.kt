@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import business.constants.CARD_AVAILABLE
 import business.constants.CARD_NOT_AVAILABLE
 import business.constants.KP_REGULER_TYPE
 import business.constants.SIM_PENGEMUDI_TYPE
@@ -92,13 +93,16 @@ private fun PemeriksaanSIMPengemudiScreen(
             ButtonVerticalSection(
                 positiveButtonLabel = "AMBIL FOTO",
                 negativeButtonLabel = "KARTU TIDAK ADA",
-                positiveButtonClick = navigateToCameraSIM,
-                negativeButtonClick = {events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show))}
+                positiveButtonClick = {
+                    events(HomeEvent.OnUpdateTypeCard(SIM_PENGEMUDI_TYPE))
+                    events(HomeEvent.OnUpdateCardAvailable(CARD_AVAILABLE))
+                    navigateToCameraSIM()
+                },
+                negativeButtonClick = { events(HomeEvent.OnShowDialogKartuTidakAda(UIComponentState.Show)) }
             )
         }
     }
 }
-
 
 
 @Composable

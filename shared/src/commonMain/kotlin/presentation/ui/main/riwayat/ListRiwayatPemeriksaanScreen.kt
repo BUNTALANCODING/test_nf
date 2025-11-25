@@ -55,6 +55,7 @@ fun ListRiwayatPemeriksaanScreen(
         progressBarState = state.progressBarState,
         titleToolbar = "Riwayat Pemeriksaan",
         startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
+        onClickStartIconToolbar = { popup() },
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
         ListRiwayatPemeriksaanContent(

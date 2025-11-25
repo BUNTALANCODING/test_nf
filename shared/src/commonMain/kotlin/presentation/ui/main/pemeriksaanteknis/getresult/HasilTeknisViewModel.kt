@@ -1,5 +1,5 @@
 // HasilTeknisViewModel.kt
-package presentation.ui.main.pemeriksaanteknis
+package presentation.ui.main.pemeriksaanteknis.getresult
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,13 +7,12 @@ import business.constants.DataStoreKeys
 import business.core.AppDataStore
 import business.datasource.network.main.MainService
 import business.datasource.network.main.responses.HasilTeknisDTO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CancellationException
-
+import presentation.ui.main.pemeriksaanteknis.HasilTeknisState
 
 
 //class HasilTeknisViewModel(
@@ -208,6 +207,7 @@ class HasilTeknisViewModel(
     private val _state = MutableStateFlow(HasilTeknisState())
     val state: StateFlow<HasilTeknisState> = _state
 
+
     fun loadHasil(uniqueKey: String) {
         viewModelScope.launch {
             // state awal
@@ -247,7 +247,7 @@ class HasilTeknisViewModel(
                             error = null
                         )
 
-                        val statusLower = data.status.lowercase()
+                        val statusLower = data.status?.lowercase()
                         val hasResponse = responseList.isNotEmpty()
 
                         // berhenti hanya kalau sudah completed + response ada
@@ -288,6 +288,7 @@ class HasilTeknisViewModel(
         }
     }
 }
+
 
 
 

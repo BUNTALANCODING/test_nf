@@ -35,6 +35,8 @@ sealed class HomeAction : ViewSingleAction {
 
         data object NavigateToTeknisUtama : Navigation()
 
+        data object NavigateToBeritaAcara : Navigation()
+
         data object Logout : Navigation()
     }
 

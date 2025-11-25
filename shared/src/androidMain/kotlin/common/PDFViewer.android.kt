@@ -23,12 +23,37 @@ import java.io.FileOutputStream
 @Composable
 actual fun Base64PdfViewer(url: String, modifier: Modifier) {
 
-    // Helper function untuk mengubah URL menjadi format Google Docs Viewer
+//    val isPdf = url.endsWith(".pdf", ignoreCase = true)
+//
+//    if (isPdf) {
+//        AndroidView(
+//            modifier = modifier,
+//            factory = { context ->
+//                WebView(context).apply {
+//                    settings.javaScriptEnabled = true
+//                    settings.loadWithOverviewMode = true
+//                    settings.useWideViewPort = true
+//                    settings.setSupportZoom(true)
+//                    settings.builtInZoomControls = true
+//                    settings.displayZoomControls = false
+//
+//                    webViewClient = WebViewClient()
+//                }
+//            },
+//            update = { webView ->
+//                webView.loadUrl(url)
+//            }
+//        )
+//    } else {
+//        Text("File ini bukan PDF dan tidak bisa ditampilkan")
+//    }
+//    // Helper function untuk mengubah URL menjadi format Google Docs Viewer
     fun getViewerUrl(originalUrl: String): String {
         return if (originalUrl.endsWith(".pdf", ignoreCase = true)) {
             // Jika PDF, muat langsung
             originalUrl
-        } else {
+        }
+        else {
             // Untuk DOCX, PPTX, XLSX, dll., gunakan Google Docs Viewer
             // Ini akan merender file tersebut di dalam WebView
             "https://docs.google.com/gview?embedded=true&url=" + originalUrl

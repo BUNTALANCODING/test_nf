@@ -42,6 +42,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object SubmitQuestionSIM : HomeEvent()
 
+    data object SubmitQuestionTeknisUtama : HomeEvent()
+
     data object CheckQR : HomeEvent()
 
     data object PlatKIR : HomeEvent()
@@ -194,11 +196,40 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateSelectionKartuUji(val value: Int) : HomeEvent()
 
+    data class OnUpdateSelectionSIM(val value: Int) : HomeEvent()
+
+    data class OnShowDialogSuccessAdministrasi(val value: UIComponentState) : HomeEvent()
+
+    data class OnUpdateSelection(
+        val questionId: Int,
+        val selection: Int
+    ) : HomeEvent()
+
+    data class OnUpdateCondition(
+        val questionId: Int,
+        val value: String
+    ) : HomeEvent()
+
+    data class OnUpdateImage(
+        val questionId: Int,
+        val base64: String
+    ) : HomeEvent()
+
+    data class OnSaveImage(val questionId: Int, val base64: String) : HomeEvent()
+
+
     data object OnValidateField : HomeEvent()
 
     data class ApplyTeknisResultFromApi(
         val apiSubcategories: List<SubcategoryResponse>
     ) : HomeEvent()
+
+    data class OnUpdateTidakSesuaiListBitmap(
+        val questionId: Int,
+        val bitmap: ImageBitmap
+    ) : HomeEvent()
+
+    data class OnSetActiveQuestion(val questionId: Int) : HomeEvent()
 
     data class OnUpdateSelectedOptionKPReguler(val id: Int) : HomeEvent()
     data class OnUpdateSelectedOptionKPCadangan(val id: Int) : HomeEvent()
@@ -214,7 +245,9 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateKpType(val value: Int) : HomeEvent()
 
-    data class ListSubmitQuestionKp(val value: List<AnswersItem>) : HomeEvent()
+    data class ListSubmitQuestionKpReguler(val value: AnswersItem) : HomeEvent()
+
+    data class ListSubmitQuestionKpCadangan(val value: AnswersItem) : HomeEvent()
 
     data class SubmitQuestionKp(val value: List<AnswersItem>) : HomeEvent()
 

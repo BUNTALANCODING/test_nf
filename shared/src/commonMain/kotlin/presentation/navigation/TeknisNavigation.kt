@@ -17,6 +17,9 @@ sealed interface TeknisNavigation {
     ) : TeknisNavigation
 
     @Serializable
+    data object CameraTidakSesuaiTeknisUtama : TeknisNavigation
+
+    @Serializable
     data object GuidePemeriksaanTeknisPenunjang : TeknisNavigation
 
     @Serializable

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -221,6 +223,16 @@ private fun PemeriksaanKPRegularContent(
             enableSimpan = !state.keteranganKartuTidakAda.isNullOrEmpty()
         )
     }
+    if (state.listSubmitQuestionKPCadangan.questionId != null && state.listSubmitQuestionKPReguler.questionId != null) {
+        events(
+            HomeEvent.OnUpdateListSubmitQuestion(
+                listOf(
+                    state.listSubmitQuestionKPReguler,
+                    state.listSubmitQuestionKPCadangan
+                )
+            )
+        )
+    }
 
     val kpRegulerItem = state.listLoadCard.firstOrNull {
         it.name.equals("KP Reguler", ignoreCase = true)
@@ -239,13 +251,14 @@ private fun PemeriksaanKPRegularContent(
                     else -> ans.answerId ?: 0
                 },
                 label = ans.text.orEmpty(),
-                resultId = ans.resultId ?: 0
+                answerId = ans.answerId ?: 0
             )
         } ?: emptyList()
 
     val kpCadanganItem = state.listLoadCard.firstOrNull {
         it.name.equals("KP Cadangan", ignoreCase = true)
     }
+
 
     val kpCadanganOptions = kpCadanganItem
         ?.answers
@@ -260,7 +273,7 @@ private fun PemeriksaanKPRegularContent(
                     else -> ans.answerId ?: 0
                 },
                 label = ans.text.orEmpty(),
-                resultId = ans.resultId ?: 0
+                answerId = ans.answerId ?: 0
             )
         } ?: emptyList()
 
@@ -286,8 +299,19 @@ private fun PemeriksaanKPRegularContent(
             imageBitmap = state.imageKPReguler,
             questionId = kpRegulerItem?.questionId ?: 0,
             updateSubmitAnswer = { answer ->
-                events(HomeEvent.ListSubmitQuestionKp(listOf(answer)))
-            }
+                events(
+                    HomeEvent.ListSubmitQuestionKpReguler(
+                            AnswersItem(
+                                answerOptionId = 0,
+                                answerCondition = answer.answerCondition,
+                                answerFile = answer.answerFile,
+                                questionId = kpRegulerItem?.questionId,
+                                answerId = answer.answerId
+                            ),
+                    )
+                )
+            },
+            answerFile = state.imageKPRegulerBase64 ?: "",
         )
 
 
@@ -307,12 +331,22 @@ private fun PemeriksaanKPRegularContent(
                 events(HomeEvent.OnUpdateSelectedOptionKPCadangan(option.id))
             },
             imageBitmap = state.imageKPCadangan,
-            questionId = kpRegulerItem?.questionId ?: 0,
+            questionId = kpCadanganItem?.questionId ?: 0,
             updateSubmitAnswer = { answer ->
-                events(HomeEvent.ListSubmitQuestionKp(listOf(answer)))
+                events(
+                    HomeEvent.ListSubmitQuestionKpCadangan(
+                            AnswersItem(
+                                answerOptionId = 0,
+                                answerCondition = answer.answerCondition,
+                                answerFile = answer.answerFile,
+                                questionId = kpCadanganItem?.questionId,
+                                answerId = answer.answerId
+                            ),
+                    )
+                )
                 println("Updated submit question: $answer")
-            }
-
+            },
+            answerFile = state.imageKPCadanganBase64 ?: "",
         )
 
         Spacer_10dp()
@@ -324,20 +358,18 @@ private fun PemeriksaanKPRegularContent(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .height(DEFAULT__BUTTON_SIZE),
             enabled = true,
+            progressBarState = state.progressBarState,
             enableElevation = false,
             text = "SIMPAN",
             onClick = {
-                    events(HomeEvent.SubmitQuestionKp(state.submitQuestionKp))
-                    navigateToSim()
+                events(HomeEvent.SubmitQuestionKp(state.listSubmitQuestion))
+//                navigateToSim()
             }
         )
 
 
-
     }
 }
-
-
 
 
 @Composable
@@ -362,7 +394,7 @@ private fun HeaderSection() {
 data class StatusOption(
     val id: Int,          // answer_id dari API
     val label: String,    // text dari API
-    val resultId: Int     // result_id dari API
+    val answerId: Int     // result_id dari API
 )
 
 
@@ -494,6 +526,7 @@ data class StatusOption(
 @Composable
 fun KPSection(
     title: String,
+    answerFile: String,
     keterangan: String,
     onKeteranganChange: (String) -> Unit,
     onClickCamera: () -> Unit,
@@ -517,7 +550,10 @@ fun KPSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(Color(0xFFF2A000), RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)),
+                .background(
+                    Color(0xFFF2A000),
+                    RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                ),
             contentAlignment = Alignment.CenterStart
         ) {
             Text(
@@ -546,18 +582,15 @@ fun KPSection(
                             selected = selectedOption == option.id,
                             onClick = {
                                 onOptionSelected(option)
-
-                                // ⬇️ Update data API untuk submit
                                 updateSubmitAnswer(
                                     AnswersItem(
-                                        answerId = option.id,
-                                        answerOptionId = option.id,
-                                        answerCondition = if (option.id == 3) keterangan else "",
-                                        answerFile = imageBitmap?.toBytes()?.toBase64(),
-                                        questionId = questionId
+                                        answerOptionId = 0,
+                                        answerCondition = keterangan,
+                                        answerFile = answerFile,
+                                        questionId = questionId,
+                                        answerId = option.answerId
                                     )
                                 )
-                                println("Updated submit question: $")
                             }
                         )
                         Text(option.label, fontWeight = FontWeight.Bold)
@@ -610,16 +643,10 @@ fun KPSection(
                                     value = keterangan,
                                     onValueChange = {
                                         onKeteranganChange(it)
-                                        updateSubmitAnswer(
-                                            AnswersItem(
-                                                answerId = option.id,
-                                                answerOptionId = option.id,
-                                                answerCondition = it,
-                                                answerFile = null,
-                                                questionId = questionId
-                                            )
-                                        )
                                     },
+                                    keyboardOptions = KeyboardOptions(
+                                        imeAction = ImeAction.Done
+                                    ),
                                     modifier = Modifier.fillMaxWidth(),
                                     label = { Text("Keterangan") }
                                 )
@@ -631,8 +658,6 @@ fun KPSection(
         }
     }
 }
-
-
 
 
 //@Composable

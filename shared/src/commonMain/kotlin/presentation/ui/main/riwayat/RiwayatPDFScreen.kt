@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
@@ -47,7 +49,9 @@ fun RiwayatPDFScreen(
         errors = errors,
         progressBarState = state.progressBarState,
         titleToolbar = "Preview Berita Acara",
-        endIconToolbar = Res.drawable.ic_kemenhub
+        endIconToolbar = Res.drawable.ic_kemenhub,
+        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
+        onClickStartIconToolbar = { popup() },
     ) {
         RiwayatPDFContent(
             state = state,
