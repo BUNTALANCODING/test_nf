@@ -154,6 +154,13 @@ data class HomeState(
 
     val currentCameraQuestionId: Int? = null,
 
+    val answersPenunjang: List<AnswersItem> = emptyList(),
+    val selectionMapPenunjang: Map<Int, Int> = emptyMap(),
+    val bitmapTidakSesuaiPenunjangMap: Map<Int, ImageBitmap> = emptyMap(),
+    val activeQuestionIdPenunjang: Int? = null,
+
+    val currentCameraQuestionIdPenunjang: Int? = null,
+
 
 
     val errorResult: JAlertResponse = JAlertResponse(),

@@ -224,12 +224,23 @@ sealed class HomeEvent : ViewEvent {
         val apiSubcategories: List<SubcategoryResponse>
     ) : HomeEvent()
 
+    data class ApplyPenunjangResult(
+        val apiSubcategories: List<SubcategoryResponse>
+    ) : HomeEvent()
+
     data class OnUpdateTidakSesuaiListBitmap(
         val questionId: Int,
         val bitmap: ImageBitmap
     ) : HomeEvent()
 
+    data class OnUpdateTidakSesuaiListBitmapPenunjang(
+        val questionId: Int,
+        val bitmap: ImageBitmap
+    ) : HomeEvent()
+
     data class OnSetActiveQuestion(val questionId: Int) : HomeEvent()
+
+    data class OnSetActiveQuestionPenunjang(val questionId: Int) : HomeEvent()
 
     data class OnUpdateSelectedOptionKPReguler(val id: Int) : HomeEvent()
     data class OnUpdateSelectedOptionKPCadangan(val id: Int) : HomeEvent()

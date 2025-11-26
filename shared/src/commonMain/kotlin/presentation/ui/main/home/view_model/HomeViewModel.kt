@@ -491,6 +491,34 @@ class HomeViewModel(
 //                applyTeknisResultFromApi(event.apiSubcategories)
             }
 
+            is HomeEvent.ApplyPenunjangResult -> {
+
+                if (state.value.answersPenunjang.isNotEmpty()) return
+
+                val answersPenunjang = event.apiSubcategories.flatMap { sub ->
+                    sub.questions.map { q ->
+                        AnswersItem(
+                            questionId = q.question_id ?: 0,
+                            answerId = q.answer_id
+                        )
+                    }
+                }
+
+                val selection = event.apiSubcategories
+                    .flatMap { it.questions }
+                    .associate { q ->
+                        (q.question_id ?: 0) to 0
+                    }
+
+                setState {
+                    copy(
+                        answersPenunjang = answersPenunjang,
+                        selectionMapPenunjang = selection
+                    )
+                }
+//                applyTeknisResultFromApi(event.apiSubcategories)
+            }
+
             is HomeEvent.OnSaveImage -> {
                 val updated = state.value.answers.map {
                     if (it.questionId == event.questionId) {

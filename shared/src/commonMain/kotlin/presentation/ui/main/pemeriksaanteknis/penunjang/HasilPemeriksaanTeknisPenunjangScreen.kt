@@ -58,6 +58,8 @@ import presentation.ui.main.home.view_model.HomeEvent
 
 import presentation.ui.main.home.view_model.HomeState
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
+import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
+import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_kemenhub
 
@@ -88,7 +90,7 @@ import rampcheck.shared.generated.resources.ic_kemenhub
 //}
 
 @Composable
-fun HasilPemeriksaanTeknisUtamaScreen(
+fun HasilPemeriksaanTeknisPenunjangScreen(
     uniqueKey: String,
     state: HomeState,
     events: (HomeEvent) -> Unit,
@@ -96,7 +98,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
     popup: () -> Unit,
     navigateToTeknisPenunjang: () -> Unit,
     navigateToCamera: () -> Unit,
-    hasilViewModel: HasilTeknisViewModel = koinViewModel()
+    hasilViewModel: GetResultSecondViewModel = koinViewModel()
 ) {
     val hasilStateState = hasilViewModel.state.collectAsState()
     val hasilState = hasilStateState.value

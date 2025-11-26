@@ -29,7 +29,7 @@ import rampcheck.shared.generated.resources.ic_guie_teknis_utama
 import rampcheck.shared.generated.resources.ic_kemenhub
 
 @Composable
-fun GuidePemeriksaanTeknisUtamaScreen(
+fun GuidePemeriksaanTeknisPenunjangScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
@@ -118,7 +118,7 @@ private fun InformasiGuideSection() {
             Spacer_8dp()
             GuideRow(
                 iconRes = Res.drawable.ic_bus_guide,
-                description = "Petugas melakukan perekaman video pada bagian luar kendaraan"
+                description = "Petugas melakukan perekaman video pada bagian dalam kendaraan"
             )
             Spacer_8dp()
             GuideRow(
