@@ -1,4 +1,4 @@
-package presentation.ui.main.pemeriksaanteknis
+package presentation.ui.main.pemeriksaanteknis.utama
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

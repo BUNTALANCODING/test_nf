@@ -758,9 +758,124 @@ override suspend fun loadCard(
         }.body()
     }
 
+    override suspend fun identifyPenunjang(
+        token: String,
+        fileName: String,
+        uniqueKey: String,
+        chunkIndex: Int,
+        totalChunks: Int,
+        chunk: ByteArray
+    ): ChunkResponse {
 
+        val cleanToken = token.removePrefix("Bearer").trim()
+        val bearerToken = "Bearer $cleanToken"
 
+        val url = "https://dashboard-ramcek.net2software.net/api/v1/frontend/interioridentify"
 
+        println("MP_UPLOAD: 1. Entering uploadChunkFile...")
+        println("MP_UPLOAD: 🔑 RAW TOKEN   = '$token'")
+        println("MP_UPLOAD: 🔑 CLEAN TOKEN = '$cleanToken'")
+        println("MP_UPLOAD: 🔐 FINAL TOKEN = '$bearerToken'")
+        println("MP_UPLOAD: 📦 fileName        = '$fileName'")
+        println("MP_UPLOAD: 📦 unique_key      = '$uniqueKey'")
+        println("MP_UPLOAD: 📦 chunk_index     = $chunkIndex")
+        println("MP_UPLOAD: 📦 total_chunks    = $totalChunks")
+        println("MP_UPLOAD: 📦 chunk byte size = ${chunk.size}")
+        println("MP_UPLOAD: 🌐 URL             = '$url'")
+
+        return try {
+            // boleh tanpa withTimeout, biar cuma HttpTimeout plugin yang kerja
+            val response: HttpResponse = httpClient.post(url) {
+                headers {
+                    append(HttpHeaders.Authorization, bearerToken)
+                    append(HttpHeaders.Accept, ContentType.Application.Json.toString())
+                }
+
+                setBody(
+                    MultiPartFormDataContent(
+                        formData {
+
+                            // Wajib sesuai nama field backend
+                            append("unique_key", uniqueKey)
+                            append("chunk_index", chunkIndex.toString())
+                            append("total_chunks", totalChunks.toString())
+
+                            // Field "file" = berkas
+                            append(
+                                key = "file",
+                                value = chunk,
+                                headers = Headers.build {
+                                    append(
+                                        HttpHeaders.ContentDisposition,
+                                        """form-data; name="file"; filename="$fileName""""
+                                    )
+                                    // Kalau backend maunya video:
+                                    append(HttpHeaders.ContentType, "video/mp4")
+                                }
+                            )
+                        }
+                    )
+                )
+            }
+
+            val rawBody = runCatching { response.bodyAsText() }
+                .getOrElse { "cannot read body as text" }
+
+            println("MP_UPLOAD: 🌐 HTTP STATUS = ${response.status.value}")
+            println("MP_UPLOAD: 🌐 HTTP BODY   = $rawBody")
+
+            runCatching { response.body<ChunkResponse>() }
+                .getOrElse {
+                    println("MP_UPLOAD: ❌ Failed to decode ChunkResponse: ${it.message}")
+                    ChunkResponse(
+                        status = false,
+                        code = response.status.value.toString(),
+                        message = rawBody,
+                        data = null
+                    )
+                }
+
+        } catch (e: TimeoutCancellationException) {
+            println("MP_UPLOAD: ❌ TIMEOUT -> ${e.message}")
+            ChunkResponse(
+                status = false,
+                code = "TIMEOUT",
+                message = "Request timeout: server tidak merespon dalam batas waktu",
+                data = null
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("MP_UPLOAD: ❌ EXCEPTION -> ${e.message}")
+            ChunkResponse(
+                status = false,
+                code = "EXCEPTION",
+                message = "Terjadi kesalahan: ${e.message}",
+                data = null
+            )
+        }
+    }
+    override suspend fun getResultSecond(
+        token: String,
+        uniqueKey: String
+    ): HasilTeknisDTO {
+
+        val cleanToken = token.removePrefix("Bearer").trim()
+        val bearer = "Bearer $cleanToken"
+
+        return httpClient.get {          // 👈 kemungkinan besar GET, bukan POST
+            url {
+                takeFrom(BASE_URL)       // misal: https://dashboard-ramcek.net2software.net/api/v1/frontend/
+                // hasil akhir: https://.../api/v1/frontend/getresult/UJI-BUS-20251111234949
+                encodedPath += MainService.GET_RESULT_SECOND + "/$uniqueKey"
+                // atau kalau gak pakai constant:
+                // encodedPath += "getresult/$uniqueKey"
+            }
+            headers {
+                append(HttpHeaders.Authorization, bearer)
+            }
+            contentType(ContentType.Application.Json)
+        }.body()
+    }
 
 }
 

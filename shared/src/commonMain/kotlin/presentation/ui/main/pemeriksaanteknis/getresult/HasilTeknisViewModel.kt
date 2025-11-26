@@ -1,4 +1,4 @@
-// HasilTeknisViewModel.kt
+// GetResultSecondViewModel.kt
 package presentation.ui.main.pemeriksaanteknis.getresult
 
 import androidx.lifecycle.ViewModel

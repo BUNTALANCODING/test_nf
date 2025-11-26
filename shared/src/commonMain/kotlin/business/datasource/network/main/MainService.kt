@@ -69,6 +69,8 @@ interface MainService {
 
         const val GET_RESULT = "getresult"
 
+        const val GET_RESULT_SECOND = "getresultsecond"
+
         const val LOAD_CARD = "loadcard"
     }
 
@@ -186,8 +188,17 @@ interface MainService {
         uniqueKey: String
     ): HasilTeknisDTO
 
+    suspend fun identifyPenunjang(
+        token: String,
+        fileName: String,
+        uniqueKey: String,
+        chunkIndex: Int,
+        totalChunks: Int,
+        chunk: ByteArray
+    ): ChunkResponse
 
-
-
-
+    suspend fun getResultSecond(
+        token: String,
+        uniqueKey: String
+    ): HasilTeknisDTO
 }

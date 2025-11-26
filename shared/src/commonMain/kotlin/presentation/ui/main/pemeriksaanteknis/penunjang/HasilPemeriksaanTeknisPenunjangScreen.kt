@@ -1,4 +1,4 @@
-package presentation.ui.main.pemeriksaanteknis
+package presentation.ui.main.pemeriksaanteknis.penunjang
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

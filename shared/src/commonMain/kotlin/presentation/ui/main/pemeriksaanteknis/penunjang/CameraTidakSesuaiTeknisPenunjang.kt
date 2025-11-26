@@ -1,6 +1,5 @@
-package presentation.ui.main.pemeriksaanteknis
+package presentation.ui.main.pemeriksaanteknis.penunjang
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -31,13 +30,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.decodeToImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,7 +68,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun CameraTidakSesuaiTeknisUtamaScreen(
+fun CameraTidakSesuaiTeknisPenunjangScreen(
     state: HomeState,
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
@@ -84,7 +79,7 @@ fun CameraTidakSesuaiTeknisUtamaScreen(
     DefaultScreenUI(
         errors = errors,
         progressBarState = state.progressBarState,
-        titleToolbar = "Foto Teknis Utama",
+        titleToolbar = "Foto Teknis Penunjang",
         startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
         onClickStartIconToolbar = { popup() },
         isCamera = true

@@ -61,9 +61,9 @@ import presentation.ui.main.pemeriksaanadministrasi.kpreguler.PemeriksaanKPRegul
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraSIMPengemudiScreen
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.HasilPemeriksaanSIMPengemudiScreen
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.PemeriksaanSIMPengemudiScreen
-import presentation.ui.main.pemeriksaanteknis.CameraTeknisUtamaScreen
-import presentation.ui.main.pemeriksaanteknis.GuidePemeriksaanTeknisUtamaScreen
-import presentation.ui.main.pemeriksaanteknis.HasilPemeriksaanTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.utama.CameraTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.utama.GuidePemeriksaanTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.utama.HasilPemeriksaanTeknisUtamaScreen
 import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
 import presentation.ui.main.riwayat.RiwayatPDFScreen
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
@@ -71,7 +71,7 @@ import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 import presentation.ui.main.uploadChunk.UploadViewModel
 import androidx.navigation.toRoute
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraTidakSesuaiSIMPengemudiScreen
-import presentation.ui.main.pemeriksaanteknis.CameraTidakSesuaiTeknisUtamaScreen
+import presentation.ui.main.pemeriksaanteknis.utama.CameraTidakSesuaiTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

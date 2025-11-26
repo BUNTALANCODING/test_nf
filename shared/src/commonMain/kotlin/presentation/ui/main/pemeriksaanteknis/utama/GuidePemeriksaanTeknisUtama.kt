@@ -1,4 +1,4 @@
-package presentation.ui.main.pemeriksaanteknis
+package presentation.ui.main.pemeriksaanteknis.utama
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -19,19 +19,14 @@ import business.core.UIComponent
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.painterResource
 import presentation.component.DefaultScreenUI
-import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
-import presentation.ui.main.datapemeriksaan.fotokendaraan.ButtonNextSection
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideRow
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_bus_guide
-import rampcheck.shared.generated.resources.ic_card_guide
 import rampcheck.shared.generated.resources.ic_guie_teknis_utama
-import rampcheck.shared.generated.resources.ic_identity
 import rampcheck.shared.generated.resources.ic_kemenhub
-import rampcheck.shared.generated.resources.ic_location_guide
 
 @Composable
 fun GuidePemeriksaanTeknisUtamaScreen(

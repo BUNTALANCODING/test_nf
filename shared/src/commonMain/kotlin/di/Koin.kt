@@ -14,6 +14,7 @@ import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetHasilTeknisUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.HistoryRampcheckUseCase
+import business.interactors.main.IdentifyPenunjangUseCase
 import business.interactors.main.IdentifyUseCase
 import business.interactors.main.LoadCardUseCase
 import business.interactors.main.LogoutUseCase
@@ -38,6 +39,7 @@ import presentation.token_manager.TokenManager
 import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
+import presentation.ui.main.pemeriksaanteknis.viewmodel.IdentifyPenunjangViewModel
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 import presentation.ui.main.uploadChunk.UploadViewModel
 import presentation.util.BackgroundScheduler
@@ -88,4 +90,7 @@ fun appModule(context: Context) = module {
 
     single { GetHasilTeknisUseCase(get()) } // ⬅️ TAMBAHAN INI
     factory { HasilTeknisViewModel(get(), get()) }
+
+    single { IdentifyPenunjangUseCase(get()) } // (MainService, AppDataStore)
+    factory { IdentifyPenunjangViewModel(get(), get()) }
 }
