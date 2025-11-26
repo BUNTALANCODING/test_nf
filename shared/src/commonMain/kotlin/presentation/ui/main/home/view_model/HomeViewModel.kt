@@ -404,6 +404,10 @@ class HomeViewModel(
                 submitQuestionTeknisUtama()
             }
 
+            is HomeEvent.SubmitQuestionTeknisPenunjang -> {
+                submitQuestionTeknisPenunjang()
+            }
+
             is HomeEvent.ListSubmitQuestionKpReguler -> {
                 listsubmitQuestionKpReguler(event.value)
             }
@@ -449,12 +453,28 @@ class HomeViewModel(
                     copy(activeQuestionId = event.questionId)
                 }
             }
+            is HomeEvent.OnSetActiveQuestionPenunjang -> {
+                setState {
+                    copy(activeQuestionIdPenunjang = event.questionId)
+                }
+            }
 
             is HomeEvent.OnUpdateTidakSesuaiListBitmap -> {
                 setState {
                     copy(
                         bitmapTidakSesuaiMap =
                             bitmapTidakSesuaiMap.toMutableMap().apply {
+                                put(event.questionId, event.bitmap)
+                            }
+                    )
+                }
+            }
+
+            is HomeEvent.OnUpdateTidakSesuaiListBitmapPenunjang -> {
+                setState {
+                    copy(
+                        bitmapTidakSesuaiPenunjangMap =
+                            bitmapTidakSesuaiPenunjangMap.toMutableMap().apply {
                                 put(event.questionId, event.bitmap)
                             }
                     )
@@ -534,6 +554,21 @@ class HomeViewModel(
                 }
             }
 
+            is HomeEvent.OnSaveImagePenunjang -> {
+                val updated = state.value.answersPenunjang.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(answerFile = event.base64)
+                    } else it
+                }
+
+                setState {
+                    copy(
+                        answersPenunjang = updated,
+                        currentCameraQuestionIdPenunjang = null
+                    )
+                }
+            }
+
             is HomeEvent.Logout -> {
                 logout()
             }
@@ -582,6 +617,14 @@ class HomeViewModel(
                 onShowDialogSuccessAdministrasi(event.value)
             }
 
+            is HomeEvent.OnSuccessTeknisUtama -> {
+                onSuccessTeknisUtama(event.value)
+            }
+
+            is HomeEvent.OnSuccessTeknisPenunjang -> {
+                onSuccessTeknisPenunjang(event.value)
+            }
+
             is HomeEvent.OnUpdateSelection -> {
                 val newSelection = state.value.selectionMap.toMutableMap()
                 newSelection[event.questionId] = event.selection
@@ -621,10 +664,40 @@ class HomeViewModel(
 
                 setState { copy(answers = updatedAnswers) }
             }
+            is HomeEvent.OnUpdateSelectionPenunjang -> {
+                val newSelection = state.value.selectionMapPenunjang.toMutableMap()
+                newSelection[event.questionId] = event.selection
+
+                val updatedAnswers = state.value.answersPenunjang.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(
+                            answerOptionId = event.selection
+                        )
+                    } else it
+                }
+
+                setState {
+                    copy(
+                        selectionMapPenunjang = newSelection,
+                        answersPenunjang = updatedAnswers
+                    )
+                }
+            }
+            is HomeEvent.OnUpdateConditionPenunjang -> {
+                val updatedAnswers = state.value.answersPenunjang.map {
+                    if (it.questionId == event.questionId) {
+                        it.copy(answerCondition = event.value)
+                    } else it
+                }
+
+                setState { copy(answersPenunjang = updatedAnswers) }
+            }
 
 
             else -> {}
         }
+
+
     }
 
     private fun updateAnswer(
@@ -1149,9 +1222,36 @@ class HomeViewModel(
                         setState {
                             copy(
                                 answers = listOf(),
+                                successTeknisUtama = UIComponentState.Show
                             )
                         }
-                        setAction { HomeAction.Navigation.NavigateToBeritaAcara }
+//                        setAction { HomeAction.Navigation.NavigateToBeritaAcara }
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+    private fun submitQuestionTeknisPenunjang() {
+        executeUseCase(
+            submitQuestionUseCase.execute(
+                params = SubmitQuestionsRequestDTO(
+                    step = "8",
+                    answers = state.value.answersPenunjang,
+                )
+            ),
+            onSuccess = { data, status, code ->
+                status?.let { s ->
+                    if (s) {
+                        setState {
+                            copy(
+                                answersPenunjang = listOf(),
+                                successTeknisPenunjang = UIComponentState.Show
+                            )
+                        }
+//                        setAction { HomeAction.Navigation.NavigateToBeritaAcara }
                     }
                 }
             },
@@ -1295,6 +1395,14 @@ class HomeViewModel(
 
     private fun onShowDialogSuccessAdministrasi(value: UIComponentState) {
         setState { copy(showDialogSuccessAdministrasi = value) }
+    }
+
+    private fun onSuccessTeknisUtama(value: UIComponentState) {
+        setState { copy(successTeknisUtama = value) }
+    }
+
+    private fun onSuccessTeknisPenunjang(value: UIComponentState) {
+        setState { copy(successTeknisPenunjang = value) }
     }
 
     private fun onUpdateSelectedTab(value: Int) {

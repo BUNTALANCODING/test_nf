@@ -42,6 +42,7 @@ import business.constants.SECTION_PERLENGKAPAN
 import business.constants.SECTION_TANGGAP_DARURAT
 import business.constants.SECTION_WIPER
 import business.core.UIComponent
+import business.core.UIComponentState
 import business.datasource.network.main.responses.HasilTeknisDTO
 import business.datasource.network.main.responses.QuestionResponse
 import business.datasource.network.main.responses.SubcategoryResponse
@@ -52,6 +53,7 @@ import presentation.component.ConditionTeknisUtama
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
+import presentation.component.NotMatchDialog
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -59,6 +61,7 @@ import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_check_mark
 import rampcheck.shared.generated.resources.ic_kemenhub
 
 //@Composable
@@ -576,6 +579,21 @@ private fun HasilContent(
     navigateToTeknisPenunjang: () -> Unit,
     navigateToCamera: () -> Unit,
 ) {
+    if (state.successTeknisUtama == UIComponentState.Show) {
+        NotMatchDialog(
+            iconRes = Res.drawable.ic_check_mark,
+            title = "Pemeriksaan Teknis Utama Berhasil",
+            subtitle = "Langkah berikutnya, lakukan Pemeriksaan Teknis Penunjang",
+            isButtonVisible = true,
+            positiveLabel = "LANJUTKAN",
+            onClickPositive = {
+                events(HomeEvent.OnSuccessTeknisUtama(UIComponentState.Hide))
+                navigateToTeknisPenunjang()
+            },
+            onDismissRequest = {
+            }
+        )
+    }
     val data = hasil.data
 
     Box(modifier = Modifier.fillMaxSize()) {

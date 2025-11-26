@@ -154,6 +154,10 @@ data class HomeState(
 
     val currentCameraQuestionId: Int? = null,
 
+    val successTeknisUtama: UIComponentState = UIComponentState.Hide,
+
+    val successTeknisPenunjang: UIComponentState = UIComponentState.Hide,
+
     val answersPenunjang: List<AnswersItem> = emptyList(),
     val selectionMapPenunjang: Map<Int, Int> = emptyMap(),
     val bitmapTidakSesuaiPenunjangMap: Map<Int, ImageBitmap> = emptyMap(),

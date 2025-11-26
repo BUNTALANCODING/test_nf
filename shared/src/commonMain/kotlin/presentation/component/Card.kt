@@ -600,6 +600,110 @@ fun ConditionTeknisUtama(item: QuestionResponse, events: (HomeEvent) -> Unit, st
         }
     }
 }
+
+@Composable
+fun ConditionTeknisPenunjang(item: QuestionResponse, events: (HomeEvent) -> Unit, state: HomeState, onClickCamera : (Int) -> Unit){
+    val questionId = item.question_id ?: return
+    val selection = state.selectionMapPenunjang[questionId] ?: 0
+    val answer = state.answersPenunjang.find { it.questionId == questionId }
+    val bitmap = state.bitmapTidakSesuaiPenunjangMap[questionId]
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(16.dp),
+    ) {
+        Text(
+            "${(item.question_name ?: "-")} : " + (item.answer_name ?: "-"),
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer_8dp()
+        Divider(thickness = 1.dp, color = Color.Gray)
+        Spacer_8dp()
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+
+            RadioButton(
+                selected = selection == 0,
+                onClick = {
+                    events(HomeEvent.OnUpdateSelectionPenunjang(questionId, 0))
+                }
+            )
+            Text("Ya, Sesuai")
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            RadioButton(
+                selected = selection == 1,
+                onClick = {
+                    events(HomeEvent.OnUpdateSelectionPenunjang(questionId, 1))
+                }
+            )
+            Text("Tidak Sesuai")
+        }
+
+        AnimatedVisibility(
+            visible = selection == 1,
+            enter = expandVertically(expandFrom = Alignment.Top),
+            exit = shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+
+            Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+
+
+                DefaultTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = answer?.answerCondition ?: "",
+                    onValueChange = {
+                        events(
+                            HomeEvent.OnUpdateConditionPenunjang(questionId, it)
+                        )
+                    },
+                    placeholder = "Masukkan Kondisi Sebenarnya"
+                )
+
+                Spacer_8dp()
+
+                if(bitmap != null){
+                    bitmap.let {
+                        Image(
+                            contentDescription = null,
+                            modifier = Modifier.width(100.dp).height(70.dp).clickable { onClickCamera(questionId) },
+                            bitmap = it
+                        )
+                    }
+                }else{
+                    DottedBorderBackground(bgColor = Color(0XFFF4F4F4), modifier = Modifier.height(70.dp).width(100.dp).clickable { onClickCamera(questionId) }) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            androidx.compose.material.Icon(
+                                imageVector = vectorResource(Res.drawable.ic_camera),
+                                modifier = Modifier.size(24.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                contentDescription = null,
+                                tint = Color.Black
+                            )
+                            Spacer_8dp()
+                            Text(
+                                "Foto",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    color = Color.Black
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 @Composable
 fun ConditionSIMCard(item: IdentifyDTOItem, events: (HomeEvent) -> Unit, state: HomeState, value: String, onValueChange: (String) -> Unit, onClickCamera : () -> Unit){
     Column(

@@ -200,13 +200,13 @@ private fun CameraKartuUjiContent(
                                     image.toBytes().toBase64()
                                 }
                                 events(
-                                    HomeEvent.OnUpdateTidakSesuaiListBitmap(
-                                        questionId = state.activeQuestionId ?: 0,
+                                    HomeEvent.OnUpdateTidakSesuaiListBitmapPenunjang(
+                                        questionId = state.activeQuestionIdPenunjang ?: 0,
                                         bitmap = image
                                     )
                                 )
-                                events(HomeEvent.OnSaveImage(
-                                    questionId = state.activeQuestionId ?: 0,
+                                events(HomeEvent.OnSaveImagePenunjang(
+                                    questionId = state.activeQuestionIdPenunjang ?: 0,
                                     base64 = base64
                                 ))
                                 navigateToSIMPengemudi()

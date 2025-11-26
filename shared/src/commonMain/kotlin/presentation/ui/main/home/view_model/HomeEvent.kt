@@ -44,6 +44,8 @@ sealed class HomeEvent : ViewEvent {
 
     data object SubmitQuestionTeknisUtama : HomeEvent()
 
+    data object SubmitQuestionTeknisPenunjang : HomeEvent()
+
     data object CheckQR : HomeEvent()
 
     data object PlatKIR : HomeEvent()
@@ -200,6 +202,10 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnShowDialogSuccessAdministrasi(val value: UIComponentState) : HomeEvent()
 
+    data class OnSuccessTeknisUtama(val value: UIComponentState) : HomeEvent()
+
+    data class OnSuccessTeknisPenunjang(val value: UIComponentState) : HomeEvent()
+
     data class OnUpdateSelection(
         val questionId: Int,
         val selection: Int
@@ -216,6 +222,19 @@ sealed class HomeEvent : ViewEvent {
     ) : HomeEvent()
 
     data class OnSaveImage(val questionId: Int, val base64: String) : HomeEvent()
+
+    data class OnUpdateSelectionPenunjang(
+        val questionId: Int,
+        val selection: Int
+    ) : HomeEvent()
+
+    data class OnUpdateConditionPenunjang(
+        val questionId: Int,
+        val value: String
+    ) : HomeEvent()
+
+
+    data class OnSaveImagePenunjang(val questionId: Int, val base64: String) : HomeEvent()
 
 
     data object OnValidateField : HomeEvent()

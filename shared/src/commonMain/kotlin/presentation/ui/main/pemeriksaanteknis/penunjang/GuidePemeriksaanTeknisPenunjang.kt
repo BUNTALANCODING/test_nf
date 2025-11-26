@@ -34,7 +34,7 @@ fun GuidePemeriksaanTeknisPenunjangScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToTeknisUtama: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit
 ) {
 
     DefaultScreenUI(
@@ -46,7 +46,7 @@ fun GuidePemeriksaanTeknisPenunjangScreen(
         GuidePemeriksaanTeknisUtamaContent(
             state = state,
             events = events,
-            navigateToTeknisUtama = navigateToTeknisUtama
+            navigateToTeknisPenunjang = navigateToTeknisPenunjang
         )
     }
 }
@@ -55,14 +55,14 @@ fun GuidePemeriksaanTeknisPenunjangScreen(
 private fun GuidePemeriksaanTeknisUtamaContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToTeknisUtama: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             HeaderSection()
             InformasiGuideSection()
             Spacer(modifier = Modifier.weight(1f))
-            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = navigateToTeknisUtama)
+            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = navigateToTeknisPenunjang)
         }
     }
 }

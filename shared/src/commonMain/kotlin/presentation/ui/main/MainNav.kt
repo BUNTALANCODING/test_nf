@@ -73,6 +73,12 @@ import androidx.navigation.toRoute
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraTidakSesuaiSIMPengemudiScreen
 import presentation.ui.main.pemeriksaanteknis.utama.CameraTidakSesuaiTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
+import presentation.ui.main.pemeriksaanteknis.penunjang.CameraTeknisPenunjangScreen
+import presentation.ui.main.pemeriksaanteknis.penunjang.CameraTidakSesuaiTeknisPenunjangScreen
+import presentation.ui.main.pemeriksaanteknis.penunjang.GuidePemeriksaanTeknisPenunjangScreen
+import presentation.ui.main.pemeriksaanteknis.penunjang.HasilPemeriksaanTeknisPenunjangScreen
+import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
+import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +92,9 @@ fun MainNav(context: Context?, logout: () -> Unit) {
     val viewModelLogin: LoginViewModel = koinViewModel()
     val viewModelRiwayat: RiwayatViewModel = koinViewModel()
     val viewModelUpload: UploadViewModel = koinViewModel()
+    val viewModelIdentify: IdentifyPenunjangViewModel = koinViewModel()
     val hasilTeknisViewModel: HasilTeknisViewModel = koinViewModel()
+    val getResulViewModel: GetResultSecondViewModel = koinViewModel()
 
 
     val currentRoute = navBackStackEntry?.destination?.route
@@ -670,10 +678,6 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     )
                 }
 
-
-
-
-
                 composable<TeknisNavigation.QuestionTeknisUtama> { backStackEntry ->
 
                     // ⬅️ Decode argumen dari route → jadi object Kotlin
@@ -689,7 +693,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         errors = viewModel.errors,
                         popup = { navigator.popBackStack() },
                         navigateToTeknisPenunjang = {
-                            navigator.navigate(BANavigation.FormBeritaAcara)
+                            navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisPenunjang)
                         },
                         hasilViewModel = hasilTeknisViewModel,
                         navigateToCamera = {
@@ -711,8 +715,76 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                     )
                 }
 
+                composable<TeknisNavigation.GuidePemeriksaanTeknisPenunjang> {
+                    GuidePemeriksaanTeknisPenunjangScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToTeknisPenunjang = {
+                            navigator.navigate(TeknisNavigation.CameraTeknisPenunjang)
+                        },
+                    )
+                }
+
+                composable<TeknisNavigation.CameraTeknisPenunjang> {
+
+                    CameraTeknisPenunjangScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+
+                        navigateToQuestionTeknisPenunjang = { uniqueKey ->
+
+                            navigator.navigate(
+                                TeknisNavigation.QuestionTeknisPenunjang(
+                                    uniqueKey = uniqueKey
+                                )
+                            )
+                        },
+
+                        identifyPenunjangViewModel = viewModelIdentify
+                    )
+                }
+
+                composable<TeknisNavigation.QuestionTeknisPenunjang> { backStackEntry ->
+
+                    // ⬅️ Decode argumen dari route → jadi object Kotlin
+                    val args: TeknisNavigation.QuestionTeknisPenunjang = backStackEntry.toRoute()
+
+                    // Ini dia uniqueKey-nya
+                    val uniqueKey = args.uniqueKey
+
+                    HasilPemeriksaanTeknisPenunjangScreen(
+                        uniqueKey = uniqueKey,                 // ⬅️ kirim ke screen
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        errors = viewModel.errors,
+                        popup = { navigator.popBackStack() },
+                        navigateToBeritaAcara = {
+                            navigator.navigate(BANavigation.FormBeritaAcara)
+                        },
+                        hasilViewModel = getResulViewModel,
+                        navigateToCamera = {
+                            navigator.navigate(TeknisNavigation.CameraTidakSesuaiTeknisPenunjang)
+                        }
+                    )
+                }
+
+                composable<TeknisNavigation.CameraTidakSesuaiTeknisPenunjang> {
 
 
+                    CameraTidakSesuaiTeknisPenunjangScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToSIMPengemudi = {
+                            navigator.popBackStack()
+                        },
+                    )
+                }
 
                 composable<BANavigation.FormBeritaAcara> {
                     FormBeritaAcaraScreen(
@@ -730,6 +802,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToPreviewBA = {navigator.navigate(BANavigation.PreviewBeritaAcara)},
                     )
                 }
+
                 composable<BANavigation.PengemudiBeritaAcara> {
                     PengemudiBeritaAcaraScreen(
                         errors = viewModel.errors,

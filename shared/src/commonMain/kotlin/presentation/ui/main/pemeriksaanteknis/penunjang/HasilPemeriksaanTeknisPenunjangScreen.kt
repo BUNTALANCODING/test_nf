@@ -42,16 +42,19 @@ import business.constants.SECTION_PERLENGKAPAN
 import business.constants.SECTION_TANGGAP_DARURAT
 import business.constants.SECTION_WIPER
 import business.core.UIComponent
+import business.core.UIComponentState
 import business.datasource.network.main.responses.HasilTeknisDTO
 import business.datasource.network.main.responses.QuestionResponse
 import business.datasource.network.main.responses.SubcategoryResponse
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.component.ConditionCard
+import presentation.component.ConditionTeknisPenunjang
 import presentation.component.ConditionTeknisUtama
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
+import presentation.component.NotMatchDialog
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -61,6 +64,7 @@ import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
 import rampcheck.shared.generated.resources.Res
+import rampcheck.shared.generated.resources.ic_check_mark
 import rampcheck.shared.generated.resources.ic_kemenhub
 
 //@Composable
@@ -69,7 +73,7 @@ import rampcheck.shared.generated.resources.ic_kemenhub
 //    events: (HomeEvent) -> Unit,
 //    errors: Flow<UIComponent>,
 //    popup: () -> Unit,
-//    navigateToTeknisPenunjang: () -> Unit
+//    navigateToBeritaAcara: () -> Unit
 //) {
 //
 //    DefaultScreenUI(
@@ -83,7 +87,7 @@ import rampcheck.shared.generated.resources.ic_kemenhub
 //        HasilPemeriksaanKPCadanganContent(
 //            state = state,
 //            events = events,
-//            navigateToTeknisPenunjang = navigateToTeknisPenunjang
+//            navigateToBeritaAcara = navigateToBeritaAcara
 //        )
 //
 //    }
@@ -96,7 +100,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToTeknisPenunjang: () -> Unit,
+    navigateToBeritaAcara: () -> Unit,
     navigateToCamera: () -> Unit,
     hasilViewModel: GetResultSecondViewModel = koinViewModel()
 ) {
@@ -131,7 +135,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
         ) {
             println("SCREEN_HASIL: apply result to HomeViewModel")
             events(
-                HomeEvent.ApplyTeknisResultFromApi(
+                HomeEvent.ApplyPenunjangResult(
                     apiSubcategories = response
                 )
             )
@@ -141,7 +145,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
     DefaultScreenUI(
         errors = errors,
         progressBarState = state.progressBarState,
-        titleToolbar = "Pemeriksaan Teknis Utama",
+        titleToolbar = "Pemeriksaan Teknis Penunjang",
         startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
         onClickStartIconToolbar = { popup() },
         endIconToolbar = Res.drawable.ic_kemenhub
@@ -177,7 +181,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
             }
         } else {
             HasilContent(
-                navigateToTeknisPenunjang = navigateToTeknisPenunjang,
+                navigateToBeritaAcara = navigateToBeritaAcara,
                 hasil = hasilState.data ?: HasilTeknisDTO(),
                 state = state,
                 events = events,
@@ -192,7 +196,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
 private fun HasilPemeriksaanKPCadanganContent(
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToTeknisPenunjang: () -> Unit
+    navigateToBeritaAcara: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -231,7 +235,7 @@ private fun HasilPemeriksaanKPCadanganContent(
                 enableElevation = false,
                 text = "SIMPAN",
                 onClick = {
-                    navigateToTeknisPenunjang()
+                    navigateToBeritaAcara()
                 }
             )
         }
@@ -512,7 +516,7 @@ private fun TanggapDaruratSection(state: HomeState, events: (HomeEvent) -> Unit)
 //fun HasilPemeriksaanTeknisUtamaScreen(
 //    errors: Flow<UIComponent>,
 //    popup: () -> Unit,
-//    navigateToTeknisPenunjang: () -> Unit,
+//    navigateToBeritaAcara: () -> Unit,
 //    viewModel: HasilTeknisViewModel = koinViewModel()
 //) {
 //    val state by viewModel.state.collectAsState()
@@ -531,7 +535,7 @@ private fun TanggapDaruratSection(state: HomeState, events: (HomeEvent) -> Unit)
 //            state.error != null -> ErrorUI(state.error!!)
 //            state.data != null -> HasilContent(
 //                hasil = state.data!!,
-//                navigateToTeknisPenunjang = navigateToTeknisPenunjang
+//                navigateToBeritaAcara = navigateToBeritaAcara
 //            )
 //            else -> {
 //                // optional: kosong / initial state
@@ -575,9 +579,24 @@ private fun HasilContent(
     hasil: HasilTeknisDTO,
     state: HomeState,
     events: (HomeEvent) -> Unit,
-    navigateToTeknisPenunjang: () -> Unit,
+    navigateToBeritaAcara: () -> Unit,
     navigateToCamera: () -> Unit,
 ) {
+    if (state.successTeknisPenunjang == UIComponentState.Show) {
+        NotMatchDialog(
+            iconRes = Res.drawable.ic_check_mark,
+            title = "Pemeriksaan Selesai",
+            subtitle = "Semua tahapan sudah selesai diperiksa. Lanjutkan untuk membuat Berita Acara",
+            isButtonVisible = true,
+            positiveLabel = "BUAT BERITA ACARA",
+            onClickPositive = {
+                events(HomeEvent.OnSuccessTeknisPenunjang(UIComponentState.Hide))
+                navigateToBeritaAcara()
+            },
+            onDismissRequest = {
+            }
+        )
+    }
     val data = hasil.data
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -641,7 +660,7 @@ private fun HasilContent(
                 enableElevation = false,
                 text = "SIMPAN",
                 onClick = {
-                    events(HomeEvent.SubmitQuestionTeknisUtama)
+                    events(HomeEvent.SubmitQuestionTeknisPenunjang)
                 }
             )
         }
@@ -650,7 +669,7 @@ private fun HasilContent(
         // BottomButton(
         //     modifier = Modifier
         //         .align(Alignment.BottomCenter),
-        //     navigateToTeknisPenunjang = navigateToTeknisPenunjang
+        //     navigateToBeritaAcara = navigateToBeritaAcara
         // )
     }
 
@@ -705,12 +724,12 @@ private fun SubcategorySection(
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
             sub.questions.forEach { q ->
-                ConditionTeknisUtama(
+                ConditionTeknisPenunjang(
                     item = q,
                     events = events,
                     state = state,
                     onClickCamera = {
-                        events(HomeEvent.OnSetActiveQuestion(it))
+                        events(HomeEvent.OnSetActiveQuestionPenunjang(it))
                         navigateToCamera()
                     }
                 )
@@ -753,7 +772,7 @@ private fun QuestionCard(q: QuestionResponse) {
 @Composable
 private fun BottomButton(
     modifier: Modifier = Modifier,
-    navigateToTeknisPenunjang: () -> Unit
+    navigateToBeritaAcara: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -769,7 +788,7 @@ private fun BottomButton(
             enabled = true,
             enableElevation = false,
             text = "SIMPAN",
-            onClick = navigateToTeknisPenunjang
+            onClick = navigateToBeritaAcara
         )
     }
 }

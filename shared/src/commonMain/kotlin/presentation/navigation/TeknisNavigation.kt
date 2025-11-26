@@ -26,7 +26,12 @@ sealed interface TeknisNavigation {
     data object CameraTeknisPenunjang : TeknisNavigation
 
     @Serializable
-    data object QuestionTeknisPenunjang : TeknisNavigation
+    data object CameraTidakSesuaiTeknisPenunjang : TeknisNavigation
+
+    @Serializable
+    data class QuestionTeknisPenunjang(
+        val uniqueKey: String      // ⬅️ argumen yang mau dibawa
+    ) : TeknisNavigation
 
 
 }
