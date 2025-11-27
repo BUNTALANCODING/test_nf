@@ -1,14 +1,21 @@
 package presentation.ui.main.riwayat.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import business.core.BaseViewModel
 import business.datasource.network.main.request.HistoryRampcheckRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
+import business.datasource.network.main.request.SendEmailBARequestDTO
 import business.interactors.main.HistoryRampcheckUseCase
 import business.interactors.main.PreviewBAUseCase
+import business.interactors.main.SendEmailBAUseCase
+import common.PdfDownloader
+import kotlinx.coroutines.launch
 
 class RiwayatViewModel(
     private val getRiwayatUseCase: HistoryRampcheckUseCase,
     private val previewBAUseCase: PreviewBAUseCase,
+    private val sendEmailBAUseCase: SendEmailBAUseCase,
+
 
     ) : BaseViewModel<RiwayatEvent, RiwayatState, RiwayatAction>()  {
 
@@ -32,9 +39,67 @@ class RiwayatViewModel(
                 previewBA()
             }
 
+            is RiwayatEvent.SendEmailBA -> {
+                sendEmailBA(event.emails, event.sendToMyEmail)
+            }
+
+            is RiwayatEvent.ShowSendEmailDialog -> {
+                setState { copy(isSendEmailDialogOpen = true) }
+            }
+
+            is RiwayatEvent.HideSendEmailDialog -> {
+                setState { copy(isSendEmailDialogOpen = false) }
+            }
+
+
+
+
 
         }
     }
+
+//    private fun sendEmailBA() {
+//        executeUseCase(
+//            sendEmailBAUseCase.execute(
+//                params = SendEmailBARequestDTO(
+//                    rampcheckId = state.value.rampcheckId
+//                )
+//            ),
+//            onSuccess = { data, status, code ->
+//                setState { copy(isEmailSent = true) }
+//            },
+//            onLoading = {
+//                setState { copy(progressBarState = it) }
+//            },
+//        )
+//    }
+
+
+    private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
+
+        // gabungkan email dalam satu list final
+        val finalEmails = if (sendToMyEmail) {
+            emails + "petugasrampcheck@gmail.com"
+        } else emails
+
+        executeUseCase(
+            sendEmailBAUseCase.execute(
+                params = SendEmailBARequestDTO(
+                    rampcheckId = state.value.rampcheckId,
+                    emails = finalEmails // ⬅ KIRIM LIST EMAIL KE API
+                )
+            ),
+            onSuccess = { data, status, code ->
+                // tampilkan snackbar atau apapun
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            }
+        )
+    }
+
+
+
 
     //FETCHING
     private fun getRiwayat() {
@@ -81,6 +146,8 @@ class RiwayatViewModel(
     }
 
 
+
+
     private fun onUpdateStatusRiwayat(value: Int) {
         setState { copy(statusRiwayat = value) }
         getRiwayat()
@@ -94,6 +161,7 @@ class RiwayatViewModel(
             )
         }
     }
+
 
 
 }

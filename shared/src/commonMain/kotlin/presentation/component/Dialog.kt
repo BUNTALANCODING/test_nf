@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -253,6 +254,193 @@ fun NotMatchDialog(
     }
 }
 
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun SendEmailDialog(
+//    iconRes: DrawableResource = Res.drawable.ic_info_alert,
+//    title: String,
+//    subtitle: String,
+//    isButtonVertical: Boolean = false,
+//    isButtonVisible: Boolean = false,
+//    onDismissRequest: () -> Unit,
+//    onSendClick: () -> Unit,
+//
+//    ) {
+//
+//    CustomAlertDialog(
+//        onDismissRequest = onDismissRequest,
+//        modifier = Modifier
+//            .fillMaxWidth().background(MaterialTheme.colorScheme.background)
+//    ) {
+//
+//        Column(
+//            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//        ) {
+//
+//            Image(
+//                painter = painterResource(iconRes),
+//                contentDescription = null
+//            )
+//            Spacer_8dp()
+//            Text(
+//                title,
+//                style = MaterialTheme.typography.labelMedium.copy(
+//                    fontWeight = FontWeight.Bold
+//                )
+//            )
+//
+//            Spacer_16dp()
+//
+//            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
+//                Text(
+//                    "Masukkan Alamat Email",
+//                    style = MaterialTheme.typography.labelMedium.copy(
+//                        fontWeight = FontWeight.Medium
+//                    )
+//                )
+//                Spacer_8dp()
+//                DefaultTextField(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    value = "",
+//                    onValueChange = {},
+//                    placeholder = "Masukkan email"
+//                )
+//                Spacer_8dp()
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Image(
+//                        painter = painterResource(Res.drawable.ic_plus),
+//                        contentDescription = null
+//                    )
+//                    Spacer_8dp()
+//                    Text(
+//                        "Tambah Email",
+//                        style = MaterialTheme.typography.labelMedium.copy(
+//                            fontWeight = FontWeight.Medium,
+//                            color = PrimaryColor
+//                        )
+//                    )
+//                }
+//
+//                Spacer_64dp()
+//
+//                var isChecked by remember { mutableStateOf(false) }
+//                Row(
+//                    modifier = Modifier.noRippleClickable {
+//                        isChecked = !isChecked
+//                    }, // Membuat seluruh Row bisa diklik
+//                    verticalAlignment = Alignment.Top
+//                ) {
+//                    Checkbox(
+//                        checked = isChecked,
+//                        onCheckedChange = { isChecked = it },
+//                        colors = CheckboxDefaults.colors(
+//                            checkedColor = PrimaryColor,
+//                            uncheckedColor = Color.Gray
+//                        ),
+//                        modifier = Modifier.size(16.dp) // Mengatur ukuran Checkbox (opsional)
+//                    )
+//                    Spacer_8dp()
+//
+//                    Column(modifier = Modifier.fillMaxWidth()) {
+//                        Text(
+//                            text = "Kirim ke email saya",
+//                            style = MaterialTheme.typography.labelMedium,
+//                            color = Color.Black
+//                        )
+//                        Spacer_8dp()
+//                        Text(
+//                            "petugasrampcheck@gmail.com",
+//                            style = MaterialTheme.typography.labelMedium.copy(
+//                                color = Color.Gray
+//                            )
+//                        )
+//                    }
+//
+//                }
+//
+//
+//            }
+//
+//
+//            Spacer_8dp()
+//
+//            if (isButtonVisible) {
+//                if (isButtonVertical) {
+//                    Column {
+//                        DefaultButton(
+//                            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
+//                            onClick = onDismissRequest,
+//                            colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
+//                            text = "VERIFIKASI SEKARANG",
+//                            style = MaterialTheme.typography.labelLarge.copy(
+//                                color = PrimaryColor,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                        )
+//
+//                        Spacer_8dp()
+//
+//                        DefaultButton(
+//                            onClick = onDismissRequest,
+//                            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
+//                            text = "BATALKAN",
+//                            style = MaterialTheme.typography.labelLarge.copy(
+//                                fontWeight = FontWeight.Bold
+//                            ),
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = Color.Transparent,
+//                                contentColor = Color.Black
+//                            )
+//                        )
+//                    }
+//                } else {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//
+//                        DefaultButton(
+//                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp).border(
+//                                1.dp,
+//                                PrimaryColor, shape = MaterialTheme.shapes.small
+//                            ),
+//                            onClick = onDismissRequest,
+//                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//                            text = "BATAL",
+//                            style = MaterialTheme.typography.labelLarge.copy(
+//                                color = PrimaryColor,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//                        )
+//
+//                        Spacer_8dp()
+//
+//                        DefaultButton(
+//                            onClick = onDismissRequest,
+//                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
+//                            text = "KIRIM",
+//                            style = MaterialTheme.typography.labelLarge.copy(
+//                                fontWeight = FontWeight.Bold
+//                            ),
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = PrimaryColor,
+//                                contentColor = Color.White
+//                            )
+//                        )
+//                    }
+//                }
+//            }
+//
+//
+//        }
+//    }
+//}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SendEmailDialog(
@@ -262,17 +450,28 @@ fun SendEmailDialog(
     isButtonVertical: Boolean = false,
     isButtonVisible: Boolean = false,
     onDismissRequest: () -> Unit,
+    onSendClick: (List<String>, Boolean) -> Unit
+) {
 
-    ) {
+    // ============================================
+    // STATE FIX — gunakan mutableStateListOf()
+    // ============================================
+    val emailList = remember { mutableStateListOf("") }
+    var isChecked by remember { mutableStateOf(false) }
+    // ============================================
 
     CustomAlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = Modifier
-            .fillMaxWidth().background(MaterialTheme.colorScheme.background)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
@@ -280,7 +479,9 @@ fun SendEmailDialog(
                 painter = painterResource(iconRes),
                 contentDescription = null
             )
+
             Spacer_8dp()
+
             Text(
                 title,
                 style = MaterialTheme.typography.labelMedium.copy(
@@ -290,23 +491,43 @@ fun SendEmailDialog(
 
             Spacer_16dp()
 
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+
                 Text(
                     "Masukkan Alamat Email",
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.Medium
                     )
                 )
+
                 Spacer_8dp()
-                DefaultTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = {},
-                    placeholder = "Masukkan email"
-                )
-                Spacer_8dp()
+
+                // ==============================
+                // DAFTAR TEXTFIELD DINAMIS
+                // ==============================
+                emailList.forEachIndexed { index, textValue ->
+
+                    DefaultTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = textValue,
+                        onValueChange = { newValue ->
+                            emailList[index] = newValue     // <-- update bekerja sekarang
+                        },
+                        placeholder = "Masukkan email"
+                    )
+
+                    Spacer_8dp()
+                }
+
+                // ==============================
+                // TOMBOL TAMBAH TEXTFIELD
+                // ==============================
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable {
+                            emailList.add("")     // <-- recomposition AKTIF
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
@@ -323,13 +544,15 @@ fun SendEmailDialog(
                     )
                 }
 
-                Spacer_64dp()
+                Spacer_32dp()
 
-                var isChecked by remember { mutableStateOf(false) }
+                // ==============================
+                // CHECKBOX EMAIL SAYA
+                // ==============================
                 Row(
                     modifier = Modifier.noRippleClickable {
                         isChecked = !isChecked
-                    }, // Membuat seluruh Row bisa diklik
+                    },
                     verticalAlignment = Alignment.Top
                 ) {
                     Checkbox(
@@ -339,70 +562,31 @@ fun SendEmailDialog(
                             checkedColor = PrimaryColor,
                             uncheckedColor = Color.Gray
                         ),
-                        modifier = Modifier.size(16.dp) // Mengatur ukuran Checkbox (opsional)
+                        modifier = Modifier.size(16.dp)
                     )
+
                     Spacer_8dp()
 
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Kirim ke email saya",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.Black
-                        )
+                    Column {
+                        Text("Kirim ke email saya", color = Color.Black)
                         Spacer_8dp()
                         Text(
                             "petugasrampcheck@gmail.com",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = Color.Gray
-                            )
+                            color = Color.Gray
                         )
                     }
-
                 }
-
-
             }
 
+            Spacer_16dp()
 
-            Spacer_8dp()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-            if (isButtonVisible) {
-                if (isButtonVertical) {
-                    Column {
-                        DefaultButton(
-                            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-                            onClick = onDismissRequest,
-                            colors = ButtonDefaults.buttonColors(containerColor = LightPurpleColor),
-                            text = "VERIFIKASI SEKARANG",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                color = PrimaryColor,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-
-                        Spacer_8dp()
-
-                        DefaultButton(
-                            onClick = onDismissRequest,
-                            modifier = Modifier.fillMaxWidth().height(DEFAULT__BUTTON_SIZE),
-                            text = "BATALKAN",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent,
-                                contentColor = Color.Black
-                            )
-                        )
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        DefaultButton(
-                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp).border(
+                DefaultButton(
+                    modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp).border(
                                 1.dp,
                                 PrimaryColor, shape = MaterialTheme.shapes.small
                             ),
@@ -413,30 +597,226 @@ fun SendEmailDialog(
                                 color = PrimaryColor,
                                 fontWeight = FontWeight.Bold
                             )
-                        )
+                )
 
-                        Spacer_8dp()
+                Spacer_8dp()
 
-                        DefaultButton(
-                            onClick = onDismissRequest,
-                            modifier = Modifier.height(DEFAULT__BUTTON_SIZE).width(128.dp),
-                            text = "KIRIM",
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryColor,
-                                contentColor = Color.White
-                            )
-                        )
-                    }
-                }
+                DefaultButton(
+                    onClick = {
+                        onSendClick(emailList.toList(), isChecked)
+                    },
+                    modifier = Modifier
+                        .height(DEFAULT__BUTTON_SIZE)
+                        .width(128.dp),
+                    text = "KIRIM",
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryColor,
+                        contentColor = Color.White
+                    )
+                )
             }
-
-
         }
     }
 }
+
+
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun SendEmailDialog(
+//    iconRes: DrawableResource = Res.drawable.ic_info_alert,
+//    title: String,
+//    subtitle: String,
+//    isButtonVertical: Boolean = false,
+//    isButtonVisible: Boolean = false,
+//    onDismissRequest: () -> Unit,
+//    onSendClick: () -> Unit,
+//) {
+//
+//    // ==============================
+//    // STATE
+//    // ==============================
+//    var emailInput by remember { mutableStateOf("") }           // Input email utama
+//    var emailList by remember { mutableStateOf(listOf<String>()) } // List email tambahan
+//    var isChecked by remember { mutableStateOf(false) }         // Checkbox
+//    // ==============================
+//
+//    CustomAlertDialog(
+//        onDismissRequest = onDismissRequest,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(MaterialTheme.colorScheme.background)
+//    ) {
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp)
+//                .verticalScroll(rememberScrollState()),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//        ) {
+//
+//            Image(
+//                painter = painterResource(iconRes),
+//                contentDescription = null
+//            )
+//
+//            Spacer_8dp()
+//
+//            Text(
+//                title,
+//                style = MaterialTheme.typography.labelMedium.copy(
+//                    fontWeight = FontWeight.Bold
+//                )
+//            )
+//
+//            Spacer_16dp()
+//
+//
+//            // ========================
+//            // FORM EMAIL
+//            // ========================
+//            Column(modifier = Modifier.fillMaxWidth()) {
+//
+//                Text(
+//                    "Masukkan Alamat Email",
+//                    style = MaterialTheme.typography.labelMedium.copy(
+//                        fontWeight = FontWeight.Medium
+//                    )
+//                )
+//
+//                Spacer_8dp()
+//
+//                // -------- Email Input --------
+//                DefaultTextField(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    value = emailInput,
+//                    onValueChange = { emailInput = it },
+//                    placeholder = "Masukkan email"
+//                )
+//
+//                Spacer_8dp()
+//
+//                // -------- Tombol Tambah Email --------
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .noRippleClickable {
+//                            if (emailInput.isNotBlank()) {
+//                                emailList = emailList + emailInput
+//                                emailInput = ""
+//                            }
+//                        },
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Image(
+//                        painter = painterResource(Res.drawable.ic_plus),
+//                        contentDescription = null
+//                    )
+//                    Spacer_8dp()
+//                    Text(
+//                        "Tambah Email",
+//                        style = MaterialTheme.typography.labelMedium.copy(
+//                            fontWeight = FontWeight.Medium,
+//                            color = PrimaryColor
+//                        )
+//                    )
+//                }
+//
+//                // -------- Tampilkan list email tambahan --------
+//                if (emailList.isNotEmpty()) {
+//                    Spacer_8dp()
+//                    emailList.forEach {
+//                        Text("- $it", style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray))
+//                    }
+//                }
+//
+//                Spacer_32dp()
+//
+//
+//                // ========================
+//                // CHECKBOX EMAIL SAYA
+//                // ========================
+//                Row(
+//                    modifier = Modifier.noRippleClickable {
+//                        isChecked = !isChecked
+//                    },
+//                    verticalAlignment = Alignment.Top
+//                ) {
+//                    Checkbox(
+//                        checked = isChecked,
+//                        onCheckedChange = { isChecked = it },
+//                        colors = CheckboxDefaults.colors(
+//                            checkedColor = PrimaryColor,
+//                            uncheckedColor = Color.Gray
+//                        ),
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//
+//                    Spacer_8dp()
+//
+//                    Column {
+//                        Text(
+//                            text = "Kirim ke email saya",
+//                            style = MaterialTheme.typography.labelMedium,
+//                            color = Color.Black
+//                        )
+//                        Spacer_8dp()
+//                        Text(
+//                            "petugasrampcheck@gmail.com",
+//                            style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+//                        )
+//                    }
+//                }
+//
+//            }
+//
+//            Spacer_16dp()
+//
+//            // ========================
+//            // BUTTONS
+//            // ========================
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//
+//                DefaultButton(
+//                    modifier = Modifier
+//                        .height(DEFAULT__BUTTON_SIZE)
+//                        .width(128.dp)
+//                        .border(1.dp, PrimaryColor, shape = MaterialTheme.shapes.small),
+//                    onClick = onDismissRequest,
+//                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+//                    text = "BATAL",
+//                    style = MaterialTheme.typography.labelLarge.copy(
+//                        color = PrimaryColor,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                )
+//
+//                Spacer_8dp()
+//
+//                DefaultButton(
+//                    onClick = onSendClick,
+//                    modifier = Modifier
+//                        .height(DEFAULT__BUTTON_SIZE)
+//                        .width(128.dp),
+//                    text = "KIRIM",
+//                    style = MaterialTheme.typography.labelLarge.copy(
+//                        fontWeight = FontWeight.Bold
+//                    ),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = PrimaryColor,
+//                        contentColor = Color.White
+//                    )
+//                )
+//            }
+//        }
+//    }
+//}
+
 
 @Composable
 fun KartuTidakAdaDialog(

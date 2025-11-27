@@ -24,4 +24,10 @@ data class RiwayatState (
     val time: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     val progressBarState: ProgressBarState = ProgressBarState.Idle,
     val networkState: NetworkState = NetworkState.Good,
+    val isEmailSent: Boolean = false,
+
+
+    val isSendEmailDialogOpen: Boolean = false
+
+
 ) : ViewState

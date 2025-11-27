@@ -22,6 +22,7 @@ import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SendEmailBAUseCase
 import business.interactors.main.SubmitQuestionUseCase
 import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadChunkUseCase
@@ -32,6 +33,7 @@ import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
 import common.Context
+import common.PdfDownloader
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import presentation.SharedViewModel
@@ -58,8 +60,17 @@ fun appModule(context: Context) = module {
     factory { SharedViewModel(get()) }
 //    factory { UploadChunkViewModel(get()) }
     factory { LoginViewModel(get(), get(), get(),get(), get()) }
-    factory { RiwayatViewModel(get(), get()) }
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory {
+        RiwayatViewModel(
+            get(),        // HistoryRampcheckUseCase
+            get(),
+            get()        // SendEmailBAUseCase
+        )
+    }
+
+    single { SendEmailBAUseCase(get(), get()) }
+
+    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -88,7 +99,11 @@ fun appModule(context: Context) = module {
     factory { HasilTeknisViewModel(get(), get()) }
     single { LoadCardUseCase(get(), get()) }
     single { UploadChunkUseCase(get()) }
-//    single { UpdateDeviceTokenUseCase(get(), get()) }
+
+
+//    single { UpdateDeviceTokenUseCase(get(), get()) }single { PdfDownloader(get()) }
+
+
 
     single { GetResultSecondUseCase(get()) } // ⬅️ TAMBAHAN INI
     factory { GetResultSecondViewModel(get(), get()) }

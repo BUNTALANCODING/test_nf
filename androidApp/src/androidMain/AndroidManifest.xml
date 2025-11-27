@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_UPLOAD" />
 
+
     <application
 
         android:allowBackup="true"
@@ -68,6 +69,10 @@
 <!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
 <!--                android:resource="@xml/path_provider" />-->
 <!--        </provider>-->
+
+<!--        <meta-data-->
+<!--            android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--            android:resource="@xml/file_paths" />-->
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

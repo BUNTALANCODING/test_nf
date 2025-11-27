@@ -65,6 +65,7 @@ import presentation.ui.main.datapemeriksaan.fotokendaraan.ButtonNextSection
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideRow
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
+import presentation.ui.main.riwayat.viewmodel.RiwayatEvent
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_bus_guide
 import rampcheck.shared.generated.resources.ic_camera
@@ -99,6 +100,14 @@ fun PDFBeritaAcaraScreen(
     }
 }
 
+// Tambahkan di luar composable (wajib sama seperti Riwayat)
+private fun normalizePdfUrl(input: String): String {
+    return input
+        .replace("\\/", "/")
+        .replace(Regex("^https:\\/\\/https:\\/\\/"), "https://")
+        .trim()
+}
+
 @Composable
 private fun PDFBeritaAcaraContent(
     state: HomeState,
@@ -108,26 +117,28 @@ private fun PDFBeritaAcaraContent(
         events(HomeEvent.PreviewBA)
     }
 
-//    Column(modifier = Modifier.fillMaxSize()) {
-//        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-//            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-//                Base64PdfViewer(
-//                    url = state.urlPreviewBA,
-//                    modifier = Modifier.fillMaxSize()
-//                        .padding(16.dp)
-//                )
-//            }
-//        }
-//    }
     val scope = rememberCoroutineScope()
-
     val downloader = rememberPdfDownloader()
 
-    // 1. Ambil URL dari state (asumsi nama field di state adalah pdfUrl)
-    val pdfUrl = state.urlPreviewBA
-
-    // Gunakan warna ungu gelap dari gambar Anda
     val purpleColor = Color(0xFF3F006E)
+
+    val pdfUrl = normalizePdfUrl(state.urlPreviewBA)
+
+    if (state.isSendEmailDialogOpen) {
+        presentation.component.SendEmailDialog(
+            title = "Kirim Berita Acara",
+            subtitle = "",
+            isButtonVisible = true,
+            onDismissRequest = {
+                events(HomeEvent.HideSendEmailDialog)
+            },
+            onSendClick = { emails, sendToMyEmail ->
+                events(HomeEvent.HideSendEmailDialog)
+                events(HomeEvent.SendEmailBA(emails, sendToMyEmail))
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
 
         Column(
@@ -136,17 +147,15 @@ private fun PDFBeritaAcaraContent(
                 .weight(1f)
                 .padding(16.dp)
         ) {
-            // 2. Panggil Viewer dengan URL
             Base64PdfViewer(
                 url = pdfUrl,
                 modifier = Modifier.fillMaxSize()
             )
         }
 
-        // 3. Bagian Tombol (Tetap di Bawah)
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shadowElevation = 8.dp, // Bayangan untuk memisahkan dari konten
+            shadowElevation = 8.dp,
             color = Color.White
         ) {
             Row(
@@ -156,12 +165,10 @@ private fun PDFBeritaAcaraContent(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Button(
                     onClick = {
-                        // 4. Perbaiki logika download untuk memanggil URL
                         if (pdfUrl.isNotEmpty()) {
-                            // downloader.download sekarang menerima URL!
-
                             scope.launch {
                                 downloader.download(
                                     url = pdfUrl,
@@ -185,18 +192,19 @@ private fun PDFBeritaAcaraContent(
                     )
                 }
 
-                // Tombol 2: KIRIM KE EMAIL
                 OutlinedButton(
-                    onClick = { /* TODO: Aksi Kirim ke Email */ },
+                    onClick = {
+                        events(HomeEvent.ShowSendEmailDialog)
+                    },
                     modifier = Modifier
-                        .weight(1f) // Mengambil setengah ruang lainnya
-                        .padding(start = 8.dp), // Jarak antar tombol
-                    border = BorderStroke(2.dp, purpleColor), // Garis luar ungu
-                    shape = RoundedCornerShape(8.dp) // Sudut melengkung
+                        .weight(1f)
+                        .padding(start = 8.dp),
+                    border = BorderStroke(2.dp, purpleColor),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = "KIRIM KE EMAIL",
-                        color = purpleColor, // Teks warna ungu
+                        color = purpleColor,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -204,4 +212,114 @@ private fun PDFBeritaAcaraContent(
         }
     }
 }
+
+
+//@Composable
+//private fun PDFBeritaAcaraContent(
+//    state: HomeState,
+//    events: (HomeEvent) -> Unit,
+//) {
+//    LaunchedEffect(Unit){
+//        events(HomeEvent.PreviewBA)
+//    }
+//
+////    Column(modifier = Modifier.fillMaxSize()) {
+////        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+////            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+////                Base64PdfViewer(
+////                    url = state.urlPreviewBA,
+////                    modifier = Modifier.fillMaxSize()
+////                        .padding(16.dp)
+////                )
+////            }
+////        }
+////    }
+//    val scope = rememberCoroutineScope()
+//
+//    val downloader = rememberPdfDownloader()
+//
+//    // 1. Ambil URL dari state (asumsi nama field di state adalah pdfUrl)
+//    val pdfUrl = state.urlPreviewBA
+//
+//    // Gunakan warna ungu gelap dari gambar Anda
+//    val purpleColor = Color(0xFF3F006E)
+//    Column(modifier = Modifier.fillMaxSize()) {
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(1f)
+//                .padding(16.dp)
+//        ) {
+//            // 2. Panggil Viewer dengan URL
+//            Base64PdfViewer(
+//                url = pdfUrl,
+//                modifier = Modifier.fillMaxSize()
+//            )
+//        }
+//
+//        // 3. Bagian Tombol (Tetap di Bawah)
+//        Surface(
+//            modifier = Modifier.fillMaxWidth(),
+//            shadowElevation = 8.dp, // Bayangan untuk memisahkan dari konten
+//            color = Color.White
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Button(
+//                    onClick = {
+//                        // 4. Perbaiki logika download untuk memanggil URL
+//                        if (pdfUrl.isNotEmpty()) {
+//                            // downloader.download sekarang menerima URL!
+//
+//                            scope.launch {
+//                                downloader.download(
+//                                    url = pdfUrl,
+//                                    fileName = "Laporan_${state.rampcheckId}.pdf"
+//                                )
+//                            }
+//                        }
+//                    },
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .padding(end = 8.dp),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = purpleColor
+//                    ),
+//                    shape = RoundedCornerShape(8.dp)
+//                ) {
+//                    Text(
+//                        text = "UNDUH",
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//
+//                // Tombol 2: KIRIM KE EMAIL
+//
+//                OutlinedButton(
+//                    onClick = {
+//                        events(HomeEvent.ShowSendEmailDialog)
+//                    },
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .padding(start = 8.dp),
+//                    border = BorderStroke(2.dp, purpleColor),
+//                    shape = RoundedCornerShape(8.dp)
+//                ) {
+//                    Text(
+//                        text = "KIRIM KE EMAIL",
+//                        color = purpleColor,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 

@@ -14,6 +14,7 @@ import business.datasource.network.main.request.NegativeAnswerRequestDTO
 import business.datasource.network.main.request.PlatKIRRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
 import business.datasource.network.main.request.RampcheckStartRequestDTO
+import business.datasource.network.main.request.SendEmailBARequestDTO
 import business.datasource.network.main.request.SubmitQuestionsRequestDTO
 import business.datasource.network.main.request.SubmitSignatureRequestDTO
 import business.datasource.network.main.request.UploadPetugasRequestDTO
@@ -30,6 +31,7 @@ import business.interactors.main.NegativeAnswerUseCase
 import business.interactors.main.PlatKIRUseCase
 import business.interactors.main.PreviewBAUseCase
 import business.interactors.main.RampcheckStartUseCase
+import business.interactors.main.SendEmailBAUseCase
 import business.interactors.main.SubmitQuestionUseCase
 import business.interactors.main.SubmitSignatureUseCase
 import business.interactors.main.UploadPetugasUseCase
@@ -37,6 +39,7 @@ import business.interactors.main.VehiclePhotoUseCase
 import common.toBase64
 import common.toBytes
 import kotlinx.coroutines.launch
+import presentation.ui.main.riwayat.viewmodel.RiwayatEvent
 import presentation.util.BackgroundScheduler
 
 class HomeViewModel(
@@ -55,6 +58,7 @@ class HomeViewModel(
     private val submitQuestionUseCase: SubmitQuestionUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val loadCardUseCase: LoadCardUseCase,
+    private val sendEmailBAUseCase: SendEmailBAUseCase,
     private val scheduler: BackgroundScheduler
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
@@ -62,6 +66,19 @@ class HomeViewModel(
 
     override fun onTriggerEvent(event: HomeEvent) {
         when (event) {
+
+            is HomeEvent.SendEmailBA -> {
+                sendEmailBA(event.emails, event.sendToMyEmail)
+            }
+
+
+            is HomeEvent.ShowSendEmailDialog -> {
+                setState { copy(isSendEmailDialogOpen = true) }
+            }
+
+            is HomeEvent.HideSendEmailDialog -> {
+                setState { copy(isSendEmailDialogOpen = false) }
+            }
 
             is HomeEvent.GetHomeContent -> {
 //                getHome()
@@ -1711,6 +1728,29 @@ class HomeViewModel(
 
     private fun listsubmitQuestionKpCadangan(value: AnswersItem) {
         setState { copy(listSubmitQuestionKPCadangan = value) }
+    }
+
+    private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
+
+        // gabungkan email dalam satu list final
+        val finalEmails = if (sendToMyEmail) {
+            emails + "petugasrampcheck@gmail.com"
+        } else emails
+
+        executeUseCase(
+            sendEmailBAUseCase.execute(
+                params = SendEmailBARequestDTO(
+                    rampcheckId = state.value.rampcheckId,
+                    emails = finalEmails // ⬅ KIRIM LIST EMAIL KE API
+                )
+            ),
+            onSuccess = { data, status, code ->
+                // tampilkan snackbar atau apapun
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            }
+        )
     }
 
     private fun submitQuestionKp(listAnswer: List<AnswersItem>) {

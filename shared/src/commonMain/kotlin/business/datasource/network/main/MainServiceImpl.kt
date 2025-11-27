@@ -323,7 +323,7 @@ class MainServiceImpl(
                     append(HttpHeaders.Authorization, token)
                 }
                 takeFrom(BASE_URL)
-                encodedPath += MainService.PREVIEW_BA
+                encodedPath += MainService.SEND_EMAIL_BA
             }
             contentType(ContentType.Application.Json)
             setBody(params)

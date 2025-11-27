@@ -24,6 +24,11 @@ import presentation.component.ConditionItem
 
 data class HomeState(
 
+
+    val isEmailSent: Boolean = false,
+
+    val isSendEmailDialogOpen: Boolean = false,
+
     val technicalConditions: List<ConditionItem> = initialTechnicalConditionsList(),
     val cityCodeValue: String = "",
     val middleCodeValue: String = "",

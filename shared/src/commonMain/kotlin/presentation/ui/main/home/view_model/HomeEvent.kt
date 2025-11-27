@@ -7,10 +7,16 @@ import business.core.ViewEvent
 import business.datasource.network.main.request.AnswersItem
 import business.datasource.network.main.responses.GetLocationDTO
 import business.datasource.network.main.responses.SubcategoryResponse
-
+import presentation.ui.main.riwayat.viewmodel.RiwayatEvent
 
 
 sealed class HomeEvent : ViewEvent {
+
+    data object ShowSendEmailDialog : HomeEvent()
+
+    data object HideSendEmailDialog : HomeEvent()
+
+    data class SendEmailBA(val emails: List<String>, val sendToMyEmail: Boolean) : HomeEvent()
 
     data object GetHomeContent : HomeEvent()
 

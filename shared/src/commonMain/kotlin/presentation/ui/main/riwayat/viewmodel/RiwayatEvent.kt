@@ -10,5 +10,15 @@ sealed class RiwayatEvent : ViewEvent {
     data object PreviewBA : RiwayatEvent()
     data class OnUpdateRampcheckId(val value: Int) : RiwayatEvent()
 
+    data object ShowSendEmailDialog : RiwayatEvent()
+    data object HideSendEmailDialog : RiwayatEvent()
+
+    data class SendEmailBA(val emails: List<String>, val sendToMyEmail: Boolean) : RiwayatEvent()
+
+
+
+
+
+
 
 }
