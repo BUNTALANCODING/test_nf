@@ -15,6 +15,8 @@ sealed class RiwayatEvent : ViewEvent {
 
     data class SendEmailBA(val emails: List<String>, val sendToMyEmail: Boolean) : RiwayatEvent()
 
+    data object UpdateMyEmail : RiwayatEvent()
+
 
 
 

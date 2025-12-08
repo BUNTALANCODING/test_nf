@@ -8,5 +8,6 @@ expect fun ActualCameraVideoView(
     onCaptureClick: () -> Unit,
     isRecording: Boolean,
     label: String,
+    labels: String,
     onVideoRecorded: (String) -> Unit,
 )

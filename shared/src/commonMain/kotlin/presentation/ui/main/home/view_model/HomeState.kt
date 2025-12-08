@@ -86,6 +86,13 @@ data class HomeState(
     val kartuUjiBase64 : String? = "",
     val simPengemudiBitmap : ImageBitmap? = null,
     val simPengemudiBase64 : String? = "",
+
+    val simPengemuduiTidakSesuaiBitmap : ImageBitmap? = null,
+    val simPengemudiTidakSesuaiBase64 : String? = "",
+
+    val myEmail: String = "",
+
+
     val getStepKartuUJi : GetStepDTO = GetStepDTO(),
     val tidakSesuai : String = "",
     val tidakSesuaiBitmap : ImageBitmap? = null,
@@ -181,7 +188,16 @@ data class HomeState(
     val selectedOptionKPReguler: Int? = null,
     val selectedOptionKPCadangan: Int? = null,
 
+    val jenisBusList: List<JenisBus> = emptyList(),
+    val isLoadingJenisBus: Boolean = false,
+    val selectedJenisBusId: Int? = null,
+
     ) : ViewState
+
+data class JenisBus(
+    val id: Int,
+    val nama: String
+)
 
 fun initialTechnicalConditionsList(): List<ConditionItem> {
     return listOf(

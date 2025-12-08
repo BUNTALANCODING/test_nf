@@ -12,6 +12,7 @@ import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetNotificationUseCase
 import business.interactors.main.GetProfileUseCase
 import business.interactors.main.GetHasilTeknisUseCase
+import business.interactors.main.GetJenisBusUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.HistoryRampcheckUseCase
 import business.interactors.main.IdentifyPenunjangUseCase
@@ -33,7 +34,6 @@ import business.interactors.splash.CheckTokenUseCase
 import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
 import common.Context
-import common.PdfDownloader
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import presentation.SharedViewModel
@@ -45,7 +45,7 @@ import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecon
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
-import presentation.ui.main.uploadChunk.UploadViewModel
+import presentation.ui.main.pemeriksaanteknis.utama.viewmodel.UploadViewModel
 import presentation.util.BackgroundScheduler
 
 fun appModule(context: Context) = module {
@@ -64,13 +64,14 @@ fun appModule(context: Context) = module {
         RiwayatViewModel(
             get(),        // HistoryRampcheckUseCase
             get(),
-            get()        // SendEmailBAUseCase
+            get(),        // SendEmailBAUseCase
+            get()        // AppDataStoreManager
         )
     }
 
     single { SendEmailBAUseCase(get(), get()) }
 
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetProfileUseCase(get(), get()) }
     single { TokenManager(get(), get(), get()) }
     single { LogoutUseCase(get()) }
@@ -110,4 +111,7 @@ fun appModule(context: Context) = module {
 
     single { IdentifyPenunjangUseCase(get()) } // (MainService, AppDataStore)
     factory { IdentifyPenunjangViewModel(get(), get()) }
+
+    single { GetJenisBusUseCase(get()) }
+
 }

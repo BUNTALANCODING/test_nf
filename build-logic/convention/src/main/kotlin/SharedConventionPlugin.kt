@@ -94,6 +94,10 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(libs.findLibrary("camerak-image-saver").get())
                         implementation("com.squareup.okio:okio:3.9.0")
 
+                        val skikoVersion = "0.9.8"
+//                        implementation("org.jetbrains.skia:skia-jni:0.9.73")
+
+
                     }
                 }
 
@@ -129,6 +133,17 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("io.insert-koin:koin-android:4.0.0")
                         implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
                         implementation("io.ktor:ktor-client-cio:2.3.12")
+
+                        // CameraX
+                        val cameraxVersion = "1.3.4" // atau versi yang kamu pakai
+                        implementation("androidx.camera:camera-core:$cameraxVersion")
+                        implementation("androidx.camera:camera-camera2:$cameraxVersion")
+                        implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+                        implementation("androidx.camera:camera-view:$cameraxVersion")
+
+                        // TensorFlow Lite
+                        implementation("org.tensorflow:tensorflow-lite:2.12.0")
+                        implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
 
                     }
                 }

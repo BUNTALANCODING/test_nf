@@ -248,7 +248,7 @@ private fun CameraView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Pastikan Petugas dan Kendaraan terlihat jelas.",
+                text = "Pastikan Foto terlihat jelas.",
                 style = MaterialTheme.typography.labelLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Normal
@@ -266,10 +266,10 @@ private fun CameraView(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Tutup", color = Color.White)
                 }
-                IconButton(modifier = Modifier.align(Alignment.Center), onClick = onCapture) {
+                IconButton(modifier = Modifier.align(Alignment.Center).size(90.dp), onClick = onCapture) {
                     Box(
                         modifier = Modifier
-                            .size(64.dp)
+                            .size(80.dp)
                             .border(4.dp, Color.White, shape = CircleShape)
                             .background(Color(0xFF001F3F), shape = CircleShape)
                     )

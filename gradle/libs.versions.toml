@@ -54,6 +54,7 @@ play-services-location = "21.0.1"
 gservice = "4.4.0"
 fbservice = "3.0.6"
 b-konfig = "0.17.1"
+litertSupportApi = "1.4.1"
 
 
 [libraries]
@@ -143,6 +144,7 @@ coil3-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coil3-io" }
 
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps" }
+litert-support-api = { group = "com.google.ai.edge.litert", name = "litert-support-api", version.ref = "litertSupportApi" }
 
 
 [bundles]

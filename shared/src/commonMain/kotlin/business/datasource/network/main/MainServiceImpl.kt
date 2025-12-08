@@ -1,5 +1,6 @@
 package business.datasource.network.main
 
+import BusTypeResponseDto
 import business.constants.BASE_URL
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.request.CheckQRRequestDTO
@@ -644,7 +645,7 @@ override suspend fun loadCard(
         uniqueKey: String,
         chunkIndex: Int,
         totalChunks: Int,
-        chunk: ByteArray
+        chunk: ByteArray,
     ): ChunkResponse {
 
         val cleanToken = token.removePrefix("Bearer").trim()
@@ -679,6 +680,7 @@ override suspend fun loadCard(
                             append("unique_key", uniqueKey)
                             append("chunk_index", chunkIndex.toString())
                             append("total_chunks", totalChunks.toString())
+
 
                             // Field "file" = berkas
                             append(
@@ -764,7 +766,7 @@ override suspend fun loadCard(
         uniqueKey: String,
         chunkIndex: Int,
         totalChunks: Int,
-        chunk: ByteArray
+        chunk: ByteArray,
     ): ChunkResponse {
 
         val cleanToken = token.removePrefix("Bearer").trim()
@@ -799,6 +801,7 @@ override suspend fun loadCard(
                             append("unique_key", uniqueKey)
                             append("chunk_index", chunkIndex.toString())
                             append("total_chunks", totalChunks.toString())
+
 
                             // Field "file" = berkas
                             append(
@@ -867,8 +870,7 @@ override suspend fun loadCard(
                 takeFrom(BASE_URL)       // misal: https://dashboard-ramcek.net2software.net/api/v1/frontend/
                 // hasil akhir: https://.../api/v1/frontend/getresult/UJI-BUS-20251111234949
                 encodedPath += MainService.GET_RESULT_SECOND + "/$uniqueKey"
-                // atau kalau gak pakai constant:
-                // encodedPath += "getresult/$uniqueKey"
+
             }
             headers {
                 append(HttpHeaders.Authorization, bearer)
@@ -876,6 +878,15 @@ override suspend fun loadCard(
             contentType(ContentType.Application.Json)
         }.body()
     }
+
+    override suspend fun getBusType(token: String): BusTypeResponseDto {
+        return httpClient.post("https://dashboard-ramcek.net2software.net/api/v1/frontend/bustype") {
+            // ⬅️ di sini token ditambahkan ke header
+            header(HttpHeaders.Authorization, token)
+            contentType(ContentType.Application.Json)
+        }.body()
+    }
+
 
 }
 

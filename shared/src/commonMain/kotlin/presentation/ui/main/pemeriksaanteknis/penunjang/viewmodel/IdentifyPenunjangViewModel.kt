@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import presentation.ui.main.uploadChunk.UploadController
-import presentation.ui.main.uploadChunk.UploadState
+import presentation.ui.main.pemeriksaanteknis.utama.viewmodel.UploadState
 
 class IdentifyPenunjangViewModel(
     private val identifyPenunjangUseCase: IdentifyPenunjangUseCase,
@@ -29,6 +29,13 @@ class IdentifyPenunjangViewModel(
     private var fileContainer: FileContainer? = null
     private var controller = UploadController()
     private var uploadJob: Job? = null
+
+
+    private var busTypeId: Int? = null
+
+    fun setBusTypeId(id: Int) {
+        busTypeId = id
+    }
 
     fun setFile(container: FileContainer) {
         fileContainer = container
@@ -45,30 +52,44 @@ class IdentifyPenunjangViewModel(
     fun startUploadInterior() {
         val container = fileContainer ?: return
 
-        // 🔍 CEK SIZE 0
         val totalBytes = container.size
+        val durationMs = container.durationMs
+
+        val oneGbInBytes = 1_073_741_824L
+        val maxDurationMs = 3 * 60 * 1000L
+
+        val reasons = mutableListOf<String>()
+
         if (totalBytes <= 0L) {
-            _state.value = _state.value.copy(
-                status = "File kosong (0 byte), tidak bisa diupload",
-                isUploading = false,
-                progress = 0
-            )
-            return
+            reasons += "File kosong (0 byte), tidak bisa diupload"
         }
 
-        // 🔍 LIMIT 1GB
-        val oneGbInBytes = 1_073_741_824L // 1GB = 1024^3
         if (totalBytes > oneGbInBytes) {
+            reasons += "Ukuran file melebihi 1 GB"
+        }
+
+        if (durationMs > maxDurationMs) {
+            reasons += "Durasi video lebih dari 3 menit"
+        }
+
+        if (reasons.isNotEmpty()) {
             _state.value = _state.value.copy(
-                status = "Ukuran file melebihi 1 GB",
+                showLimitDialog = true,
+                limitDialogMessage = reasons.joinToString("\n"),
                 isUploading = false,
-                progress = 0
+                progress = 0,
+                status = "Tidak bisa upload"
             )
             return
         }
 
-        // cancel upload lama jika masih jalan
         uploadJob?.cancel()
+
+        val maxChunks = 30
+
+        val chunkSizeLong = (totalBytes + maxChunks - 1) / maxChunks
+        val chunkSize = chunkSizeLong.toInt()
+        val totalChunks = ((totalBytes + chunkSizeLong - 1) / chunkSizeLong).toInt()
 
         _state.value = _state.value.copy(
             status = "Uploading...",
@@ -78,7 +99,6 @@ class IdentifyPenunjangViewModel(
 
         uploadJob = viewModelScope.launch {
 
-            // 🔑 AMBIL TOKEN DARI DATASTORE
             val token = appDataStore.readValue(DataStoreKeys.TOKEN) ?: ""
             println("VM_UPLOAD: TOKEN FROM DATASTORE = '$token'")
 
@@ -91,15 +111,11 @@ class IdentifyPenunjangViewModel(
                 return@launch
             }
 
-            val chunkSize = 5_000_000 // 1 MB
-            val totalChunks = ((totalBytes + chunkSize - 1) / chunkSize).toInt()
-
             val uniqueKey = "${container.fileName}_${getTimeMillis()}"
 
             var uploadedBytes = 0L
-            var chunkIndex = 0 // 0-based
+            var chunkIndex = 0
 
-            // cuma buat statistik, tidak dipakai untuk stop loop
             var failedChunks = 0
 
             try {
@@ -116,7 +132,7 @@ class IdentifyPenunjangViewModel(
 
                     try {
                         identifyPenunjangUseCase.execute(
-                            token = token,               // kirim token ke usecase
+                            token = token,
                             fileName = container.fileName,
                             uniqueKey = uniqueKey,
                             chunkIndex = currentIndex,
@@ -126,31 +142,35 @@ class IdentifyPenunjangViewModel(
 
                             when (dataState) {
                                 is DataState.Loading -> {
-                                    // optional: global loading
                                 }
 
                                 is DataState.Data -> {
                                     val apiResponse: ChunkResponse? = dataState.data
                                     println("VM_UPLOAD: chunk $currentIndex OK -> $apiResponse")
 
-                                    // tetap naikkan progress walaupun status di response false
                                     uploadedBytes += chunk.size
                                     val percent = ((uploadedBytes.toFloat() / totalBytes.toFloat()) * 100).toInt()
 
-                                    _state.value = _state.value.copy(
-                                        progress = percent.coerceIn(0, 100),
-                                        status = "Uploading...",
-                                        isUploading = true
-                                    )
+                                    val newProgress = percent.coerceIn(0, 100)
+
+                                    val current = _state.value
+                                    _state.value = if (current.isPaused) {
+                                        current.copy(
+                                            progress = newProgress
+                                        )
+                                    } else {
+                                        current.copy(
+                                            progress = newProgress,
+                                            status = "Uploading...",
+                                            isUploading = true
+                                        )
+                                    }
                                 }
 
                                 is DataState.Response -> {
-                                    // ada error dari server (timeout, dll)
                                     println("VM_UPLOAD: chunk $currentIndex failed -> ${dataState.uiComponent}")
                                     failedChunks += 1
 
-                                    // TIDAK STOP, TIDAK SET isUploading = false
-                                    // cukup tulis status sementara
                                     _state.value = _state.value.copy(
                                         status = "Beberapa chunk gagal (chunk $currentIndex), lanjut upload...",
                                         isUploading = true
@@ -158,12 +178,10 @@ class IdentifyPenunjangViewModel(
                                 }
 
                                 is DataState.NetworkStatus -> {
-                                    // optional: bisa log disini
                                 }
                             }
                         }
                     } catch (e: Exception) {
-                        // Error per chunk (misal timeout dari Ktor)
                         e.printStackTrace()
                         failedChunks += 1
                         println("VM_UPLOAD: Exception di chunk $currentIndex -> ${e.message}")
@@ -177,7 +195,6 @@ class IdentifyPenunjangViewModel(
                     chunkIndex++
                 }
 
-                // SELESAI SEMUA CHUNK
                 val finalStatus = if (failedChunks == 0) {
                     "Upload completed!"
                 } else {
@@ -206,14 +223,15 @@ class IdentifyPenunjangViewModel(
         }
     }
 
+
     fun pause() {
         controller.pause()
-        _state.value = _state.value.copy(status = "Paused")
+        _state.value = _state.value.copy(status = "Paused", isPaused = true)
     }
 
     fun resume() {
         controller.resume()
-        _state.value = _state.value.copy(status = "Resumed")
+        _state.value = _state.value.copy(status = "Resumed", isPaused = false)
     }
 
     fun cancel() {
@@ -222,6 +240,13 @@ class IdentifyPenunjangViewModel(
         _state.value = _state.value.copy(
             status = "Cancelled",
             isUploading = false
+        )
+    }
+
+    fun dismissLimitDialog() {
+        _state.value = _state.value.copy(
+            showLimitDialog = false,
+            limitDialogMessage = ""
         )
     }
 }

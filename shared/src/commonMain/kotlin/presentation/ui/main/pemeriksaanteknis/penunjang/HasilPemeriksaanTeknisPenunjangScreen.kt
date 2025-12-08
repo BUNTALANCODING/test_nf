@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -46,6 +47,7 @@ import business.core.UIComponentState
 import business.datasource.network.main.responses.HasilTeknisDTO
 import business.datasource.network.main.responses.QuestionResponse
 import business.datasource.network.main.responses.SubcategoryResponse
+import common.KeepScreenOn
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.component.ConditionCard
@@ -55,6 +57,7 @@ import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
 import presentation.component.NotMatchDialog
+import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -115,13 +118,16 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
 
     val currentStatus = hasilState.data?.data?.status?.lowercase()
 
-    val stillWaiting =
-        hasilState.error == null && (
+    val stillWaiting = hasilState.error == null && (
                 hasilState.isLoading ||
                         currentStatus == "sent" ||
                         currentStatus == "processing" ||
                         currentStatus.isNullOrBlank()
                 )
+
+    KeepScreenOn(keepOn = stillWaiting)
+
+
 
     LaunchedEffect(hasilState.data, hasilState.isLoading) {
         val dto = hasilState.data ?: return@LaunchedEffect
@@ -151,7 +157,8 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
 
-//         🔹 Dialog error khusus hasil teknis
+
+        // 🔹 Dialog error khusus hasil teknis
         if (hasilState.error != null) {
             AlertDialog(
                 onDismissRequest = { },
@@ -166,6 +173,7 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
                 text = { Text(hasilState.error ?: "") }
             )
         }
+
         if (stillWaiting) {
             Box(
                 modifier = Modifier
@@ -176,7 +184,30 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator()
                     Spacer_8dp()
-                    Text("Menunggu hasil identifikasi...")
+
+                    Text(
+                        text = if (hasilState.statusMessage.isNotBlank())
+                            hasilState.statusMessage
+                        else
+                            "Menunggu hasil identifikasi..."
+                    )
+
+                    if (hasilState.showCancelButton) {
+                        Spacer_16dp()
+                        DefaultButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(DEFAULT__BUTTON_SIZE)
+                                .width(50.dp),
+                            enabled = true,
+                            enableElevation = false,
+                            text = "Batalkan",
+                            onClick = {
+                                hasilViewModel.cancel()
+                                navigateToCamera()
+                            }
+                        )
+                    }
                 }
             }
         } else {

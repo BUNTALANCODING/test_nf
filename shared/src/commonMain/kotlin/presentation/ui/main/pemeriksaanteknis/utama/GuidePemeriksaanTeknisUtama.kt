@@ -23,10 +23,12 @@ import presentation.component.Spacer_8dp
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideRow
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
+import presentation.ui.main.pemeriksaanteknis.utama.viewmodel.UploadViewModel
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_bus_guide
 import rampcheck.shared.generated.resources.ic_guie_teknis_utama
 import rampcheck.shared.generated.resources.ic_kemenhub
+
 
 @Composable
 fun GuidePemeriksaanTeknisUtamaScreen(
@@ -34,7 +36,8 @@ fun GuidePemeriksaanTeknisUtamaScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToTeknisUtama: () -> Unit
+    navigateToTeknisUtama: () -> Unit,
+    uploadViewModel: UploadViewModel
 ) {
 
     DefaultScreenUI(
@@ -66,6 +69,7 @@ private fun GuidePemeriksaanTeknisUtamaContent(
         }
     }
 }
+
 
 @Composable
 private fun HeaderSection() {

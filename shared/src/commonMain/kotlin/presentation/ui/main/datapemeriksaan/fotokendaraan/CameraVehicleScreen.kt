@@ -47,7 +47,6 @@ import com.kashif.cameraK.enums.CameraLens
 import com.kashif.cameraK.enums.Directory
 import com.kashif.cameraK.enums.FlashMode
 import com.kashif.cameraK.enums.ImageFormat
-import com.kashif.cameraK.enums.QualityPrioritization
 import com.kashif.cameraK.permissions.Permissions
 import com.kashif.cameraK.permissions.providePermissions
 import com.kashif.cameraK.result.ImageCaptureResult
@@ -223,7 +222,8 @@ private fun CameraVehicleContent(
                     }
                 }
             },
-            onCameraReady = { cameraController.value = it }
+            onCameraReady = { cameraController.value = it },
+            imageType = state.imageTypes        // ⬅️ tambahkan ini
         )
     } else {
         // fallback UI
@@ -244,7 +244,8 @@ private fun CameraView(
     imageSaverPlugin: ImageSaverPlugin,
     onBack: () -> Unit,
     onCapture: () -> Unit,
-    onCameraReady: (CameraController) -> Unit
+    onCameraReady: (CameraController) -> Unit,
+    imageType: String?                  // ⬅️ tambah parameter
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         CameraPreview(
@@ -269,7 +270,7 @@ private fun CameraView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Pastikan Petugas dan Kendaraan terlihat jelas.",
+                text = "Pastikan Foto Kendaraan $imageType terlihat jelas.",
                 style = MaterialTheme.typography.labelLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Normal
@@ -287,10 +288,10 @@ private fun CameraView(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Tutup", color = Color.White)
                 }
-                IconButton(modifier = Modifier.align(Alignment.Center), onClick = onCapture) {
+                IconButton(modifier = Modifier.align(Alignment.Center).size(90.dp), onClick = onCapture) {
                     Box(
                         modifier = Modifier
-                            .size(64.dp)
+                            .size(80.dp)
                             .border(4.dp, Color.White, shape = CircleShape)
                             .background(Color(0xFF001F3F), shape = CircleShape)
                     )

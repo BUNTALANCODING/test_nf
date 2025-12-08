@@ -51,7 +51,7 @@ fun BirthdayDatePrickerDialog(
     val datePickerState = rememberDatePickerState(
         initialDisplayedMonthMillis = todayMillisUtc,
         initialSelectedDateMillis = todayMillisUtc, // Optional: if you want today to be pre-selected
-        selectableDates = PastOrPresentSelectableDates2
+        selectableDates = TodayOnlySelectableDates
     )
 
     val selectedDateMillis = datePickerState.selectedDateMillis
@@ -102,18 +102,49 @@ fun BirthdayDatePrickerDialog(
     }
 }
 
+//@OptIn(ExperimentalMaterial3Api::class)
+//object PastOrPresentSelectableDates2: SelectableDates {
+//    // Use Indonesia timezone for calculating "today"
+//    private val indonesiaTimeZone = TimeZone.of("Asia/Jakarta")
+//    private val nowIndonesia = Clock.System.now().toLocalDateTime(indonesiaTimeZone).date
+//    private val dayStartUtc = nowIndonesia.atTime(0, 0, 0, 0).toInstant(TimeZone.UTC).toEpochMilliseconds()
+//
+//    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+//        return utcTimeMillis <= dayStartUtc
+//    }
+//
+//    override fun isSelectableYear(year: Int): Boolean {
+//        return year <= LocalDate.now().year
+//    }
+//}
+
 @OptIn(ExperimentalMaterial3Api::class)
-object PastOrPresentSelectableDates2: SelectableDates {
-    // Use Indonesia timezone for calculating "today"
+object TodayOnlySelectableDates : SelectableDates {
+
     private val indonesiaTimeZone = TimeZone.of("Asia/Jakarta")
-    private val nowIndonesia = Clock.System.now().toLocalDateTime(indonesiaTimeZone).date
-    private val dayStartUtc = nowIndonesia.atTime(0, 0, 0, 0).toInstant(TimeZone.UTC).toEpochMilliseconds()
 
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-        return utcTimeMillis <= dayStartUtc
+        // Tanggal yang lagi dicek DatePicker (dari millis → LocalDate Indonesia)
+        val dateFromPicker = Instant.fromEpochMilliseconds(utcTimeMillis)
+            .toLocalDateTime(indonesiaTimeZone)
+            .date
+
+        // Tanggal hari ini di Indonesia
+        val todayIndonesia = Clock.System.now()
+            .toLocalDateTime(indonesiaTimeZone)
+            .date
+
+        // HANYA boleh kalau tepat HARI INI
+        return dateFromPicker == todayIndonesia
     }
 
     override fun isSelectableYear(year: Int): Boolean {
-        return year <= LocalDate.now().year
+        val todayYear = Clock.System.now()
+            .toLocalDateTime(indonesiaTimeZone)
+            .date
+            .year
+
+        // cuma tahun sekarang yang boleh
+        return year == todayYear
     }
 }

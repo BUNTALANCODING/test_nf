@@ -1,32 +1,62 @@
 package presentation.ui.main.pemeriksaanteknis.penunjang
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import business.constants.GetContext
 import business.core.UIComponent
 import com.kashif.cameraK.permissions.Permissions
 import com.kashif.cameraK.permissions.providePermissions
+import common.FileContainer
+import common.KeepScreenOn
 import common.PermissionCallback
 import common.PermissionStatus
 import common.PermissionType
 import common.camera.ActualCameraVideoView
-import common.FileContainer
 import common.createPermissionsManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import presentation.component.DefaultScreenUI
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
+
+private enum class CameraUiState {
+    PREVIEW,
+    RECORDING,
+    REVIEW
+}
 
 @Composable
 fun CameraTeknisPenunjangScreen(
@@ -65,8 +95,21 @@ private fun CameraTeknisPenunjangContent(
 ) {
     val permissions: Permissions = providePermissions()
 
-    var isRecording by remember { mutableStateOf(false) }
-    var showPermissionRequest by remember { mutableStateOf(false) }
+    var cameraUiState by remember { mutableStateOf(CameraUiState.PREVIEW) }
+    var recordedVideoUri by remember { mutableStateOf<String?>(null) }
+    val isRecording = cameraUiState == CameraUiState.RECORDING
+
+    var recordSeconds by remember { mutableStateOf(0) }
+
+    LaunchedEffect(isRecording) {
+        if (isRecording) {
+            while (true) {
+                delay(1_000)
+                recordSeconds++
+            }
+        }
+    }
+
     var isCameraGranted by remember { mutableStateOf(permissions.hasCameraPermission()) }
     var showDeniedDialog by remember { mutableStateOf(false) }
     var launchCamera by remember { mutableStateOf(false) }
@@ -77,6 +120,9 @@ private fun CameraTeknisPenunjangContent(
     val uploadState by identifyPenunjangViewModel.state.collectAsState()
     var showUploadDialog by remember { mutableStateOf(false) }
 
+    val stillWaiting = isRecording || uploadState.isUploading || showUploadDialog
+    KeepScreenOn(keepOn = stillWaiting)
+
     LaunchedEffect(uploadState.isUploading) {
         if (!uploadState.isUploading && showUploadDialog) {
             showUploadDialog = false
@@ -85,6 +131,7 @@ private fun CameraTeknisPenunjangContent(
             }
         }
     }
+
     val permissionsManager = createPermissionsManager(object : PermissionCallback {
         override fun onPermissionStatus(permissionType: PermissionType, status: PermissionStatus) {
             when (status) {
@@ -113,75 +160,313 @@ private fun CameraTeknisPenunjangContent(
             title = { Text("Camera Permission Denied") },
             text = { Text("Camera access is required!") },
             confirmButton = {
-                TextButton(onClick = {
-                    showDeniedDialog = false
-                    showPermissionRequest = true
-                }) { Text("Okay") }
+                TextButton(
+                    onClick = { showDeniedDialog = false }
+                ) {
+                    Text("Okay")
+                }
+            }
+        )
+    }
+
+    if (uploadState.showLimitDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                identifyPenunjangViewModel.dismissLimitDialog()
+                cameraUiState = CameraUiState.PREVIEW
+                recordedVideoUri = null
+                recordSeconds = 0
+            },
+            title = { Text("Video tidak bisa diupload") },
+            text = { Text(uploadState.limitDialogMessage) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        identifyPenunjangViewModel.dismissLimitDialog()
+                        cameraUiState = CameraUiState.PREVIEW
+                        recordedVideoUri = null
+                        recordSeconds = 0
+                    }
+                ) {
+                    Text("OK")
+                }
             }
         )
     }
 
     if (isCameraGranted) {
-        ActualCameraVideoView(
-            onBack = { popup() },
-            onCaptureClick = {
-                isRecording = !isRecording
-            },
-            isRecording = isRecording,
-            label = if (isRecording) "Merekam video..." else "Pastikan video terlihat jelas.",
-            onVideoRecorded = { videoUri ->
-                println("video saved: $videoUri")
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ActualCameraVideoView(
+                labels = "INTERIOR",
+                onBack = { popup() },
+                onCaptureClick = {
+                    if (cameraUiState != CameraUiState.REVIEW) {
+                        cameraUiState = if (cameraUiState == CameraUiState.RECORDING) {
+                            CameraUiState.PREVIEW
+                        } else {
+                            recordSeconds = 0
+                            CameraUiState.RECORDING
+                        }
+                    }
+                },
+                isRecording = isRecording,
+                label = when (cameraUiState) {
+                    CameraUiState.PREVIEW -> "Pastikan video terlihat jelas."
+                    CameraUiState.RECORDING -> "Merekam video..."
+                    CameraUiState.REVIEW -> "Video selesai direkam."
+                },
+                onVideoRecorded = { videoUri ->
+                    println("video saved: $videoUri")
+                    recordedVideoUri = videoUri.toString()
+                    cameraUiState = CameraUiState.REVIEW
+                }
+            )
 
-                scope.launch {
-                    try {
-                        // DI SINI: bikin FileContainer dari Uri (String)
-                        val container = FileContainer(
-                            context = context,
-                            rawUri = videoUri.toString()
+            if (cameraUiState == CameraUiState.RECORDING || cameraUiState == CameraUiState.REVIEW) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                        .background(
+                            color = Color.Red,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = formatRecordTime(recordSeconds),
+                        color = Color.White
+                    )
+                }
+            }
+
+            if (cameraUiState == CameraUiState.REVIEW) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .background(Color.Black)
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Pastikan video sudah sesuai.",
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            border = BorderStroke(1.dp, Color.White),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color.White
+                            ),
+                            onClick = {
+                                recordedVideoUri = null
+                                cameraUiState = CameraUiState.PREVIEW
+                                recordSeconds = 0
+                            }
+                        ) {
+                            Text("Ambil Ulang")
+                        }
+
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black
+                            ),
+                            onClick = {
+                                recordedVideoUri?.let { uri ->
+                                    scope.launch {
+                                        try {
+                                            val container = FileContainer(
+                                                context = context,
+                                                rawUri = uri
+                                            )
+
+                                            identifyPenunjangViewModel.setFile(container)
+                                            identifyPenunjangViewModel.startUploadInterior()
+
+                                            val current = identifyPenunjangViewModel.state.value
+                                            if (!current.showLimitDialog && current.isUploading) {
+                                                showUploadDialog = true
+                                            } else if (current.showLimitDialog) {
+                                                cameraUiState = CameraUiState.PREVIEW
+                                                recordedVideoUri = null
+                                                recordSeconds = 0
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("Unggah")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showUploadDialog) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Uploading",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = uploadState.fileName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ModernProgressBar(
+                            progress = uploadState.progress,
+                            modifier = Modifier.weight(1f)
                         )
 
-                        identifyPenunjangViewModel.setFile(container)
-                        identifyPenunjangViewModel.startUploadInterior()
+                        Spacer(modifier = Modifier.width(12.dp))
 
-                        showUploadDialog = true
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(999.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "${uploadState.progress}%",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
 
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        // TODO: tampilkan snackbar / dialog error kalau mau
+                    Text(
+                        text = uploadState.status,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    FilledIconButton(
+                        onClick = {
+                            if (uploadState.isPaused) {
+                                identifyPenunjangViewModel.resume()
+                            } else {
+                                identifyPenunjangViewModel.pause()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (uploadState.isPaused) {
+                                Icons.Filled.PlayArrow
+                            } else {
+                                Icons.Filled.Pause
+                            },
+                            contentDescription = if (uploadState.isPaused) {
+                                "Resume upload"
+                            } else {
+                                "Pause upload"
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    OutlinedIconButton(
+                        onClick = {
+                            identifyPenunjangViewModel.cancel()
+                            showUploadDialog = false
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Cancel,
+                            contentDescription = "Cancel upload"
+                        )
                     }
                 }
             }
         )
     }
+}
 
-    if (showUploadDialog) {
-        AlertDialog(
-            onDismissRequest = { /* jangan di-close manual */ },
-            title = { Text("Uploading ${uploadState.fileName}") },
-            text = {
-                Column {
-                    LinearProgressIndicator(
-                        progress = (uploadState.progress.coerceIn(0, 100)) / 100f,
-                        modifier = Modifier.fillMaxWidth()
+private fun formatRecordTime(totalSeconds: Int): String {
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    val seconds = totalSeconds % 60
+
+    fun twoDigits(value: Int): String =
+        if (value < 10) "0$value" else value.toString()
+
+    return "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}"
+}
+
+@Composable
+private fun ModernProgressBar(
+    progress: Int,
+    modifier: Modifier = Modifier
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress.coerceIn(0, 100) / 100f,
+        label = "uploadProgress"
+    )
+
+    Box(
+        modifier = modifier
+            .height(8.dp)
+            .clip(RoundedCornerShape(999.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(animatedProgress)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.tertiary
+                        )
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text("${uploadState.progress}% Completed")
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(uploadState.status)
-                }
-            },
-            confirmButton = {
-                Row {
-                    Button(onClick = { identifyPenunjangViewModel.pause() }) { Text("Pause") }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { identifyPenunjangViewModel.resume() }) { Text("Resume") }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = {
-                        identifyPenunjangViewModel.cancel()
-                        showUploadDialog = false
-                    }) { Text("Cancel") }
-                }
-            }
+                )
         )
     }
 }

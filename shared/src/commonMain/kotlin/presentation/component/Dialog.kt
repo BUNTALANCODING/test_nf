@@ -450,7 +450,8 @@ fun SendEmailDialog(
     isButtonVertical: Boolean = false,
     isButtonVisible: Boolean = false,
     onDismissRequest: () -> Unit,
-    onSendClick: (List<String>, Boolean) -> Unit
+    onSendClick: (List<String>, Boolean) -> Unit,
+    myEmail: String, // ⬅ TAMBAHAN
 ) {
 
     // ============================================
@@ -571,7 +572,7 @@ fun SendEmailDialog(
                         Text("Kirim ke email saya", color = Color.Black)
                         Spacer_8dp()
                         Text(
-                            "petugasrampcheck@gmail.com",
+                            text = if (myEmail.isBlank()) "-" else myEmail,
                             color = Color.Gray
                         )
                     }
@@ -1141,4 +1142,6 @@ object PastOrPresentSelectableDates : SelectableDates {
         return year >= LocalDate.now().year && year <= LocalDate.now().year
     }
 }
+
+
 

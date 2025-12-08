@@ -68,8 +68,9 @@ import presentation.ui.main.riwayat.ListRiwayatPemeriksaanScreen
 import presentation.ui.main.riwayat.RiwayatPDFScreen
 import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
 //import presentation.ui.main.uploadChunk.UploadFileScreen
-import presentation.ui.main.uploadChunk.UploadViewModel
+import presentation.ui.main.pemeriksaanteknis.utama.viewmodel.UploadViewModel
 import androidx.navigation.toRoute
+import presentation.ui.main.detection.RealTimeDetectionScreen
 import presentation.ui.main.pemeriksaanadministrasi.simpengemudi.CameraTidakSesuaiSIMPengemudiScreen
 import presentation.ui.main.pemeriksaanteknis.utama.CameraTidakSesuaiTeknisUtamaScreen
 import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
@@ -261,6 +262,21 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         navigateToUploadDemo = {
                             navigator.navigate(TeknisNavigation.CameraTeknisUtama)
+                        },
+                        navigateToRealTimeCam = {
+                            navigator.navigate(TeknisNavigation.CameraRealTimeCam)
+                        }
+                    )
+                }
+
+                composable<TeknisNavigation.CameraRealTimeCam> {
+                    RealTimeDetectionScreen(
+                        errors = viewModel.errors,
+                        state = viewModel.state.value,
+                        events = viewModel::onTriggerEvent,
+                        popup = { navigator.popBackStack() },
+                        navigateToRealTimeCam = {
+                            navigator.popBackStack()
                         },
                     )
                 }
@@ -625,7 +641,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                             navigator.navigate(TeknisNavigation.GuidePemeriksaanTeknisUtama)
                         },
                         navigateToCameraNegative = {
-                            navigator.popBackStack()
+                            navigator.navigate(AdministrasiNavigation.CameraSIMNegative)  // ✅ BENAR
                         },
                     )
                 }
@@ -639,6 +655,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         navigateToTeknisUtama = {
                             navigator.navigate(TeknisNavigation.CameraTeknisUtama)
                         },
+                        uploadViewModel = viewModelUpload
                     )
                 }
 

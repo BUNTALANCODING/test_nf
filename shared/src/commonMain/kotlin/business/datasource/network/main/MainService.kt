@@ -1,5 +1,6 @@
 package business.datasource.network.main
 
+import BusTypeResponseDto
 import business.datasource.network.common.MainGenericResponse
 import business.datasource.network.main.request.CheckQRRequestDTO
 import business.datasource.network.main.request.GetStepRequestDTO
@@ -72,6 +73,8 @@ interface MainService {
         const val GET_RESULT_SECOND = "getresultsecond"
 
         const val LOAD_CARD = "loadcard"
+
+        const val JENIS_BUS = "bustype"
     }
 
 
@@ -180,7 +183,7 @@ interface MainService {
         uniqueKey: String,
         chunkIndex: Int,
         totalChunks: Int,
-        chunk: ByteArray
+        chunk: ByteArray,
     ): ChunkResponse
 
     suspend fun getInteriorResult(
@@ -194,11 +197,16 @@ interface MainService {
         uniqueKey: String,
         chunkIndex: Int,
         totalChunks: Int,
-        chunk: ByteArray
+        chunk: ByteArray,
     ): ChunkResponse
 
     suspend fun getResultSecond(
         token: String,
         uniqueKey: String
     ): HasilTeknisDTO
+
+
+    suspend fun getBusType(token: String): BusTypeResponseDto
+
+
 }

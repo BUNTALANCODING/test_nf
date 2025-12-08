@@ -81,7 +81,8 @@ fun FormBeritaAcaraScreen(
     popup: () -> Unit,
     navigateToPengemudi: () -> Unit,
     navigateToKemenhub: () -> Unit,
-    navigateToPreviewBA: () -> Unit
+    navigateToPreviewBA: () -> Unit,
+//    navigateToHome: () -> Unit,
 ) {
 
     DefaultScreenUI(
@@ -114,12 +115,12 @@ private fun FormBeritaAcaraContent(
 
     LaunchedEffect(Unit){
         events(HomeEvent.SetStateValue)
+
     }
     val scope = rememberCoroutineScope()
 
     val downloader = rememberPdfDownloader()
 
-    // 1. Ambil URL dari state (asumsi nama field di state adalah pdfUrl)
     val pdfUrl = state.urlPreviewBA
     if (state.showDialogTandaTanganPenguji == UIComponentState.Show) {
         Dialog(onDismissRequest = { events(HomeEvent.OnShowDialogTandaTanganPenguji(UIComponentState.Hide)) }) {
@@ -183,21 +184,24 @@ private fun FormBeritaAcaraContent(
             positiveLabel = "UNDUH DAN SELESAI",
             negativeLabel = "LIHAT PREVIEW",
             onClickPositive = {
-                // 4. Perbaiki logika download untuk memanggil URL
-                if (pdfUrl.isNotEmpty()) {
-                    // downloader.download sekarang menerima URL!
+                val cleanUrl = normalizePdfUrl(pdfUrl)
 
+                if (cleanUrl.isNotBlank()) {
                     scope.launch {
                         downloader.download(
-                            url = pdfUrl,
+                            url = cleanUrl,
                             fileName = "Laporan_${state.rampcheckId}.pdf"
                         )
                     }
+                    events(HomeEvent.OnShowDialogSubmitSignature(UIComponentState.Hide))
+                } else {
                 }
             },
             onClickNegative = navigateToPreviewBA
         )
     }
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             TandaTanganForm(state = state, events = events, loginState = loginState, navigateToKemenhub = navigateToKemenhub, navigateToPengemudi = navigateToPengemudi)
@@ -225,7 +229,6 @@ private fun FormBeritaAcaraContent(
 
 @Composable
 fun TandaTanganForm(modifier: Modifier = Modifier, state: HomeState, events: (HomeEvent) -> Unit, loginState: LoginState, navigateToKemenhub: () -> Unit, navigateToPengemudi: () -> Unit) {
-    // List data yang merepresentasikan setiap bagian formulir
     val sections = listOf(
         "Penguji Kendaraan Bermotor",
         "Pengemudi",
@@ -239,14 +242,12 @@ fun TandaTanganForm(modifier: Modifier = Modifier, state: HomeState, events: (Ho
             .padding(16.dp)
     ) {
 
-        // Bagian Penguji
         Text(
             sections[0],
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
         )
         Spacer_8dp()
 
-        // Data Penguji
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -329,7 +330,6 @@ fun TandaTanganForm(modifier: Modifier = Modifier, state: HomeState, events: (Ho
 
         Spacer_16dp()
 
-        // Bagian Pengemudi
         Text(
             sections[1],
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
@@ -442,7 +442,6 @@ fun TandaTanganForm(modifier: Modifier = Modifier, state: HomeState, events: (Ho
 
         Spacer_16dp()
 
-        // Bagian Petugas Kemenhub
         Text(
             sections[2],
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)

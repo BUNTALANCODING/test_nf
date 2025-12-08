@@ -21,6 +21,7 @@ import org.jetbrains.compose.resources.painterResource
 import presentation.component.DefaultScreenUI
 import presentation.component.Spacer_8dp
 import presentation.ui.main.datapemeriksaan.fotopetugas.GuideRow
+import presentation.ui.main.datapemeriksaan.kir.ButtonNextSection
 import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import rampcheck.shared.generated.resources.Res
@@ -34,7 +35,7 @@ fun GuidePemeriksaanTeknisPenunjangScreen(
     events: (HomeEvent) -> Unit,
     errors: Flow<UIComponent>,
     popup: () -> Unit,
-    navigateToTeknisPenunjang: () -> Unit
+    navigateToTeknisPenunjang: () -> Unit,
 ) {
 
     DefaultScreenUI(
@@ -62,10 +63,11 @@ private fun GuidePemeriksaanTeknisUtamaContent(
             HeaderSection()
             InformasiGuideSection()
             Spacer(modifier = Modifier.weight(1f))
-            presentation.ui.main.datapemeriksaan.kir.ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = navigateToTeknisPenunjang)
+            ButtonNextSection("MULAI PEMERIKSAAN", state, onClick = navigateToTeknisPenunjang)
         }
     }
 }
+
 
 @Composable
 private fun HeaderSection() {

@@ -53,6 +53,13 @@ class LoginUseCase(
             )
         }
 
+        if(result?.officerEmail != null){
+            appDataStoreManager.setValue(
+                DataStoreKeys.OFFICER_EMAIL,
+                result.officerEmail
+            )
+        }
+
         return apiResponse
     }
 

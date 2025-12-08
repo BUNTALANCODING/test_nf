@@ -1,6 +1,7 @@
 package common
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,6 +40,27 @@ actual class FileContainer actual constructor(
         length
     }
 
+    val mimeType: String? by lazy {
+        appContext.contentResolver.getType(uri)
+    }
+
+    actual val durationMs: Long by lazy {
+        var retriever: MediaMetadataRetriever? = null
+        try {
+            retriever = MediaMetadataRetriever().apply {
+                setDataSource(appContext, uri)
+            }
+            val durationStr = retriever.extractMetadata(
+                MediaMetadataRetriever.METADATA_KEY_DURATION
+            )
+            durationStr?.toLongOrNull() ?: 0L
+        } catch (e: Exception) {
+            0L
+        } finally {
+            retriever?.release()
+        }
+    }
+
     private fun openStream() =
         appContext.contentResolver.openInputStream(uri)
             ?: error("Cannot open input stream for uri: $uri")
@@ -58,3 +80,4 @@ actual class FileContainer actual constructor(
         }
     }
 }
+

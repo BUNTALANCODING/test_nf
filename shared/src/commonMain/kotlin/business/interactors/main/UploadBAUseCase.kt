@@ -16,7 +16,7 @@ class UploadChunkUseCase(
         uniqueKey: String,
         chunkIndex: Int,
         totalChunks: Int,
-        chunk: ByteArray
+        chunk: ByteArray,
     ): Flow<DataState<ChunkResponse>> = flow {
 
         emit(DataState.Loading())

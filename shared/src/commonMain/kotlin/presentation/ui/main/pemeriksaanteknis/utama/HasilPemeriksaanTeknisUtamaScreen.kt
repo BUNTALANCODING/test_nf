@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -46,6 +47,7 @@ import business.core.UIComponentState
 import business.datasource.network.main.responses.HasilTeknisDTO
 import business.datasource.network.main.responses.QuestionResponse
 import business.datasource.network.main.responses.SubcategoryResponse
+import common.KeepScreenOn
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.component.ConditionCard
@@ -54,6 +56,7 @@ import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
 import presentation.component.NotMatchDialog
+import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
@@ -90,6 +93,107 @@ import rampcheck.shared.generated.resources.ic_kemenhub
 //    }
 //}
 
+
+
+//@Composable
+//fun HasilPemeriksaanTeknisUtamaScreen(
+//    uniqueKey: String,
+//    state: HomeState,
+//    events: (HomeEvent) -> Unit,
+//    errors: Flow<UIComponent>,
+//    popup: () -> Unit,
+//    navigateToTeknisPenunjang: () -> Unit,
+//    navigateToCamera: () -> Unit,
+//    hasilViewModel: HasilTeknisViewModel = koinViewModel()
+//) {
+//    val hasilStateState = hasilViewModel.state.collectAsState()
+//    val hasilState = hasilStateState.value
+//    var showDialogError by remember { mutableStateOf(false) }
+//
+//    LaunchedEffect(uniqueKey) {
+//        println("SCREEN_HASIL: start loadHasil($uniqueKey)")
+//        hasilViewModel.loadHasil(uniqueKey)
+//    }
+//
+//    val currentStatus = hasilState.data?.data?.status?.lowercase()
+//
+//    val stillWaiting =
+//        hasilState.error == null && (
+//                hasilState.isLoading ||
+//                        currentStatus == "sent" ||
+//                        currentStatus == "processing" ||
+//                        currentStatus.isNullOrBlank()
+//                )
+//
+//
+//    LaunchedEffect(hasilState.data, hasilState.isLoading) {
+//        val dto = hasilState.data ?: return@LaunchedEffect
+//        val data = dto.data
+//        val response = data.response ?: emptyList()
+//
+//        if (!hasilState.isLoading &&
+//            hasilState.error == null &&
+//            data.status.equals("completed", ignoreCase = true) &&
+//            response.isNotEmpty()
+//        ) {
+//            println("SCREEN_HASIL: apply result to HomeViewModel")
+//            events(
+//                HomeEvent.ApplyTeknisResultFromApi(
+//                    apiSubcategories = response
+//                )
+//            )
+//        }
+//    }
+//
+//    DefaultScreenUI(
+//        errors = errors,
+//        progressBarState = state.progressBarState,
+//        titleToolbar = "Pemeriksaan Teknis Utama",
+//        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
+//        onClickStartIconToolbar = { popup() },
+//        endIconToolbar = Res.drawable.ic_kemenhub
+//    ) {
+//
+////         🔹 Dialog error khusus hasil teknis
+//        if (hasilState.error != null) {
+//            AlertDialog(
+//                onDismissRequest = { },
+//                confirmButton = {
+//                    TextButton(
+//                        onClick = { popup() }
+//                    ) {
+//                        Text("OK")
+//                    }
+//                },
+//                title = { Text("Gagal mengambil hasil") },
+//                text = { Text(hasilState.error ?: "") }
+//            )
+//        }
+//        if (stillWaiting) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(16.dp),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    CircularProgressIndicator()
+//                    Spacer_8dp()
+//                    Text("Menunggu hasil identifikasi...")
+//                }
+//            }
+//        } else {
+//            HasilContent(
+//                navigateToTeknisPenunjang = navigateToTeknisPenunjang,
+//                hasil = hasilState.data ?: HasilTeknisDTO(),
+//                state = state,
+//                events = events,
+//                navigateToCamera = navigateToCamera
+//            )
+//        }
+//    }
+//}
+
 @Composable
 fun HasilPemeriksaanTeknisUtamaScreen(
     uniqueKey: String,
@@ -101,8 +205,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
     navigateToCamera: () -> Unit,
     hasilViewModel: HasilTeknisViewModel = koinViewModel()
 ) {
-    val hasilStateState = hasilViewModel.state.collectAsState()
-    val hasilState = hasilStateState.value
+    val hasilState by hasilViewModel.state.collectAsState()
     var showDialogError by remember { mutableStateOf(false) }
 
     LaunchedEffect(uniqueKey) {
@@ -119,6 +222,8 @@ fun HasilPemeriksaanTeknisUtamaScreen(
                         currentStatus == "processing" ||
                         currentStatus.isNullOrBlank()
                 )
+
+    KeepScreenOn(keepOn = stillWaiting)
 
     LaunchedEffect(hasilState.data, hasilState.isLoading) {
         val dto = hasilState.data ?: return@LaunchedEffect
@@ -148,7 +253,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
 
-//         🔹 Dialog error khusus hasil teknis
+        // 🔹 Dialog error khusus hasil teknis
         if (hasilState.error != null) {
             AlertDialog(
                 onDismissRequest = { },
@@ -163,6 +268,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
                 text = { Text(hasilState.error ?: "") }
             )
         }
+
         if (stillWaiting) {
             Box(
                 modifier = Modifier
@@ -173,7 +279,30 @@ fun HasilPemeriksaanTeknisUtamaScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator()
                     Spacer_8dp()
-                    Text("Menunggu hasil identifikasi...")
+
+                    Text(
+                        text = if (hasilState.statusMessage.isNotBlank())
+                            hasilState.statusMessage
+                        else
+                            "Menunggu hasil identifikasi..."
+                    )
+
+                    if (hasilState.showCancelButton) {
+                        Spacer_16dp()
+                        DefaultButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(DEFAULT__BUTTON_SIZE)
+                                .width(50.dp),
+                            enabled = true,
+                            enableElevation = false,
+                            text = "Batalkan",
+                            onClick = {
+                                hasilViewModel.cancel()
+                                navigateToCamera()
+                            }
+                        )
+                    }
                 }
             }
         } else {
@@ -187,6 +316,7 @@ fun HasilPemeriksaanTeknisUtamaScreen(
         }
     }
 }
+
 
 
 @Composable

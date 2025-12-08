@@ -7,6 +7,7 @@ expect class FileContainer(
 ) {
     val fileName: String
     val size: Long
+    val durationMs: Long
 
     suspend fun forEachChunk(
         chunkSize: Int = 1_000_000,

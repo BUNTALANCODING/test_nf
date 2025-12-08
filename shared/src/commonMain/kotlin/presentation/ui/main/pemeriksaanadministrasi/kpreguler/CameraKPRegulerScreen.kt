@@ -35,11 +35,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.decodeToImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import business.core.UIComponent
 import com.kashif.cameraK.controller.CameraController
@@ -71,6 +74,7 @@ import presentation.ui.main.home.view_model.HomeEvent
 import presentation.ui.main.home.view_model.HomeState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import androidx.compose.ui.graphics.Canvas as GraphicsCanvas
 
 @Composable
 fun CameraKPRegulerScreen(
@@ -288,10 +292,10 @@ private fun CameraView(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Tutup", color = Color.White)
                 }
-                IconButton(modifier = Modifier.align(Alignment.Center), onClick = onCapture) {
+                IconButton(modifier = Modifier.align(Alignment.Center).size(90.dp), onClick = onCapture) {
                     Box(
                         modifier = Modifier
-                            .size(64.dp)
+                            .size(80.dp)
                             .border(4.dp, Color.White, shape = CircleShape)
                             .background(Color(0xFF001F3F), shape = CircleShape)
                     )
@@ -301,6 +305,34 @@ private fun CameraView(
     }
 }
 
+//@OptIn(ExperimentalResourceApi::class, ExperimentalUuidApi::class)
+//private suspend fun handleImageCapture(
+//    cameraController: CameraController,
+//    imageSaverPlugin: ImageSaverPlugin,
+//    onImageCaptured: suspend (ImageBitmap) -> Unit
+//) {
+//    when (val result = cameraController.takePicture()) {
+//        is ImageCaptureResult.Success -> {
+//            val bitmap = result.byteArray.decodeToImageBitmap()
+//            onImageCaptured(bitmap)
+//
+//            if (!imageSaverPlugin.config.isAutoSave) {
+//                val customName = "Manual_${Uuid.random().toHexString()}"
+//                imageSaverPlugin.saveImage(
+//                    byteArray = result.byteArray,
+//                    imageName = customName
+//                )?.let { path ->
+//                    println("Image saved at: $path")
+//                }
+//            }
+//        }
+//
+//        is ImageCaptureResult.Error -> {
+//            println("Image Capture Error: ${result.exception.message}")
+//        }
+//    }
+//}
+
 @OptIn(ExperimentalResourceApi::class, ExperimentalUuidApi::class)
 private suspend fun handleImageCapture(
     cameraController: CameraController,
@@ -309,9 +341,16 @@ private suspend fun handleImageCapture(
 ) {
     when (val result = cameraController.takePicture()) {
         is ImageCaptureResult.Success -> {
-            val bitmap = result.byteArray.decodeToImageBitmap()
-            onImageCaptured(bitmap)
+            // Decode full foto ke ImageBitmap
+            val fullBitmap = result.byteArray.decodeToImageBitmap()
 
+            // CROP sesuai overlay
+            val croppedBitmap = cropToRectangleOverlay(fullBitmap)
+
+            // Kirim hasil crop ke UI / ViewModel
+            onImageCaptured(croppedBitmap)
+
+            // Kalau mau tetap simpan file aslinya (full frame) ke storage
             if (!imageSaverPlugin.config.isAutoSave) {
                 val customName = "Manual_${Uuid.random().toHexString()}"
                 imageSaverPlugin.saveImage(
@@ -328,6 +367,46 @@ private suspend fun handleImageCapture(
         }
     }
 }
+
+private fun cropToRectangleOverlay(image: ImageBitmap): ImageBitmap {
+    val width = image.width
+    val height = image.height
+
+    // Rasio HARUS sama dengan yang dipakai di RectangleFocusOverlay
+    val overlayWidthRatio = 0.6f
+    val overlayHeightRatio = 0.3f
+    val overlayTopRatio = 0.35f
+
+    val cropWidth = (width * overlayWidthRatio).toInt()
+    val cropHeight = (height * overlayHeightRatio).toInt()
+    val left = ((width - cropWidth) / 2f).toInt()
+    val top = (height * overlayTopRatio).toInt()
+
+    val safeLeft = left.coerceAtLeast(0)
+    val safeTop = top.coerceAtLeast(0)
+    val safeWidth = cropWidth.coerceAtMost(width - safeLeft)
+    val safeHeight = cropHeight.coerceAtMost(height - safeTop)
+
+    // ImageBitmap tujuan (hasil crop)
+    val target = ImageBitmap(safeWidth, safeHeight)
+
+    // Canvas untuk gambar subset image ke target
+    val canvas = GraphicsCanvas(target)
+    val paint = Paint()
+
+    canvas.drawImageRect(
+        image,
+        srcOffset = IntOffset(safeLeft, safeTop),
+        srcSize = IntSize(safeWidth, safeHeight),
+        dstOffset = IntOffset(0, 0),
+        dstSize = IntSize(safeWidth, safeHeight),
+        paint = paint
+    )
+
+    return target
+}
+
+
 @Composable
 fun RectangleFocusOverlay(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {

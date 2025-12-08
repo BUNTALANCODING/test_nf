@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import logger.getTimeMillis
 import presentation.ui.main.pemeriksaanteknis.HasilTeknisState
 
 
@@ -199,6 +201,100 @@ import presentation.ui.main.pemeriksaanteknis.HasilTeknisState
 
 
 
+//class HasilTeknisViewModel(
+//    private val service: MainService,
+//    private val appDataStore: AppDataStore
+//) : ViewModel() {
+//
+//    private val _state = MutableStateFlow(HasilTeknisState())
+//    val state: StateFlow<HasilTeknisState> = _state
+//
+//
+//    fun loadHasil(uniqueKey: String) {
+//        viewModelScope.launch {
+//            // state awal
+//            _state.value = HasilTeknisState(
+//                isLoading = true,
+//                data = null,
+//                error = null
+//            )
+//
+//            try {
+//                val token = appDataStore.readValue(DataStoreKeys.TOKEN).orEmpty()
+//                if (token.isBlank()) {
+//                    _state.value = HasilTeknisState(
+//                        isLoading = false,
+//                        data = null,
+//                        error = "Token kosong"
+//                    )
+//                    return@launch
+//                }
+//
+//                val delayMs = 5_000L
+//
+//                while (true) {
+//                    try {
+//                        val result: HasilTeknisDTO = service.getInteriorResult(
+//                            token = token,
+//                            uniqueKey = uniqueKey
+//                        )
+//
+//                        val data = result.data
+//                        val responseList = data.response ?: emptyList()
+//
+//                        println("HASIL_VM: status=${data.status}, responseSize=${responseList.size}")
+//
+//                        _state.value = _state.value.copy(
+//                            data = result,
+//                            error = null
+//                        )
+//
+//                        val statusLower = data.status?.lowercase()
+//                        val hasResponse = responseList.isNotEmpty()
+//
+//                        // berhenti hanya kalau sudah completed + response ada
+//                        if (statusLower == "completed" && hasResponse) {
+//                            _state.value = _state.value.copy(isLoading = false)
+//                            println("HASIL_VM: completed, stop polling")
+//                            return@launch
+//                        }
+//
+//                        // masih proses
+//                        _state.value = _state.value.copy(isLoading = true)
+//
+//                    } catch (e: CancellationException) {
+//                        throw e
+//                    } catch (e: Exception) {
+//                        e.printStackTrace()
+//
+//                        val msg = e.message ?: "Terjadi kesalahan"
+//
+//                        _state.value = HasilTeknisState(
+//                            isLoading = false,
+//                            data = null,
+//                            error = msg
+//                        )
+//                        return@launch
+//                    }
+//
+//                    delay(delayMs)
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                _state.value = HasilTeknisState(
+//                    isLoading = false,
+//                    data = null,
+//                    error = e.message ?: "Terjadi kesalahan"
+//                )
+//            }
+//        }
+//    }
+//}
+//
+//
+//
+//
+
 class HasilTeknisViewModel(
     private val service: MainService,
     private val appDataStore: AppDataStore
@@ -207,14 +303,19 @@ class HasilTeknisViewModel(
     private val _state = MutableStateFlow(HasilTeknisState())
     val state: StateFlow<HasilTeknisState> = _state
 
+    private var pollingJob: Job? = null
 
     fun loadHasil(uniqueKey: String) {
-        viewModelScope.launch {
-            // state awal
+        // batalin polling lama kalau ada
+        pollingJob?.cancel()
+
+        pollingJob = viewModelScope.launch {
             _state.value = HasilTeknisState(
                 isLoading = true,
                 data = null,
-                error = null
+                error = null,
+                statusMessage = "Video sedang diproses",
+                showCancelButton = false
             )
 
             try {
@@ -223,12 +324,15 @@ class HasilTeknisViewModel(
                     _state.value = HasilTeknisState(
                         isLoading = false,
                         data = null,
-                        error = "Token kosong"
+                        error = "Token kosong",
+                        statusMessage = ""
                     )
                     return@launch
                 }
 
                 val delayMs = 5_000L
+                val cancelAfterMs = 20_000L
+                val startTime = getTimeMillis()
 
                 while (true) {
                     try {
@@ -240,24 +344,37 @@ class HasilTeknisViewModel(
                         val data = result.data
                         val responseList = data.response ?: emptyList()
 
-                        println("HASIL_VM: status=${data.status}, responseSize=${responseList.size}")
-
-                        _state.value = _state.value.copy(
-                            data = result,
-                            error = null
-                        )
-
                         val statusLower = data.status?.lowercase()
                         val hasResponse = responseList.isNotEmpty()
 
-                        // berhenti hanya kalau sudah completed + response ada
+                        val statusMessage = when (statusLower) {
+                            "processing" -> "Video sedang diproses"
+                            "sent"       -> "Identifikasi sedang diproses"
+                            "completed"  -> "Identifikasi selesai diproses"
+                            else         -> ""
+                        }
+
+                        val elapsed = getTimeMillis() - startTime
+                        val showCancel = elapsed >= cancelAfterMs
+
+                        println("HASIL_VM: status=${data.status}, responseSize=${responseList.size}, elapsed=$elapsed")
+
+                        _state.value = _state.value.copy(
+                            data = result,
+                            error = null,
+                            statusMessage = statusMessage,
+                            showCancelButton = showCancel
+                        )
+
                         if (statusLower == "completed" && hasResponse) {
-                            _state.value = _state.value.copy(isLoading = false)
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                showCancelButton = false
+                            )
                             println("HASIL_VM: completed, stop polling")
                             return@launch
                         }
 
-                        // masih proses
                         _state.value = _state.value.copy(isLoading = true)
 
                     } catch (e: CancellationException) {
@@ -270,25 +387,42 @@ class HasilTeknisViewModel(
                         _state.value = HasilTeknisState(
                             isLoading = false,
                             data = null,
-                            error = msg
+                            error = msg,
+                            statusMessage = "",
+                            showCancelButton = false
                         )
                         return@launch
                     }
 
                     delay(delayMs)
                 }
+            } catch (e: CancellationException) {
+                // kalau kamu mau, bisa update state di sini juga
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    statusMessage = "Dibatalkan oleh pengguna",
+                    showCancelButton = false
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.value = HasilTeknisState(
                     isLoading = false,
                     data = null,
-                    error = e.message ?: "Terjadi kesalahan"
+                    error = e.message ?: "Terjadi kesalahan",
+                    statusMessage = "",
+                    showCancelButton = false
                 )
             }
         }
     }
+
+    fun cancel() {
+        pollingJob?.cancel()
+        _state.value = _state.value.copy(
+            isLoading = false,
+            statusMessage = "Dibatalkan oleh pengguna",
+            showCancelButton = false
+        )
+    }
 }
-
-
-
 

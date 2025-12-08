@@ -86,6 +86,10 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnUpdateTidakSesuai(val value: String) : HomeEvent()
 
+    data class OnUpdateSIMTidakSesuaiBase64(val value: String) : HomeEvent()
+
+    data class OnUpdateSIMTidakSesuaiBitmap(val value: ImageBitmap) : HomeEvent()
+
     data class OnUpdateTidakSesuaiBitmap(val value: ImageBitmap) : HomeEvent()
 
     data class OnUpdateTidakSesuaiBase64(val value: String) : HomeEvent()
@@ -288,10 +292,9 @@ sealed class HomeEvent : ViewEvent {
     data class SubmitQuestionKp(val value: List<AnswersItem>) : HomeEvent()
 
 
+    object LoadJenisBus : HomeEvent()
 
-
-
-
+    data class OnJenisBusSelected(val jenisBusId: Int) : HomeEvent()
 
 
 

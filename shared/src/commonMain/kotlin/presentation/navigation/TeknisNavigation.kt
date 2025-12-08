@@ -33,6 +33,9 @@ sealed interface TeknisNavigation {
         val uniqueKey: String      // ⬅️ argumen yang mau dibawa
     ) : TeknisNavigation
 
+    @Serializable
+    data object CameraRealTimeCam : TeknisNavigation
+
 
 }
 

@@ -764,8 +764,8 @@ fun ConditionSIMCard(item: IdentifyDTOItem, events: (HomeEvent) -> Unit, state: 
 
                 Spacer_8dp()
 
-                if(state.tidakSesuaiBitmap != null){
-                    state.tidakSesuaiBitmap.let {
+                if(state.simPengemuduiTidakSesuaiBitmap != null){
+                    state.simPengemuduiTidakSesuaiBitmap.let {
                         Image(
                             contentDescription = null,
                             modifier = Modifier.width(100.dp).height(70.dp).clickable { onClickCamera() },

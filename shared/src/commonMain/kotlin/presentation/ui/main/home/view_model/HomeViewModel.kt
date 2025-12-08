@@ -22,6 +22,7 @@ import business.datasource.network.main.request.VehiclePhotoRequestDTO
 import business.datasource.network.main.responses.ItemsItemLoadCard
 import business.datasource.network.main.responses.SubcategoryResponse
 import business.interactors.main.CheckQRUseCase
+import business.interactors.main.GetJenisBusUseCase
 import business.interactors.main.GetLocationUseCase
 import business.interactors.main.GetVehicleUseCase
 import business.interactors.main.IdentifyUseCase
@@ -59,7 +60,10 @@ class HomeViewModel(
     private val logoutUseCase: LogoutUseCase,
     private val loadCardUseCase: LoadCardUseCase,
     private val sendEmailBAUseCase: SendEmailBAUseCase,
-    private val scheduler: BackgroundScheduler
+    private val scheduler: BackgroundScheduler,
+
+    private val getJenisBusUseCase: GetJenisBusUseCase
+
 ) : BaseViewModel<HomeEvent, HomeState, HomeAction>() {
 
     override fun setInitialState() = HomeState()
@@ -642,6 +646,13 @@ class HomeViewModel(
                 onSuccessTeknisPenunjang(event.value)
             }
 
+            is HomeEvent.OnUpdateSIMTidakSesuaiBase64 -> {
+                onUpdateSIMTidakSesuaiBase64(event.value)
+            }
+            is HomeEvent.OnUpdateSIMTidakSesuaiBitmap -> {
+                onUpdateSIMTidakSesuaiBitmap(event.value)
+            }
+
             is HomeEvent.OnUpdateSelection -> {
                 val newSelection = state.value.selectionMap.toMutableMap()
                 newSelection[event.questionId] = event.selection
@@ -710,11 +721,27 @@ class HomeViewModel(
                 setState { copy(answersPenunjang = updatedAnswers) }
             }
 
+            is HomeEvent.LoadJenisBus -> loadJenisBus()
 
+            is HomeEvent.OnJenisBusSelected -> {
+                state.value = state.value.copy(
+                    selectedJenisBusId = event.jenisBusId
+                )
+            }
             else -> {}
         }
 
 
+    }
+
+
+
+    protected fun onUpdateSIMTidakSesuaiBase64(value: String) {
+        setState { copy(simPengemudiTidakSesuaiBase64 = value) }
+    }
+
+    protected fun onUpdateSIMTidakSesuaiBitmap(value: ImageBitmap) {
+        setState { copy(simPengemuduiTidakSesuaiBitmap = value) }
     }
 
     private fun updateAnswer(
@@ -993,22 +1020,65 @@ class HomeViewModel(
         viewModelScope.launch {
             val officerName = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NAME)
             val officerNIP = appDataStoreManager.readValue(DataStoreKeys.OFFICER_NIP)
+            val myEmail = appDataStoreManager.readValue(DataStoreKeys.OFFICER_EMAIL)
             setState {
                 copy(officerName = officerName ?: "")
             }
             setState {
                 copy(officerNip = officerNIP ?: "")
             }
+            setState {
+                copy(myEmail = myEmail ?: "")
+            }
 
         }
     }
+
+//    private fun submitSignature() {
+//
+//        executeUseCase(
+//            submitSignatureUseCase.execute(
+//
+//                params = SubmitSignatureRequestDTO(
+//                    rampcheckOfficerNip = state.value.nipKemenhub,
+//                    rampcheckOfficerName = state.value.officerName,
+//                    rampcheckOfficerSignature = state.value.ttdPenguji,
+//                    driverName = state.value.driverName,
+//                    driverSignature = state.value.ttdPengemudi,
+//                    kemenhubNip = state.value.nipKemenhub,
+//                    kemenhubName = state.value.kemenhubName,
+//                    kemenhubSignature = state.value.ttdKemenhub,
+//                    step = "9"
+//                ),
+//            ),
+//            onSuccess = { data, status, code ->
+//                status?.let { s ->
+//                    if (s) {
+//                        data.let {
+//                            setState {
+//                                copy(
+//                                    showDialogSuccessSubmitSignature = UIComponentState.Show,
+//                                    rampcheckId = data?.rampcheckId!!.toInt()
+//                                )
+//                            }
+//                        }
+//
+//                    }
+//                }
+//                previewBA()
+//            },
+//            onLoading = {
+//                setState { copy(progressBarState = it) }
+//            },
+//        )
+//    }
 
     private fun submitSignature() {
 
         executeUseCase(
             submitSignatureUseCase.execute(
-
                 params = SubmitSignatureRequestDTO(
+                    // Saran: ini seharusnya NIP penguji, bukan NIP Kemenhub
                     rampcheckOfficerNip = state.value.nipKemenhub,
                     rampcheckOfficerName = state.value.officerName,
                     rampcheckOfficerSignature = state.value.ttdPenguji,
@@ -1021,17 +1091,17 @@ class HomeViewModel(
                 ),
             ),
             onSuccess = { data, status, code ->
-                status?.let { s ->
-                    if (s) {
-                        data.let {
-                            setState {
-                                copy(
-                                    showDialogSuccessSubmitSignature = UIComponentState.Show,
-                                    rampcheckId = data?.rampcheckId!!.toInt()
-                                )
-                            }
+                if (status == true && data != null) {
+
+                    val id = data.rampcheckId?.toInt()
+                    if (id != null) {
+                        setState {
+                            copy(
+                                rampcheckId = id
+                            )
                         }
 
+                        previewBASignature(id)
                     }
                 }
             },
@@ -1040,6 +1110,31 @@ class HomeViewModel(
             },
         )
     }
+
+
+    private fun previewBASignature(rampcheckId: Int = state.value.rampcheckId) {
+        executeUseCase(
+            previewBAUseCase.execute(
+                params = PreviewBARequestDTO(
+                    rampcheckId = rampcheckId
+                )
+            ),
+            onSuccess = { data, status, code ->
+                data?.let {
+                    setState {
+                        copy(
+                            urlPreviewBA = data.file_url ?: "",
+                            showDialogSuccessSubmitSignature = UIComponentState.Show
+                        )
+                    }
+                }
+            },
+            onLoading = {
+                setState { copy(progressBarState = it) }
+            },
+        )
+    }
+
 
     private fun checkQR() {
         executeUseCase(
@@ -1732,10 +1827,13 @@ class HomeViewModel(
 
     private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
 
-        // gabungkan email dalam satu list final
-        val finalEmails = if (sendToMyEmail) {
-            emails + "petugasrampcheck@gmail.com"
-        } else emails
+        val myEmail = state.value.myEmail
+
+        val finalEmails = if (sendToMyEmail && myEmail.isNotBlank()) {
+            emails + myEmail          // ⬅ BUKAN hardcode lagi
+        } else {
+            emails
+        }
 
         executeUseCase(
             sendEmailBAUseCase.execute(
@@ -1775,6 +1873,70 @@ class HomeViewModel(
                 setState { copy(progressBarState = it) }
             },
         )
+    }
+
+
+//    private fun loadJenisBus() {
+//        viewModelScope.launch {
+//            state.value = state.value.copy(isLoadingJenisBus = true)
+//
+//            val token = appDataStoreManager.readValue(DataStoreKeys.TOKEN) ?: ""
+//            if (token.isBlank()) {
+//                state.value = state.value.copy(
+//                    isLoadingJenisBus = false,
+//                    jenisBusList = emptyList()
+//                )
+//                return@launch
+//            }
+//
+//            try {
+//                val jenisBusList = getJenisBusUseCase.execute(token)
+//
+//                state.value = state.value.copy(
+//                    jenisBusList = jenisBusList,
+//                    isLoadingJenisBus = false
+//                )
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                state.value = state.value.copy(
+//                    jenisBusList = emptyList(),
+//                    isLoadingJenisBus = false
+//                )
+//            }
+//        }
+//    }
+
+    private fun loadJenisBus() {
+        viewModelScope.launch {
+            state.value = state.value.copy(isLoadingJenisBus = true)
+
+            val token = appDataStoreManager.readValue(DataStoreKeys.TOKEN) ?: ""
+            println("VM_HOME: TOKEN UNTUK JENIS BUS = '$token'")
+
+            if (token.isBlank()) {
+                state.value = state.value.copy(
+                    isLoadingJenisBus = false,
+                    jenisBusList = emptyList()
+                )
+                return@launch
+            }
+
+            try {
+
+                val jenisBusList = getJenisBusUseCase.execute(token)
+
+                state.value = state.value.copy(
+                    jenisBusList = jenisBusList,
+                    isLoadingJenisBus = false
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                state.value = state.value.copy(
+                    jenisBusList = emptyList(),
+                    isLoadingJenisBus = false
+                )
+            }
+        }
     }
 
 

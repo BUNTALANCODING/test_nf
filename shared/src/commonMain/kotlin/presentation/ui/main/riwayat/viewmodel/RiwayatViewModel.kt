@@ -1,6 +1,9 @@
 package presentation.ui.main.riwayat.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import business.constants.DataStoreKeys
+import business.core.AppDataStore
+import business.core.AppDataStoreManager
 import business.core.BaseViewModel
 import business.datasource.network.main.request.HistoryRampcheckRequestDTO
 import business.datasource.network.main.request.PreviewBARequestDTO
@@ -15,14 +18,15 @@ class RiwayatViewModel(
     private val getRiwayatUseCase: HistoryRampcheckUseCase,
     private val previewBAUseCase: PreviewBAUseCase,
     private val sendEmailBAUseCase: SendEmailBAUseCase,
+    private val appDataStoreManager: AppDataStore,
 
 
-    ) : BaseViewModel<RiwayatEvent, RiwayatState, RiwayatAction>()  {
+    ) : BaseViewModel<RiwayatEvent, RiwayatState, RiwayatAction>() {
 
     override fun setInitialState() = RiwayatState()
 
     override fun onTriggerEvent(event: RiwayatEvent) {
-        when(event) {
+        when (event) {
             is RiwayatEvent.GetListRiwayat -> {
                 getRiwayat()
             }
@@ -51,46 +55,33 @@ class RiwayatViewModel(
                 setState { copy(isSendEmailDialogOpen = false) }
             }
 
-
-
+            is RiwayatEvent.UpdateMyEmail -> {
+                setStateValue()
+            }
 
 
         }
     }
 
-//    private fun sendEmailBA() {
-//        executeUseCase(
-//            sendEmailBAUseCase.execute(
-//                params = SendEmailBARequestDTO(
-//                    rampcheckId = state.value.rampcheckId
-//                )
-//            ),
-//            onSuccess = { data, status, code ->
-//                setState { copy(isEmailSent = true) }
-//            },
-//            onLoading = {
-//                setState { copy(progressBarState = it) }
-//            },
-//        )
-//    }
-
 
     private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
 
-        // gabungkan email dalam satu list final
-        val finalEmails = if (sendToMyEmail) {
-            emails + "petugasrampcheck@gmail.com"
-        } else emails
+        val myEmail = state.value.myEmail
+
+        val finalEmails = if (sendToMyEmail && myEmail.isNotBlank()) {
+            emails + myEmail
+        } else {
+            emails
+        }
 
         executeUseCase(
             sendEmailBAUseCase.execute(
                 params = SendEmailBARequestDTO(
                     rampcheckId = state.value.rampcheckId,
-                    emails = finalEmails // ⬅ KIRIM LIST EMAIL KE API
+                    emails = finalEmails
                 )
             ),
             onSuccess = { data, status, code ->
-                // tampilkan snackbar atau apapun
             },
             onLoading = {
                 setState { copy(progressBarState = it) }
@@ -99,9 +90,6 @@ class RiwayatViewModel(
     }
 
 
-
-
-    //FETCHING
     private fun getRiwayat() {
         executeUseCase(
             getRiwayatUseCase.execute(
@@ -146,14 +134,12 @@ class RiwayatViewModel(
     }
 
 
-
-
     private fun onUpdateStatusRiwayat(value: Int) {
         setState { copy(statusRiwayat = value) }
         getRiwayat()
     }
 
-    private fun onUpdateRampcheckId(value: Int){
+    private fun onUpdateRampcheckId(value: Int) {
         setState {
             copy(
                 rampcheckId = value,
@@ -162,6 +148,14 @@ class RiwayatViewModel(
         }
     }
 
+    private fun setStateValue() {
+        viewModelScope.launch {
+            val myEmail = appDataStoreManager.readValue(DataStoreKeys.OFFICER_EMAIL)
+            setState {
+                copy(myEmail = myEmail ?: "")
+            }
 
+        }
 
+    }
 }

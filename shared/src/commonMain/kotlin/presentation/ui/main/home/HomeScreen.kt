@@ -77,6 +77,7 @@ fun HomeScreen(
     navigateToRiwayatPemeriksaan: () -> Unit,
     navigateToLogin: () -> Unit,
     navigateToUploadDemo: () -> Unit,
+    navigateToRealTimeCam: () -> Unit
 ) {
 //    val homeState = rememberHomeScreenState(state)
 
@@ -100,7 +101,8 @@ fun HomeScreen(
             navigateToLogin = navigateToLogin,
             navigateToPemeriksaan = navigateToPemeriksaan,
             navigateToRiwayatPemeriksaan = navigateToRiwayatPemeriksaan,
-            navigateToUploadDemo = navigateToUploadDemo
+            navigateToUploadDemo = navigateToUploadDemo,
+            navigateToRealTimeCam = navigateToRealTimeCam
         )
     }
 }
@@ -113,6 +115,7 @@ private fun HomeContent(
     navigateToPemeriksaan: () -> Unit,
     navigateToRiwayatPemeriksaan: () -> Unit,
     navigateToUploadDemo: () -> Unit,
+    navigateToRealTimeCam: () -> Unit,
 
     ) {
 
@@ -134,6 +137,9 @@ private fun HomeContent(
 
             //REMOVE THIS WHEN READY TO DEPLOY
             FileUploaderDemo(navigateToUploadDemo)
+
+            RealTimeCam(navigateToRealTimeCam)
+
             Spacer(modifier = Modifier.weight(1f))
             ButtonSection(events, navigateToLogin)
         }
@@ -313,6 +319,45 @@ fun FileUploaderDemo(navigateToUploadDemo: () -> Unit) {
                 Spacer_8dp()
                 Text(
                     "Demo Upload",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RealTimeCam(navigateToRealTimeCam: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = yellowBackground),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(modifier = Modifier
+            .fillMaxWidth().height(96.dp)
+            .noRippleClickable {
+                navigateToRealTimeCam()
+            }) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_riwayat_pemeriksaan),
+                    contentDescription = null
+                )
+                Spacer_8dp()
+                Text(
+                    "Real Time Camera",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
