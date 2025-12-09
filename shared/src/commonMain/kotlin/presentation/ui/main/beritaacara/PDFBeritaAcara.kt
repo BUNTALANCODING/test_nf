@@ -142,6 +142,21 @@ private fun PDFBeritaAcaraContent(
         )
     }
 
+    if (state.isSuccessEmailDialogOpen) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { events(HomeEvent.HideSuccessEmailDialog) },
+            title = { Text("Berhasil") },
+            text = { Text("Berita acara berhasil dikirim ke email.") },
+            confirmButton = {
+                Button(
+                    onClick = { events(HomeEvent.HideSuccessEmailDialog) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
 
         Column(

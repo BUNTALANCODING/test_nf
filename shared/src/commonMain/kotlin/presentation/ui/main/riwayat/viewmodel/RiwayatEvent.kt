@@ -17,6 +17,9 @@ sealed class RiwayatEvent : ViewEvent {
 
     data object UpdateMyEmail : RiwayatEvent()
 
+    data object HideSuccessEmailDialog : RiwayatEvent()
+
+
 
 
 

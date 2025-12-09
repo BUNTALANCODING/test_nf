@@ -1826,11 +1826,10 @@ class HomeViewModel(
     }
 
     private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
-
         val myEmail = state.value.myEmail
 
         val finalEmails = if (sendToMyEmail && myEmail.isNotBlank()) {
-            emails + myEmail          // ⬅ BUKAN hardcode lagi
+            emails + myEmail
         } else {
             emails
         }
@@ -1839,11 +1838,24 @@ class HomeViewModel(
             sendEmailBAUseCase.execute(
                 params = SendEmailBARequestDTO(
                     rampcheckId = state.value.rampcheckId,
-                    emails = finalEmails // ⬅ KIRIM LIST EMAIL KE API
+                    emails = finalEmails
                 )
             ),
             onSuccess = { data, status, code ->
-                // tampilkan snackbar atau apapun
+                if (status== true && data != null) {
+                    setState {
+                        copy(
+                            isSendEmailDialogOpen = false,
+                            isSuccessEmailDialogOpen = true
+                        )
+                    }
+                } else {
+                    setState {
+                        copy(
+                            isSendEmailDialogOpen = false
+                        )
+                    }
+                }
             },
             onLoading = {
                 setState { copy(progressBarState = it) }

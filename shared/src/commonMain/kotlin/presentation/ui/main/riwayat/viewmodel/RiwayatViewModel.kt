@@ -59,13 +59,16 @@ class RiwayatViewModel(
                 setStateValue()
             }
 
+            is RiwayatEvent.HideSuccessEmailDialog -> {
+                setState { copy(isSuccessEmailDialogOpen = false) }
+            }
+
 
         }
     }
 
 
     private fun sendEmailBA(emails: List<String>, sendToMyEmail: Boolean) {
-
         val myEmail = state.value.myEmail
 
         val finalEmails = if (sendToMyEmail && myEmail.isNotBlank()) {
@@ -82,12 +85,27 @@ class RiwayatViewModel(
                 )
             ),
             onSuccess = { data, status, code ->
+                if (status== true && data != null) {
+                    setState {
+                        copy(
+                            isSendEmailDialogOpen = false,
+                            isSuccessEmailDialogOpen = true
+                        )
+                    }
+                } else {
+                    setState {
+                        copy(
+                            isSendEmailDialogOpen = false
+                        )
+                    }
+                }
             },
             onLoading = {
                 setState { copy(progressBarState = it) }
             }
         )
     }
+
 
 
     private fun getRiwayat() {

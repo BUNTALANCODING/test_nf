@@ -59,7 +59,7 @@ val ALL_MODELS = listOf(
     )
 )
 
-private val SELECTED_MODEL_IDS = listOf("ban", "yolo") // atau model apa saja yang mau dipakai bareng
+private val SELECTED_MODEL_IDS = listOf("ban", "yolo")
 
 
 @Composable
@@ -79,40 +79,6 @@ actual fun RealTimeCameraView() {
     val cameraProviderState = remember { mutableStateOf<ProcessCameraProvider?>(null) }
 
     val modelsState = remember { mutableStateOf<List<LoadedTfModel>>(emptyList()) }
-
-
-//    LaunchedEffect(Unit) {
-//        try {
-//            val config = ALL_MODELS.firstOrNull { it.id == SELECTED_MODEL_ID }
-//                ?: ALL_MODELS.first()
-//
-//            Log.d("RealTimeCameraView", "Loading model=${config.modelAsset}, labels=${config.labelsAsset}")
-//
-//            val labels = try {
-//                FileUtil.loadLabels(context, config.labelsAsset)
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "Gagal load labels: ${e.message}", e)
-//                emptyList()
-//            }
-//
-//            val model = loadModelFile(context, config.modelAsset)
-//
-//            val options = Interpreter.Options().apply {
-//                setNumThreads(2)
-//            }
-//            val interpreter = Interpreter(model, options)
-//
-//            val info = interpreter.inspectModel()
-//
-//            Log.d("RealTimeCameraView", "Model inspected: kind=${info.kind}, info=$info")
-//
-//            labelsState.value = labels
-//            tfliteState.value = interpreter
-//            modelInfoState.value = info
-//        } catch (e: Exception) {
-//            Log.e("RealTimeCameraView", "Error init TFLite: ${e.message}", e)
-//        }
-//    }
 
 
     LaunchedEffect(Unit) {
@@ -157,46 +123,6 @@ actual fun RealTimeCameraView() {
     }
 
 
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            try {
-//                cameraProviderState.value?.unbindAll()
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "Error unbind camera: ${e.message}", e)
-//            }
-//            try {
-//                tfliteState.value?.close()
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "Error closing tflite: ${e.message}", e)
-//            }
-//            cameraExecutor.shutdown()
-//        }
-//    }
-
-//    DisposableEffect(Unit) {
-//        onDispose {
-//            try {
-//                cameraProviderState.value?.unbindAll()
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "Error unbind camera: ${e.message}", e)
-//            }
-//
-//            try {
-//                modelsState.value.forEach { loaded ->
-//                    try {
-//                        loaded.interpreter.close()
-//                    } catch (e: Exception) {
-//                        Log.e("RealTimeCameraView", "Error closing tflite ${loaded.id}: ${e.message}", e)
-//                    }
-//                }
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "Error closing models: ${e.message}", e)
-//            }
-//
-//            cameraExecutor.shutdown()
-//        }
-//    }
-
     DisposableEffect(Unit) {
         onDispose {
             try {
@@ -204,9 +130,6 @@ actual fun RealTimeCameraView() {
             } catch (e: Exception) {
                 Log.e("RealTimeCameraView", "Error unbind camera: ${e.message}", e)
             }
-
-            // JANGAN close interpreter dulu
-            // modelsState.value.forEach { it.interpreter.close() }
 
             cameraExecutor.shutdown()
         }
@@ -254,112 +177,6 @@ actual fun RealTimeCameraView() {
             }
         }
     )
-
-//    LaunchedEffect(
-//        previewViewState.value,
-//        overlayBoxesState.value,
-//        overlayTextState.value,
-//        tfliteState.value,
-//        labelsState.value,
-//        modelInfoState.value
-//    ) {
-//        val previewView = previewViewState.value
-//        val overlayBoxes = overlayBoxesState.value
-//        val overlayText = overlayTextState.value
-//        val tflite = tfliteState.value
-//        val labels = labelsState.value
-//        val modelInfo = modelInfoState.value
-//
-//        if (previewView == null) {
-//            Log.w("RealTimeCameraView", "previewView masih null, skip bind")
-//            return@LaunchedEffect
-//        }
-//
-//        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-//        cameraProviderFuture.addListener({
-//            try {
-//                val cameraProvider = cameraProviderFuture.get()
-//                cameraProviderState.value = cameraProvider
-//
-//                Log.d(
-//                    "RealTimeCameraView",
-//                    "Bind camera. tflite=${tflite != null}, labels=${labels.size}, modelInfo=$modelInfo"
-//                )
-//
-//                val preview = Preview.Builder()
-//                    .build()
-//                    .also {
-//                        it.setSurfaceProvider(previewView.surfaceProvider)
-//                    }
-//
-//                val analyzer: ImageAnalysis.Analyzer =
-//                    if (tflite != null && modelInfo != null && labels.isNotEmpty()) {
-//                        when (modelInfo.kind) {
-//                            ModelKind.DETECTOR -> {
-//                                val ov = overlayBoxes
-//                                    ?: throw IllegalStateException("DetectionOverlayView null")
-//                                Log.d("RealTimeCameraView", "Using DetectorAnalyzer")
-//                                DetectorAnalyzer(
-//                                    context = context,
-//                                    tflite = tflite,
-//                                    labels = labels,
-//                                    overlayView = ov,
-//                                    modelInfo = modelInfo
-//                                )
-//                            }
-//
-//                            ModelKind.CLASSIFIER -> {
-//                                val ovText = overlayText
-//                                    ?: throw IllegalStateException("ClassificationOverlayView null")
-//                                Log.d("RealTimeCameraView", "Using ClassifierAnalyzer")
-//                                ClassifierAnalyzer(
-//                                    tflite = tflite,
-//                                    labels = labels,
-//                                    overlayView = ovText,
-//                                    modelInfo = modelInfo
-//                                )
-//                            }
-//
-//                            ModelKind.UNKNOWN -> {
-//                                Log.e("RealTimeCameraView", "ModelKind.UNKNOWN, pakai dummy analyzer")
-//                                ImageAnalysis.Analyzer { proxy -> proxy.close() }
-//                            }
-//                        }
-//                    } else {
-//                        Log.w(
-//                            "RealTimeCameraView",
-//                            "TFLite/labels/modelInfo belum siap, pakai dummy analyzer (preview tetap jalan)"
-//                        )
-//                        ImageAnalysis.Analyzer { proxy -> proxy.close() }
-//                    }
-//
-//                val imageAnalysis = ImageAnalysis.Builder()
-//                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//                    .build()
-//                    .also {
-//                        it.setAnalyzer(
-//                            cameraExecutor,
-//                            analyzer
-//                        )
-//                    }
-//
-//                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(
-//                    lifecycleOwner,
-//                    cameraSelector,
-//                    preview,
-//                    imageAnalysis
-//                )
-//
-//                Log.d("RealTimeCameraView", "Camera bindToLifecycle OK")
-//            } catch (e: Exception) {
-//                Log.e("RealTimeCameraView", "bind failed: ${e.message}", e)
-//            }
-//        }, ContextCompat.getMainExecutor(context))
-//    }
-//}
 
     LaunchedEffect(
         previewViewState.value,

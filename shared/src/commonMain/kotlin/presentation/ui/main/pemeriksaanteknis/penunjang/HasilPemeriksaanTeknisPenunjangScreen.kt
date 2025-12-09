@@ -1,16 +1,28 @@
 package presentation.ui.main.pemeriksaanteknis.penunjang
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -31,9 +43,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import business.constants.SECTION_BADAN
 import business.constants.SECTION_BAN
 import business.constants.SECTION_PENERANGAN
@@ -52,7 +70,6 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 import presentation.component.ConditionCard
 import presentation.component.ConditionTeknisPenunjang
-import presentation.component.ConditionTeknisUtama
 import presentation.component.DEFAULT__BUTTON_SIZE
 import presentation.component.DefaultButton
 import presentation.component.DefaultScreenUI
@@ -61,40 +78,11 @@ import presentation.component.Spacer_16dp
 import presentation.component.Spacer_8dp
 import presentation.theme.PrimaryColor
 import presentation.ui.main.home.view_model.HomeEvent
-
 import presentation.ui.main.home.view_model.HomeState
-import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
 import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
-import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
 import rampcheck.shared.generated.resources.Res
 import rampcheck.shared.generated.resources.ic_check_mark
 import rampcheck.shared.generated.resources.ic_kemenhub
-
-//@Composable
-//fun HasilPemeriksaanTeknisUtamaScreen(
-//    state: HomeState,
-//    events: (HomeEvent) -> Unit,
-//    errors: Flow<UIComponent>,
-//    popup: () -> Unit,
-//    navigateToBeritaAcara: () -> Unit
-//) {
-//
-//    DefaultScreenUI(
-//        errors = errors,
-//        progressBarState = state.progressBarState,
-//        titleToolbar = "Pemeriksaan Teknis Utama",
-//        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
-//        onClickStartIconToolbar = { popup() },
-//        endIconToolbar = Res.drawable.ic_kemenhub
-//    ) {
-//        HasilPemeriksaanKPCadanganContent(
-//            state = state,
-//            events = events,
-//            navigateToBeritaAcara = navigateToBeritaAcara
-//        )
-//
-//    }
-//}
 
 @Composable
 fun HasilPemeriksaanTeknisPenunjangScreen(
@@ -157,8 +145,6 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
         endIconToolbar = Res.drawable.ic_kemenhub
     ) {
 
-
-        // 🔹 Dialog error khusus hasil teknis
         if (hasilState.error != null) {
             AlertDialog(
                 onDismissRequest = { },
@@ -174,39 +160,104 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
             )
         }
 
+        if (hasilState.showFailedDialog) {
+            AlertDialog(
+                onDismissRequest = { hasilViewModel.onFailedDialogDismiss() },
+                title = { Text("Gagal Identifikasi") },
+                text = { Text("Proses identifikasi gagal. Silakan coba ulangi pengambilan video.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        hasilViewModel.onFailedDialogDismiss()
+                        navigateToCamera()
+                    }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
         if (stillWaiting) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(20.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator()
-                    Spacer_8dp()
+                Card(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .fillMaxWidth()
+                        .widthIn(min = 300.dp, max = 420.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .fillMaxWidth()
+                            .heightIn(min = 180.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.size(92.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                progress = 1f,
+                                strokeWidth = 10.dp,
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .alpha(0.06f),
+                                color = MaterialTheme.colorScheme.primary
+                            )
 
-                    Text(
-                        text = if (hasilState.statusMessage.isNotBlank())
-                            hasilState.statusMessage
-                        else
-                            "Menunggu hasil identifikasi..."
-                    )
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .semantics { contentDescription = "Memproses" },
+                                strokeWidth = 4.dp
+                            )
+                        }
 
-                    if (hasilState.showCancelButton) {
-                        Spacer_16dp()
-                        DefaultButton(
+                        Text(
+                            text = "Memproses...",
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Text(
+                            text = if (hasilState.statusMessage.isNotBlank())
+                                hasilState.statusMessage
+                            else
+                                "Menunggu hasil identifikasi...",
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                            textAlign = TextAlign.Center,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(DEFAULT__BUTTON_SIZE)
-                                .width(50.dp),
-                            enabled = true,
-                            enableElevation = false,
-                            text = "Batalkan",
-                            onClick = {
-                                hasilViewModel.cancel()
-                                navigateToCamera()
-                            }
+                                .padding(horizontal = 4.dp)
                         )
+
+                        AnimatedDots(modifier = Modifier.padding(top = 4.dp))
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        if (hasilState.showCancelButton) {
+                            DefaultButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(DEFAULT__BUTTON_SIZE),
+                                enabled = true,
+                                enableElevation = false,
+                                text = "Batalkan",
+                                onClick = {
+                                    hasilViewModel.cancel()
+                                    navigateToCamera()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -219,6 +270,50 @@ fun HasilPemeriksaanTeknisPenunjangScreen(
                 navigateToCamera = navigateToCamera
             )
         }
+    }
+}
+
+@Composable
+private fun AnimatedDots(modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition()
+    val a1 by transition.animateFloat(
+        initialValue = 0.25f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+            initialStartOffset = StartOffset(0)
+        )
+    )
+    val a2 by transition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+            initialStartOffset = StartOffset(200)
+        )
+    )
+    val a3 by transition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+            initialStartOffset = StartOffset(400)
+        )
+    )
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(modifier = Modifier.size(6.dp).alpha(a1))
+        Spacer(modifier = Modifier.width(6.dp))
+        Box(modifier = Modifier.size(6.dp).alpha(a2))
+        Spacer(modifier = Modifier.width(6.dp))
+        Box(modifier = Modifier.size(6.dp).alpha(a3))
     }
 }
 
@@ -238,14 +333,6 @@ private fun HasilPemeriksaanKPCadanganContent(
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 item { HeaderSection() }
-//                item { SistemPeneranganSection(state, events) }
-//                item { SistemPengeremanSection(state, events) }
-//                item { BadanKendaraanSection(state, events) }
-//                item { KondisiBanSection(state, events) }
-//                item { PerlengkapanSection(state, events) }
-//                item { PengukurKecepatanSection(state, events) }
-//                item { WiperSection(state, events) }
-//                item { TanggapDaruratSection(state, events) }
             }
         }
 
@@ -509,72 +596,6 @@ private fun TanggapDaruratSection(state: HomeState, events: (HomeEvent) -> Unit)
 }
 
 
-//package presentation.ui.main.pemeriksaanteknis
-//
-//import androidx.compose.foundation.background
-//import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.lazy.LazyColumn
-//import androidx.compose.foundation.lazy.items
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.automirrored.filled.ArrowBack
-//import androidx.compose.material3.Card
-//import androidx.compose.material3.CardDefaults
-//import androidx.compose.material3.CircularProgressIndicator
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.Text
-//import androidx.compose.runtime.*
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.text.font.FontWeight
-//import androidx.compose.ui.unit.dp
-//import business.core.ProgressBarState
-//import business.core.UIComponent
-//import kotlinx.coroutines.flow.emptyFlow
-//import business.datasource.network.main.responses.HasilTeknisDTO
-//import business.datasource.network.main.responses.SubcategoryResponse
-//import business.datasource.network.main.responses.QuestionResponse
-//import kotlinx.coroutines.flow.Flow
-//import org.koin.compose.viewmodel.koinViewModel
-//import presentation.component.DEFAULT__BUTTON_SIZE
-//import presentation.component.DefaultButton
-//import presentation.component.DefaultScreenUI
-//import presentation.theme.PrimaryColor
-//import rampcheck.shared.generated.resources.Res
-//import rampcheck.shared.generated.resources.ic_kemenhub
-//
-//@Composable
-//fun HasilPemeriksaanTeknisUtamaScreen(
-//    errors: Flow<UIComponent>,
-//    popup: () -> Unit,
-//    navigateToBeritaAcara: () -> Unit,
-//    viewModel: HasilTeknisViewModel = koinViewModel()
-//) {
-//    val state by viewModel.state.collectAsState()
-//
-//    DefaultScreenUI(
-//        errors = errors,
-//        // Kalau mau, bisa ganti: if (state.isLoading) ProgressBarState.Loading else ProgressBarState.Idle
-//        progressBarState = ProgressBarState.Idle,
-//        titleToolbar = "Pemeriksaan Teknis Utama",
-//        startIconToolbar = Icons.AutoMirrored.Filled.ArrowBack,
-//        onClickStartIconToolbar = { popup() },
-//        endIconToolbar = Res.drawable.ic_kemenhub
-//    ) {
-//        when {
-//            state.isLoading -> LoadingUI()
-//            state.error != null -> ErrorUI(state.error!!)
-//            state.data != null -> HasilContent(
-//                hasil = state.data!!,
-//                navigateToBeritaAcara = navigateToBeritaAcara
-//            )
-//            else -> {
-//                // optional: kosong / initial state
-//            }
-//        }
-//    }
-//}
-//
 @Composable
 private fun LoadingUI() {
     Box(
@@ -591,7 +612,6 @@ private fun LoadingUI() {
     }
 }
 
-//
 @Composable
 private fun ErrorUI(msg: String) {
     Box(
@@ -604,7 +624,6 @@ private fun ErrorUI(msg: String) {
     }
 }
 
-//
 @Composable
 private fun HasilContent(
     hasil: HasilTeknisDTO,
@@ -639,7 +658,6 @@ private fun HasilContent(
             ) {
                 item { HeaderSection() }
 
-                // Info file & status
                 item {
                     Column(
                         Modifier
@@ -648,7 +666,6 @@ private fun HasilContent(
                     ) {
                         Spacer(Modifier.height(8.dp))
 
-                        // ⬇ kalau response belum ada, kasih info ke user
                         if (data.response.isNullOrEmpty()) {
                             Text(
                                 "Masih dalam proses identifikasi, silakan tunggu...",
@@ -661,7 +678,6 @@ private fun HasilContent(
                     }
                 }
 
-                // ⬇ Render list subcategory hanya kalau response sudah ada
                 if (!data.response.isNullOrEmpty()) {
                     items(data.response!!) { sub ->
                         SubcategorySection(
@@ -695,34 +711,10 @@ private fun HasilContent(
                 }
             )
         }
-
-        // kalau mau aktifkan tombol di bawah:
-        // BottomButton(
-        //     modifier = Modifier
-        //         .align(Alignment.BottomCenter),
-        //     navigateToBeritaAcara = navigateToBeritaAcara
-        // )
     }
 
 }
 
-//
-//@Composable
-//private fun HeaderSection() {
-//    Column(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(16.dp),
-//    ) {
-//        Text(
-//            "Hasil Pemeriksaan",
-//            style = MaterialTheme.typography.labelLarge.copy(
-//                fontWeight = FontWeight.Bold,
-//            )
-//        )
-//    }
-//}
-//
 @Composable
 private fun SubcategorySection(
     sub: SubcategoryResponse,
@@ -732,7 +724,6 @@ private fun SubcategorySection(
 ) {
     Column(Modifier.fillMaxWidth()) {
 
-        // header kategori (mirip SECTION_PENERANGAN, dll)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -748,7 +739,6 @@ private fun SubcategorySection(
             )
         }
 
-        // isi pertanyaan + jawaban
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -770,10 +760,8 @@ private fun SubcategorySection(
     }
 }
 
-//
 @Composable
 private fun QuestionCard(q: QuestionResponse) {
-    // warna jawaban: sesuai / ada = hijau, lainnya merah
     val isOk = q.answer_name == "Sesuai" || q.answer_name == "Ada"
     val statusColor = if (isOk) Color(0xFF1B5E20) else Color(0xFFB71C1C)
 
@@ -823,6 +811,3 @@ private fun BottomButton(
         )
     }
 }
-//
-//
-//

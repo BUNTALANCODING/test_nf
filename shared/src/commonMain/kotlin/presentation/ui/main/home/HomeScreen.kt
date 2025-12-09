@@ -79,13 +79,8 @@ fun HomeScreen(
     navigateToUploadDemo: () -> Unit,
     navigateToRealTimeCam: () -> Unit
 ) {
-//    val homeState = rememberHomeScreenState(state)
 
-    // Initialize permissions
     InitializePermissions(events)
-
-    // Handle dialogs
-//    HomeDialogs(state = state, events = events)
 
     DefaultScreenUI(
         errors = errors,
@@ -96,7 +91,6 @@ fun HomeScreen(
     ) {
         HomeContent(
             state = state,
-//            homeState = homeState,
             events = events,
             navigateToLogin = navigateToLogin,
             navigateToPemeriksaan = navigateToPemeriksaan,
@@ -135,10 +129,9 @@ private fun HomeContent(
 
             RiwayatPemeriksaanSection(navigateToRiwayatPemeriksaan)
 
-            //REMOVE THIS WHEN READY TO DEPLOY
             FileUploaderDemo(navigateToUploadDemo)
 
-            RealTimeCam(navigateToRealTimeCam)
+//            RealTimeCam(navigateToRealTimeCam)
 
             Spacer(modifier = Modifier.weight(1f))
             ButtonSection(events, navigateToLogin)
@@ -329,44 +322,44 @@ fun FileUploaderDemo(navigateToUploadDemo: () -> Unit) {
     }
 }
 
-@Composable
-fun RealTimeCam(navigateToRealTimeCam: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = yellowBackground),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Box(modifier = Modifier
-            .fillMaxWidth().height(96.dp)
-            .noRippleClickable {
-                navigateToRealTimeCam()
-            }) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_riwayat_pemeriksaan),
-                    contentDescription = null
-                )
-                Spacer_8dp()
-                Text(
-                    "Real Time Camera",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun RealTimeCam(navigateToRealTimeCam: () -> Unit) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp),
+//        colors = CardDefaults.cardColors(containerColor = yellowBackground),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+//        shape = RoundedCornerShape(16.dp)
+//    ) {
+//        Box(modifier = Modifier
+//            .fillMaxWidth().height(96.dp)
+//            .noRippleClickable {
+//                navigateToRealTimeCam()
+//            }) {
+//
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(Res.drawable.ic_riwayat_pemeriksaan),
+//                    contentDescription = null
+//                )
+//                Spacer_8dp()
+//                Text(
+//                    "Real Time Camera",
+//                    style = MaterialTheme.typography.titleMedium.copy(
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color.White
+//                    )
+//                )
+//            }
+//        }
+//    }
+//}
 
 
 @Composable
@@ -404,7 +397,6 @@ private fun InitializePermissions(events: (HomeEvent) -> Unit) {
 }
 
 
-// Permissions ViewModel
 class PermissionsViewModel(
     val permissionsController: PermissionsController
 ) : ViewModel() {
@@ -428,10 +420,8 @@ class PermissionsViewModel(
     }
 }
 
-// Extension functions for better null safety
 private fun String?.orEmpty(): String = this ?: ""
 
-// Constants
 private object HomeConstants {
     const val CARD_RADIUS = 10
     const val FIELD_RADIUS = 6

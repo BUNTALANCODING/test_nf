@@ -296,6 +296,9 @@ sealed class HomeEvent : ViewEvent {
 
     data class OnJenisBusSelected(val jenisBusId: Int) : HomeEvent()
 
+    data object HideSuccessEmailDialog : HomeEvent()
+
+
 
 
     /**

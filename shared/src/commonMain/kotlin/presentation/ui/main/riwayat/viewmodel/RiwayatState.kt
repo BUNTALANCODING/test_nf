@@ -28,8 +28,11 @@ data class RiwayatState (
 
 
     val isSendEmailDialogOpen: Boolean = false,
-    val myEmail: String = ""
+    val myEmail: String = "",
+
+    val isSuccessEmailDialogOpen: Boolean = false,
 
 
 
-) : ViewState
+
+    ) : ViewState

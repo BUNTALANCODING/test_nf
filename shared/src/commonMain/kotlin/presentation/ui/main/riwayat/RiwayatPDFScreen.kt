@@ -101,6 +101,21 @@ private fun RiwayatPDFContent(
         )
     }
 
+    if (state.isSuccessEmailDialogOpen) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { events(RiwayatEvent.HideSuccessEmailDialog) },
+            title = { Text("Berhasil") },
+            text = { Text("Berita acara berhasil dikirim ke email.") },
+            confirmButton = {
+                Button(
+                    onClick = { events(RiwayatEvent.HideSuccessEmailDialog) }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -134,7 +149,7 @@ private fun RiwayatPDFContent(
                     onClick = {
                         val cleanUrl = normalizePdfUrl(pdfUrl)
                         scope.launch {
-                            downloader.download(cleanUrl, "berita_acara.pdf")
+                            downloader.download(cleanUrl, "Laporan_${state.rampcheckId}.pdf")
                         }
                     },
                     modifier = Modifier

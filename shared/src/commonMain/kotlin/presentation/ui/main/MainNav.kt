@@ -714,7 +714,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         hasilViewModel = hasilTeknisViewModel,
                         navigateToCamera = {
-                            navigator.navigate(TeknisNavigation.CameraTidakSesuaiTeknisUtama)
+                            navigator.navigate(TeknisNavigation.CameraTeknisUtama)
                         }
                     )
                 }
@@ -784,7 +784,7 @@ fun MainNav(context: Context?, logout: () -> Unit) {
                         },
                         hasilViewModel = getResulViewModel,
                         navigateToCamera = {
-                            navigator.navigate(TeknisNavigation.CameraTidakSesuaiTeknisPenunjang)
+                            navigator.navigate(TeknisNavigation.CameraTeknisPenunjang)
                         }
                     )
                 }

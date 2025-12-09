@@ -55,7 +55,7 @@ class GetResultSecondViewModel(
 
                 while (true) {
                     try {
-                        val result: HasilTeknisDTO = service.getResultSecond(
+                        val result: HasilTeknisDTO = service.getInteriorResult(
                             token = token,
                             uniqueKey = uniqueKey
                         )
@@ -70,6 +70,7 @@ class GetResultSecondViewModel(
                             "processing" -> "Video sedang diproses"
                             "sent"       -> "Identifikasi sedang diproses"
                             "completed"  -> "Identifikasi selesai diproses"
+                            "failed"     -> "Identifikasi gagal"
                             else         -> ""
                         }
 
@@ -85,6 +86,18 @@ class GetResultSecondViewModel(
                             showCancelButton = showCancel
                         )
 
+                        // 👉 kalau gagal: stop polling & tampilkan dialog gagal
+                        if (statusLower == "failed") {
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                showCancelButton = false,
+                                showFailedDialog = true
+                            )
+                            println("HASIL_VM: failed, stop polling")
+                            return@launch
+                        }
+
+                        // 👉 kalau sukses + ada response: stop polling
                         if (statusLower == "completed" && hasResponse) {
                             _state.value = _state.value.copy(
                                 isLoading = false,
@@ -132,6 +145,10 @@ class GetResultSecondViewModel(
                 )
             }
         }
+    }
+
+    fun onFailedDialogDismiss() {
+        _state.value = _state.value.copy(showFailedDialog = false)
     }
 
     fun cancel() {

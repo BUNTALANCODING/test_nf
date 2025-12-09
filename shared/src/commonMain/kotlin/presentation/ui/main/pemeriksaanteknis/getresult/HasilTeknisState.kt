@@ -8,5 +8,7 @@ data class HasilTeknisState(
     val data: HasilTeknisDTO? = null,
     val error: String? = null,
     val statusMessage: String = "",
-    val showCancelButton: Boolean = false
+    val showCancelButton: Boolean = false,
+    val showFailedDialog: Boolean = false // 👈 new
+
 )

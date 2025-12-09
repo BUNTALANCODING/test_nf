@@ -29,6 +29,9 @@ data class HomeState(
 
     val isSendEmailDialogOpen: Boolean = false,
 
+    val isSuccessEmailDialogOpen: Boolean = false,
+
+
     val technicalConditions: List<ConditionItem> = initialTechnicalConditionsList(),
     val cityCodeValue: String = "",
     val middleCodeValue: String = "",
