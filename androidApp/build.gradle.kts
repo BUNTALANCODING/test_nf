@@ -2,46 +2,59 @@ import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import java.io.File
 
 plugins {
     alias(libs.plugins.rampcheck.androidApp)
-//    alias(libs.plugins.google.service)
-//    alias(libs.plugins.firebase.service)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.service)
 }
+
 kotlin {
-    androidTarget()
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant {
             sourceSetTree.set(KotlinSourceSetTree.test)
-
-            dependencies {
-                //implementation("io.github.vinceglb:filekit-core:0.10.0-beta04")
-                /*implementation("androidx.compose.ui:ui-test-junit4-android:1.6.4")
-                debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.4")*/
-            }
         }
     }
+
     sourceSets {
         val androidMain by getting {
             dependencies {
                 implementation(project(":shared"))
-                /*implementation("androidx.compose.material:material-ripple:1.7.0-alpha05")*/
+
+                implementation(libs.androidx.datastore.preferences)
+                implementation(compose.preview)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.koin.android)
+
+                implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.3.0"))
+                implementation("com.google.android.gms:play-services-auth:21.1.1")
             }
         }
     }
 }
+
 android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    namespace = "app.net2software.rampcheck.android"
+    namespace = "com.jaring.app_buss_jaring.android"
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     defaultConfig {
-        applicationId = "app.app.net2software.rampcheck.android"
+        applicationId = "com.jaring.app_buss_jaring.android"
+
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.version.code.get().toInt()
         versionName = libs.versions.android.version.name.get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         debug {
@@ -60,34 +73,35 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlin {
         jvmToolchain(17)
     }
+
     buildFeatures {
         buildConfig = true
     }
+
     applicationVariants.configureEach {
         outputs.configureEach {
             (this as? ApkVariantOutputImpl)?.outputFileName =
-                //"${rootProject.name}_${versionName}(${versionCode})_${buildType.name}.apk"
-                "rampcheck_android_${buildType.name}.apk"
+                "navbuss_android_${buildType.name}.apk"
         }
 
-        // rename the output AAB file
         tasks.named(
             "sign${flavorName.uppercaseFirstChar()}${buildType.name.uppercaseFirstChar()}Bundle",
             com.android.build.gradle.internal.tasks.FinalizeBundleTask::class.java
         ) {
             val file = finalBundleFile.asFile.get()
-            val finalFile =
-                File(
-                    file.parentFile,
-                    "${rootProject.name}_$versionName($versionCode)_${buildType.name}.aab"
-                )
+            val finalFile = File(
+                file.parentFile,
+                "${rootProject.name}_$versionName($versionCode)_${buildType.name}.aab"
+            )
             finalBundleFile.set(finalFile)
         }
     }

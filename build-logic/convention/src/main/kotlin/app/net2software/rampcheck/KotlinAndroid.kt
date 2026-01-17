@@ -15,7 +15,7 @@ internal fun Project.configureKotlinAndroid(
 ) {
     commonExtension.apply {
         compileSdk =  libs.findVersion("android.compileSdk").get().toString().toInt()
-        namespace ="app.net2software.rampcheck.android"
+        namespace ="com.jaring.app_buss_jaring.android"
 
         defaultConfig {
             minSdk = libs.findVersion("android.minSdk").get().toString().toInt()

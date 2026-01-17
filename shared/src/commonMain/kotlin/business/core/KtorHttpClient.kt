@@ -12,7 +12,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import app.net2software.rampcheck.BuildKonfig
 import presentation.token_manager.TokenEvent
 import presentation.token_manager.TokenManager
 import sp.bvantur.inspektify.ktor.InspektifyKtor

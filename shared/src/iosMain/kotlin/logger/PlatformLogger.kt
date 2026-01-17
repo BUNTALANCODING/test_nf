@@ -3,6 +3,7 @@ package logger
 import platform.Foundation.*
 import platform.darwin.*
 import kotlinx.cinterop.*
+import kotlin.experimental.ExperimentalNativeApi
 
 actual object PlatformLogger {
     private var config: LoggerConfig? = null
@@ -64,10 +65,12 @@ actual object PlatformLogger {
         }
     }
 
+    @OptIn(ExperimentalNativeApi::class)
     private fun isDebugBuild(): Boolean {
         return Platform.isDebugBinary
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     private fun initFileLogging() {
         try {
             val documentsPath = NSSearchPathForDirectoriesInDomains(
@@ -93,12 +96,38 @@ actual object PlatformLogger {
         }
     }
 
+//    private fun writeToFile(level: LogLevel, tag: String, message: String, throwable: Throwable?) {
+//        try {
+//            val documentsPath = NSSearchPathForDirectoriesInDomains(
+//                NSDocumentDirectory,
+//                NSUserDomainMask,
+//                true
+//            ).firstOrNull() as? String ?: return
+//
+//            val logFilePath = "$documentsPath/logs/app_log_${getCurrentDateString()}.txt"
+//            val logEntry = "${getCurrentTimestamp()} ${level.name} [$tag] $message\n"
+//
+//            val fileManager = NSFileManager.defaultManager
+//            if (fileManager.fileExistsAtPath(logFilePath)) {
+//                val existingData = NSData.dataWithContentsOfFile(logFilePath)
+//                val existingString = existingData?.let {
+//                    NSString.create(it, NSUTF8StringEncoding)
+//                } ?: ""
+//                val newContent = "$existingString$logEntry"
+//                newContent.writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
+//            } else {
+//                logEntry.writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
+//            }
+//        } catch (e: Exception) {
+//            NSLog("Failed to write to log file: ${e.message}")
+//        }
+//    }
+
+    @OptIn(ExperimentalForeignApi::class)
     private fun writeToFile(level: LogLevel, tag: String, message: String, throwable: Throwable?) {
         try {
             val documentsPath = NSSearchPathForDirectoriesInDomains(
-                NSDocumentDirectory,
-                NSUserDomainMask,
-                true
+                NSDocumentDirectory, NSUserDomainMask, true
             ).firstOrNull() as? String ?: return
 
             val logFilePath = "$documentsPath/logs/app_log_${getCurrentDateString()}.txt"
@@ -111,14 +140,17 @@ actual object PlatformLogger {
                     NSString.create(it, NSUTF8StringEncoding)
                 } ?: ""
                 val newContent = "$existingString$logEntry"
-                newContent.writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
+                NSString.create(string = newContent)
+                    .writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
             } else {
-                logEntry.writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
+                NSString.create(string = logEntry)
+                    .writeToFile(logFilePath, atomically = true, encoding = NSUTF8StringEncoding, error = null)
             }
         } catch (e: Exception) {
             NSLog("Failed to write to log file: ${e.message}")
         }
     }
+
 
     private fun sendToCrashReporting(level: LogLevel, tag: String, message: String, throwable: Throwable?) {
         // Implement Crashlytics or other crash reporting service

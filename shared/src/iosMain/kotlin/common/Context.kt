@@ -1,6 +1,7 @@
 package common
 
-import io.github.alexzhirkevich.cupertino.adaptive.Theme
-import platform.darwin.NSObject
+import platform.Foundation.NSUserDefaults
 
-actual typealias Context = NSObject
+actual class Context(
+    val userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+)

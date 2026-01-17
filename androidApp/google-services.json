@@ -1,0 +1,231 @@
+{
+  "project_info": {
+    "project_number": "67666257857",
+    "firebase_url": "https://tugasakhirapp-c5669-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tugasakhirapp-c5669",
+    "storage_bucket": "tugasakhirapp-c5669.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67666257857:android:bc810ff8dd1ec744f57140",
+        "android_client_info": {
+          "package_name": "com.jaring.app_buss_jaring"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67666257857-ocal1dhnapiqrpno6lljuo0gp5j5qahm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jaring.app_buss_jaring",
+            "certificate_hash": "37dadaab8a12bfe0363f0826280226e389e9033c"
+          }
+        },
+        {
+          "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvOvkDOKv2rWMGcCmXb7e1Km5M41M99oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jaring.appbussjaring"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67666257857:android:9e83e5faf167b77cf57140",
+        "android_client_info": {
+          "package_name": "com.jaring.app_buss_jaring.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvOvkDOKv2rWMGcCmXb7e1Km5M41M99oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jaring.appbussjaring"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67666257857:android:6cba857234f2bef5f57140",
+        "android_client_info": {
+          "package_name": "com.letris.ujikom_2025"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67666257857-rtjju0iagn9d2qc302uij2j3kjrkk0qh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.letris.ujikom_2025",
+            "certificate_hash": "456f23afd3bbab95f70ecf4754f2997f68d5761a"
+          }
+        },
+        {
+          "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvOvkDOKv2rWMGcCmXb7e1Km5M41M99oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jaring.appbussjaring"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67666257857:android:d77e1e942e4c53a2f57140",
+        "android_client_info": {
+          "package_name": "com.syhdzn.peminjamanlabkomputerku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67666257857-pvklu9ksjqom6m6qflq1t5ce3st5bgcj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syhdzn.peminjamanlabkomputerku",
+            "certificate_hash": "456f23afd3bbab95f70ecf4754f2997f68d5761a"
+          }
+        },
+        {
+          "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvOvkDOKv2rWMGcCmXb7e1Km5M41M99oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jaring.appbussjaring"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67666257857:android:d438055cabbec623f57140",
+        "android_client_info": {
+          "package_name": "com.syhdzn.tugasakhirapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67666257857-eo240qigdkhqot4a1seckmfr73p8p6ka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syhdzn.tugasakhirapp",
+            "certificate_hash": "25e5949aaf3515b070a6cb239f4cb27eb0bf23ae"
+          }
+        },
+        {
+          "client_id": "67666257857-fuj306mv0l65b59v1t548r4f44iu82j3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.syhdzn.tugasakhirapp",
+            "certificate_hash": "456f23afd3bbab95f70ecf4754f2997f68d5761a"
+          }
+        },
+        {
+          "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvOvkDOKv2rWMGcCmXb7e1Km5M41M99oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jaring.appbussjaring"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

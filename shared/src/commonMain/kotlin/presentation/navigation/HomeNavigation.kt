@@ -6,70 +6,36 @@ import kotlinx.serialization.Serializable
 sealed interface HomeNavigation {
 
     @Serializable
-    data object Forgot : HomeNavigation
+    data object Home : HomeNavigation
 
     @Serializable
-    data object ForgotSuccess : HomeNavigation
+    data object InfoRute : HomeNavigation
 
     @Serializable
-    data object Settings : HomeNavigation
+    data class DetailRute(val corridorCode: String) : HomeNavigation
+
+    @Serializable data object ArCam : HomeNavigation
+
+    @Serializable data class DetailBus(val busId: String) : HomeNavigation
+
+    @Serializable data object CariHalte : HomeNavigation
+
+    @Serializable data class DetailHalte(val halteId: String) : HomeNavigation
 
     @Serializable
-    data object Login : HomeNavigation
+    data class ArahkanRute(
+        val origin: String,
+        val destination: String
+    ) : HomeNavigation
 
-    @Serializable
-    data object Register : HomeNavigation
 
-    @Serializable
-    data object SuccessRegister : HomeNavigation
+    @Serializable data object KedatanganBuss : HomeNavigation
 
-    @Serializable
-    data object Pemeriksaan : HomeNavigation
+    @Serializable data object UbahLokasi : HomeNavigation
 
-    @Serializable
-    data object RiwayatPemeriksaan : HomeNavigation
+    @Serializable data object MauKemana : HomeNavigation
 
-    @Serializable
-    data object PreviewRiwayatPDF : HomeNavigation
+    @Serializable data object PilihPeta : HomeNavigation
 
-    @Serializable
-    data object GuideFotoPetugas : HomeNavigation
-
-    @Serializable
-    data object CameraFotoPetugas : HomeNavigation
-
-    @Serializable
-    data object VerifyFotoPetugas : HomeNavigation
-
-    @Serializable
-    data object DataKendaraanKIR : HomeNavigation
-
-    @Serializable
-    data object CameraFotoKIR : HomeNavigation
-
-    @Serializable
-    data object QRKIRScreen : HomeNavigation
-
-    @Serializable
-    data object DetailHasilFotoKIR : HomeNavigation
-
-    @Serializable
-    data object FotoKendaraan : HomeNavigation
-
-    @Serializable
-    data object CameraVehicle : HomeNavigation
-
-    @Serializable
-    data object GuideTeknisUtama : HomeNavigation
-
-    @Serializable
-    data object CameraTeknisUtama : HomeNavigation
-
-    @Serializable
-    data object HasilTeknisUtama : HomeNavigation
-
-    @Serializable
-    data object UploadFile : HomeNavigation
 
 }
-

@@ -1,34 +1,31 @@
 package app.net2software.rampcheck.android
 
-import MainView
-import android.content.Intent
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.mmk.kmpnotifier.extensions.onCreateOrOnNewIntent
-import com.mmk.kmpnotifier.notification.NotifierManager
+import androidx.activity.enableEdgeToEdge
+import business.core.AppDataStore
+import di.initKoinOnce
+import org.koin.android.ext.android.get
+import presentation.App
+import common.Context
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        ContextProvider.initialize(this)
-        ContextProvider.initializePermission(this)
+        val platformContext = Context(this)
 
-        NotifierManager.onCreateOrOnNewIntent(intent)
+        initKoinOnce(platformContext)
+
+        val appDataStore: AppDataStore = get()
 
         setContent {
-            MainView(application)
+            App(
+                context = platformContext,
+                appDataStore = appDataStore
+            )
         }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        NotifierManager.onCreateOrOnNewIntent(intent)
-    }
-
-    override fun onDestroy() {
-        ContextProvider.clearPermission()
-        super.onDestroy()
     }
 }

@@ -1,5 +1,6 @@
 package business.constants
 
-import app.net2software.rampcheck.BuildKonfig
+import com.jaring.app_buss_jaring.BuildKonfig
+
 
 val BASE_URL = BuildKonfig.base_url

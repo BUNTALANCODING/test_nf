@@ -1,21 +1,22 @@
 import SwiftUI
-import shared
-import GoogleMaps
 import UIKit
-import SwiftUI
 import FirebaseCore
+import GoogleMaps
+import shared
 
 @main
 struct iOSApp: App {
-    init() {
-        FirebaseApp.configure()
-        GMSServices.provideAPIKey("YOUR_API_KEY")
-    }
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-	var body: some Scene {
-		WindowGroup {
-			ContentView()
-		}
-	}
+
+    init() {
+        GMSServices.provideAPIKey("YOUR_API_KEY")
+
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ComposeView()
+                .ignoresSafeArea()
+        }
+    }
 }

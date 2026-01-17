@@ -7,46 +7,33 @@ import business.datasource.network.main.MainService
 import business.datasource.network.main.MainServiceImpl
 import business.datasource.network.splash.SplashService
 import business.datasource.network.splash.SplashServiceImpl
-import business.interactors.main.CheckQRUseCase
-import business.interactors.main.GetLocationUseCase
-import business.interactors.main.GetNotificationUseCase
-import business.interactors.main.GetProfileUseCase
-import business.interactors.main.GetHasilTeknisUseCase
-import business.interactors.main.GetJenisBusUseCase
-import business.interactors.main.GetVehicleUseCase
-import business.interactors.main.HistoryRampcheckUseCase
-import business.interactors.main.IdentifyPenunjangUseCase
-import business.interactors.main.IdentifyUseCase
-import business.interactors.main.LoadCardUseCase
-import business.interactors.main.LogoutUseCase
-import business.interactors.main.NegativeAnswerUseCase
-import business.interactors.main.PlatKIRUseCase
-import business.interactors.main.PreviewBAUseCase
-import business.interactors.main.RampcheckStartUseCase
-import business.interactors.main.SendEmailBAUseCase
-import business.interactors.main.SubmitQuestionUseCase
-import business.interactors.main.SubmitSignatureUseCase
-import business.interactors.main.UploadChunkUseCase
-import business.interactors.main.UploadPetugasUseCase
-import business.interactors.main.VehiclePhotoUseCase
+import business.domain.usecase.LoginUseCase
+import business.interactor.GetRouteDetailUseCase
+import business.interactor.GetRouteListUseCase
+import business.interactor.GetTripUseCase
+import business.interactors.main.GetNearestHalteUseCase
+import business.interactors.main.GetRouteMapUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
-import business.interactors.splash.LoginUseCase
 import business.interactors.splash.RegisterUseCase
 import common.Context
+import common.auth.AuthRepository
+import common.auth.provideAuthRepository
 import kotlinx.serialization.json.Json
+import org.koin.core.KoinApplication
+import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import presentation.SharedViewModel
 import presentation.token_manager.TokenManager
-import presentation.ui.main.home.view_model.HomeViewModel
 import presentation.ui.main.auth.view_model.LoginViewModel
-import presentation.ui.main.pemeriksaanteknis.getresult.HasilTeknisViewModel
-import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondUseCase
-import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.GetResultSecondViewModel
-import presentation.ui.main.pemeriksaanteknis.penunjang.viewmodel.IdentifyPenunjangViewModel
-import presentation.ui.main.riwayat.viewmodel.RiwayatViewModel
-import presentation.ui.main.pemeriksaanteknis.utama.viewmodel.UploadViewModel
+import presentation.ui.main.home.view_model.HomeViewModel
+import presentation.ui.main.inforute.view_model.detail.DetailRuteViewModel
+import presentation.ui.main.inforute.view_model.info.InfoRuteViewModel
+import presentation.ui.main.inforute.view_model.map.RouteMapViewModel
 import presentation.util.BackgroundScheduler
+
+const val WEB_CLIENT_ID = "67666257857-upcbt8r5ah8nv0gkk0ferfrq459qrbu7.apps.googleusercontent.com"
+
 
 fun appModule(context: Context) = module {
     single { Json { isLenient = true; ignoreUnknownKeys = true } }
@@ -54,64 +41,48 @@ fun appModule(context: Context) = module {
         KtorHttpClient.httpClient(get())
     }
     single<SplashService> { SplashServiceImpl(get()) }
-    single<MainService> { MainServiceImpl(get()) }
+    single<MainService> { MainServiceImpl(get(), get()) }
     single<AppDataStore> { AppDataStoreManager(context) }
     single<BackgroundScheduler> { get() }
     factory { SharedViewModel(get()) }
 //    factory { UploadChunkViewModel(get()) }
-    factory { LoginViewModel(get(), get(), get(),get(), get()) }
-    factory {
-        RiwayatViewModel(
-            get(),        // HistoryRampcheckUseCase
-            get(),
-            get(),        // SendEmailBAUseCase
-            get()        // AppDataStoreManager
-        )
-    }
-
-    single { SendEmailBAUseCase(get(), get()) }
-
-    factory { HomeViewModel(get(), get(), get(),get(), get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { GetProfileUseCase(get(), get()) }
-    single { TokenManager(get(), get(), get()) }
-    single { LogoutUseCase(get()) }
+    factory { HomeViewModel(get())}
+    single { TokenManager(get(), get()) }
     single { LoginUseCase(get(), get()) }
     single { RegisterUseCase(get(), get()) }
     single { CheckTokenUseCase(get()) }
     single { CheckFCMTokenUseCase(get()) }
-    single { GetLocationUseCase(get(),get()) }
-    single { RampcheckStartUseCase(get(),get()) }
-    single { GetVehicleUseCase(get(),get()) }
-    single { UploadPetugasUseCase(get(),get()) }
-    single { CheckQRUseCase(get(),get()) }
-    single { PlatKIRUseCase(get(),get()) }
-    single { VehiclePhotoUseCase(get(),get()) }
-    single { SubmitSignatureUseCase(get(),get()) }
-    single { NegativeAnswerUseCase(get(),get()) }
-    single { PreviewBAUseCase(get(),get()) }
-    single { IdentifyUseCase(get(),get()) }
-    single { SubmitQuestionUseCase(get(),get()) }
-    single { GetNotificationUseCase(get(), get()) }
-    single { HistoryRampcheckUseCase(get(), get()) }
-    single { UploadChunkUseCase(get()) } // (MainService, AppDataStore)
-    factory { UploadViewModel(get(), get()) }
 
-    single { GetHasilTeknisUseCase(get()) } // ⬅️ TAMBAHAN INI
-    factory { HasilTeknisViewModel(get(), get()) }
-    single { LoadCardUseCase(get(), get()) }
-    single { UploadChunkUseCase(get()) }
+    single<AuthRepository> { provideAuthRepository(WEB_CLIENT_ID) }
+    single { LoginUseCase(get(), get()) }
 
+    factory { LoginViewModel(get(), get()) }
 
-//    single { UpdateDeviceTokenUseCase(get(), get()) }single { PdfDownloader(get()) }
+    factory { GetNearestHalteUseCase(get(), get()) }
+    factory { HomeViewModel(get()) }
+
+    factory { GetRouteListUseCase(get()) }
+    factory { InfoRuteViewModel(get()) }
+
+    factory { GetRouteDetailUseCase(get())}
+    factory { DetailRuteViewModel(get(), get()) }
+
+    factory { GetTripUseCase(get()) }
+
+    factory { GetRouteMapUseCase(get()) }
+    factory { RouteMapViewModel(get()) }
 
 
 
-    single { GetResultSecondUseCase(get()) } // ⬅️ TAMBAHAN INI
-    factory { GetResultSecondViewModel(get(), get()) }
 
-    single { IdentifyPenunjangUseCase(get()) } // (MainService, AppDataStore)
-    factory { IdentifyPenunjangViewModel(get(), get()) }
+}
 
-    single { GetJenisBusUseCase(get()) }
+private var started = false
 
+fun initKoinOnce(context: Context): KoinApplication? {
+    if (started) return null
+    started = true
+    return startKoin {
+        modules(appModule(context))
+    }
 }

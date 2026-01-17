@@ -5,9 +5,9 @@ plugins {
     alias(libs.plugins.rampcheck.kotlinMultiplatform)
     alias(libs.plugins.rampcheck.shared)
     alias(libs.plugins.ktlint)
-    alias(libs.plugins.google.service)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.build.konfig)
-
+    kotlin("native.cocoapods")
 }
 
 ktlint {
@@ -27,6 +27,23 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
+    }
+
+    cocoapods {
+        summary = "Shared module for iOS (Firebase Auth + Google Sign-In)"
+        homepage = "https://example.com"
+        version = "1.0.0" // ✅ tambahkan baris ini
+        ios.deploymentTarget = "14.0"
+
+        framework {
+            baseName = "shared"
+            isStatic = true
+        }
+
+        pod("FirebaseCore", "~> 10.23.0")
+        pod("FirebaseAuth", "~> 10.23.0")
+        pod("GoogleSignIn", "~> 7.0.0")
+
     }
 
     sourceSets {
@@ -54,7 +71,7 @@ kotlin {
 }
 
 buildkonfig {
-    packageName = "app.net2software.rampcheck"
+    packageName = "com.jaring.app_buss_jaring"
 
     defaultConfigs("prod") {
         buildConfigField(STRING, "version", "1.3.1")
@@ -65,7 +82,7 @@ buildkonfig {
     defaultConfigs("dev") {
         buildConfigField(STRING, "version", "2.3.1-DEV")
         buildConfigField(BOOLEAN, "debug", "true")
-        buildConfigField(STRING, "base_url", "https://dashboard-ramcek.net2software.net/api/v1/frontend/")
+        buildConfigField(STRING, "base_url", "https://tracking-bus.net2software.net/api/v1/")
     }
 
     targetConfigs("prod") {
@@ -78,7 +95,7 @@ buildkonfig {
     targetConfigs("dev") {
         defaultConfigs {
             buildConfigField(BOOLEAN, "debug", "true")
-            buildConfigField(STRING, "base_url", "https://dashboard-ramcek.net2software.net/api/v1/frontend/")
+            buildConfigField(STRING, "base_url", "https://tracking-bus.net2software.net/api/v1/")
         }
     }
 }

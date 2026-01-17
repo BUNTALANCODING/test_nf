@@ -1,6 +1,5 @@
 package common
 
-import android.app.Application
-import io.github.alexzhirkevich.cupertino.adaptive.Theme
+import android.content.Context as AndroidContext
 
-actual typealias Context = Application
+actual class Context(val androidContext: AndroidContext)

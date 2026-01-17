@@ -3,7 +3,6 @@ package presentation.token_manager
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import business.core.DataState
-import business.interactors.main.LogoutUseCase
 import business.interactors.splash.CheckFCMTokenUseCase
 import business.interactors.splash.CheckTokenUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +14,7 @@ import presentation.ui.main.home.view_model.HomeEvent
 class TokenManager(
     private val checkTokenUseCase: CheckTokenUseCase,
     private val checkFCMTokenUseCase: CheckFCMTokenUseCase,
-    private val logoutUseCase: LogoutUseCase,
+//    private val logoutUseCase: LogoutUseCase,
 ) {
 
     private val sessionScope = CoroutineScope(Dispatchers.Main)
@@ -29,7 +28,7 @@ class TokenManager(
             }
 
             is TokenEvent.Logout -> {
-                logout()
+//                logout()
             }
 
         }
@@ -63,18 +62,18 @@ class TokenManager(
         }.launchIn(sessionScope)
     }
 
-    private fun logout() {
-        logoutUseCase.execute(Unit).onEach { dataState ->
-            when (dataState) {
-                is DataState.NetworkStatus -> {}
-                is DataState.Response -> {}
-                is DataState.Data -> {
-                    checkToken()
-                }
-
-                is DataState.Loading -> {}
-            }
-        }.launchIn(sessionScope)
-    }
+//    private fun logout() {
+//        logoutUseCase.execute(Unit).onEach { dataState ->
+//            when (dataState) {
+//                is DataState.NetworkStatus -> {}
+//                is DataState.Response -> {}
+//                is DataState.Data -> {
+//                    checkToken()
+//                }
+//
+//                is DataState.Loading -> {}
+//            }
+//        }.launchIn(sessionScope)
+//    }
 
 }

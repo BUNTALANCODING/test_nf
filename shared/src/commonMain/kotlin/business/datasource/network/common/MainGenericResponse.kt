@@ -8,7 +8,7 @@ data class MainGenericResponse<T>(
     @SerialName("status") var status: Boolean?,
     @SerialName("code") var code: String?,
     @SerialName("message") var message: String?,
-    @SerialName("data") var result: T?,
+    @SerialName("data") var data: T?,
     @SerialName("alert") var alert: JAlertResponse? = JAlertResponse(),
 )
 

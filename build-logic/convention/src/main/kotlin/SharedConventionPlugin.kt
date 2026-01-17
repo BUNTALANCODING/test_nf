@@ -16,11 +16,9 @@ class SharedConventionPlugin : Plugin<Project> {
         }
 
         val composeDeps = extensions.getByType<ComposeExtension>().dependencies
-
         extensions.configure<LibraryExtension>(::configureKotlinAndroid)
 
         extensions.configure<KotlinMultiplatformExtension> {
-
             sourceSets.apply {
 
                 commonTest {
@@ -28,7 +26,6 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(kotlin("test"))
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
-
                         implementation(libs.findLibrary("kotest.framework.engine").get())
                         implementation(libs.findLibrary("kotest.assertions.core").get())
                         implementation(libs.findLibrary("kotest.property").get())
@@ -36,9 +33,6 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(libs.findLibrary("coroutines.test").get())
                         implementation(libs.findLibrary("turbine.turbine").get())
                         implementation(libs.findLibrary("mockk.io").get())
-
-
-
                         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                         implementation(composeDeps.uiTest)
                     }
@@ -64,39 +58,37 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(libs.findLibrary("compose.navigation").get())
                         implementation(libs.findLibrary("compose-cupertino").get())
                         implementation(libs.findLibrary("kmp-date-time-picker").get())
-                        implementation(libs.findLibrary("qr-kit").get())
+//                        implementation(libs.findLibrary("qr-kit").get())
                         implementation(libs.findLibrary("androidx.lifecycle.viewmodel.compose").get())
                         implementation("am.highapps.parallaxtoolbar:compose-parallax-toolbar-kmp:1.1.0")
                         api(libs.findLibrary("koin.core").get())
                         api(libs.findLibrary("koin.compose").get())
                         api(libs.findLibrary("koin.compose.viewmodel").get())
                         api(libs.findLibrary("coil3").get())
-                        //api(libs.findLibrary("coil3.network").get())
                         api("io.github.mirzemehdi:kmpnotifier:1.5.1")
                         implementation("tech.kotlinlang:permission:0.13.0")
                         implementation("com.github.skydoves:landscapist-coil3:2.3.0")
                         implementation("be.digitalia.compose.htmlconverter:htmlconverter:1.1.0")
                         implementation("io.github.bvantur:inspektify-ktor2:1.0.0-beta09")
-
                         api("dev.icerock.moko:permissions:0.19.1")
-
-                        // specific permissions support
+                        implementation("dev.icerock.moko:mvvm-core:0.16.1")
+                        implementation("dev.icerock.moko:mvvm-compose:0.16.1")
                         implementation("dev.icerock.moko:permissions-camera:0.19.1")
                         implementation("dev.icerock.moko:permissions-gallery:0.19.1")
                         implementation("dev.icerock.moko:permissions-location:0.19.1")
                         implementation("dev.icerock.moko:permissions-notifications:0.19.1")
                         implementation("dev.icerock.moko:permissions-storage:0.19.1")
                         implementation("io.github.vinceglb:filekit-compose:0.8.7")
-
-                        // compose multiplatform
                         api("dev.icerock.moko:permissions-compose:0.19.1")
                         implementation(libs.findLibrary("camerak").get())
                         implementation(libs.findLibrary("camerak-image-saver").get())
                         implementation("com.squareup.okio:okio:3.9.0")
-
-                        val skikoVersion = "0.9.8"
-//                        implementation("org.jetbrains.skia:skia-jni:0.9.73")
-
+                        implementation("io.insert-koin:koin-core:3.5.3")
+                        implementation("io.coil-kt.coil3:coil-compose:3.0.0")
+                        implementation("io.coil-kt.coil3:coil:3.0.0")
+                        implementation("org.jetbrains.compose.ui:ui-graphics:1.6.10") // atau versi Compose kamu
+//                        implementation("io.github.davidepianca98:kmqtt-common:1.0.0")
+//                        implementation("io.github.davidepianca98:kmqtt-client:1.0.0")
 
                     }
                 }
@@ -114,36 +106,32 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation(libs.findLibrary("androidx.datastore.preferences").get())
                         implementation(libs.findLibrary("maps.compose").get())
                         implementation(libs.findBundle("play.services").get())
+
                         api(libs.findLibrary("coil3.gif").get())
                         api(libs.findLibrary("coil3.svg").get())
                         api(libs.findLibrary("coil3.core").get())
                         api(libs.findLibrary("coil3.video").get())
+
+                        implementation(project.dependencies.platform("com.google.firebase:firebase-bom:34.7.0"))
+                        implementation("com.google.firebase:firebase-auth")
                         implementation("com.google.firebase:firebase-crashlytics-ktx:18.6.0")
-                        //Face Detection
-                        implementation("com.google.mlkit:face-detection:16.1.6")
-                        implementation("com.google.android.gms:play-services-mlkit-face-detection:16.1.7")
-                        implementation ("com.google.mlkit:vision-common:17.3.0")    //
-                        implementation("androidx.camera:camera-core:1.3.1")
-                        implementation("androidx.camera:camera-lifecycle:1.3.1")
-                        implementation("androidx.camera:camera-video:1.3.1")
-                        implementation("androidx.camera:camera-view:1.3.1")
-                        implementation ("video.api:android-video-uploader:1.3.7")
+
+                        implementation("androidx.camera:camera-core:1.4.0")
+                        implementation("androidx.camera:camera-camera2:1.4.0")
+                        implementation("androidx.camera:camera-lifecycle:1.4.0")
+                        implementation("androidx.camera:camera-view:1.4.0")
+                        implementation("androidx.camera:camera-video:1.4.0")
+
                         implementation("androidx.work:work-runtime-ktx:2.9.0")
                         implementation("io.insert-koin:koin-androidx-workmanager:4.0.0")
-                        implementation("io.insert-koin:koin-android:4.0.0")
-                        implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
                         implementation("io.ktor:ktor-client-cio:2.3.12")
+                        implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+                        implementation("org.osmdroid:osmdroid-android:6.1.20")
+//                        implementation("com.google.guava:guava:32.1.2-android")
+                        implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0")
 
-                        // CameraX
-                        val cameraxVersion = "1.3.4" // atau versi yang kamu pakai
-                        implementation("androidx.camera:camera-core:$cameraxVersion")
-                        implementation("androidx.camera:camera-camera2:$cameraxVersion")
-                        implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-                        implementation("androidx.camera:camera-view:$cameraxVersion")
 
-                        // TensorFlow Lite
-                        implementation("org.tensorflow:tensorflow-lite:2.12.0")
-                        implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
 
                     }
                 }
@@ -152,6 +140,7 @@ class SharedConventionPlugin : Plugin<Project> {
                     dependencies {
                         implementation(libs.findLibrary("ktor.darwin.ios").get())
                         implementation(libs.findLibrary("ktor.ios").get())
+                        implementation("io.insert-koin:koin-core:3.5.3")
                     }
                 }
             }

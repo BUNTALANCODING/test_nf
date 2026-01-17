@@ -1,0 +1,8 @@
+platform :ios, '14.0'
+use_frameworks!
+use_modular_headers!
+
+target 'iosApp' do
+  pod 'shared', :path => '../shared'
+end
+

@@ -39,7 +39,7 @@ class RegisterUseCase(
         )
         val apiResponse = service.register(request)
 
-        val result = apiResponse.result
+        val result = apiResponse.data
 
         if (result != null) {
             appDataStoreManager.setValue(
@@ -54,7 +54,7 @@ class RegisterUseCase(
         return apiResponse
     }
 
-    override fun mapApiResponse(apiResponse: MainGenericResponse<List<String>>?) = apiResponse?.result?.toString()
+    override fun mapApiResponse(apiResponse: MainGenericResponse<List<String>>?) = apiResponse?.data?.toString()
 
     override val progressBarType = ProgressBarState.ButtonLoading
     override val needNetworkState = false

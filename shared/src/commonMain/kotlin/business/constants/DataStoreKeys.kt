@@ -9,4 +9,9 @@ object DataStoreKeys {
 
     const val OFFICER_EMAIL = "app.net2software.rampcheck.OFFICER_EMAIL"
 
+    const val USER_LAT = "com.damri.monitoring.USER_LAT"
+    const val USER_LNG = "com.damri.monitoring.USER_LNG"
+    const val USER_PLACE_NAME = "com.damri.monitoring.USER_PLACE_NAME"
+    const val USER_PLACE_ADDRESS = "com.damri.monitoring.USER_PLACE_ADDRESS"
+
 }

@@ -2,18 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.67666257857-vlnjc1rkr0dlhg9ulu4k2c1ect7m0aqa</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>67666257857-eo240qigdkhqot4a1seckmfr73p8p6ka.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyB8CJ2m_9liv91ASJepK6NIWoK4AzAQdcY</string>
+	<string>AIzaSyAmMKDxknExmvFs8ssNogk3Z6kTaZFVaCg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>276769938491</string>
+	<string>67666257857</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.cybersafety.ticket</string>
+	<string>com.jaring.appbussjaring</string>
 	<key>PROJECT_ID</key>
-	<string>bookingapp-e8e1e</string>
+	<string>tugasakhirapp-c5669</string>
 	<key>STORAGE_BUCKET</key>
-	<string>bookingapp-e8e1e.firebasestorage.app</string>
+	<string>tugasakhirapp-c5669.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:276769938491:ios:0095247d80049903a6d01e</string>
+	<string>1:67666257857:ios:f169d431ea668b63f57140</string>
+	<key>DATABASE_URL</key>
+	<string>https://tugasakhirapp-c5669-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>

@@ -32,6 +32,6 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "Rampcheck"
+rootProject.name = "NavBuss"
 include(":androidApp")
 include(":shared")
