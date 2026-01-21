@@ -40,7 +40,7 @@
             android:foregroundServiceType="dataSync|mediaPlayback"
             android:exported="false" />
         <activity
-            android:name="app.net2software.rampcheck.android.MainActivity"
+            android:name="com.nf.test.android.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="true">
             <intent-filter>

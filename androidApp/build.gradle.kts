@@ -37,7 +37,7 @@ kotlin {
 
 android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    namespace = "com.jaring.app_buss_jaring.android"
+    namespace = "com.nf.test.android"
 
     packaging {
         jniLibs {

@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "app.net2software.rampcheck.buildlogic"
+group = "com.nf.test.buildlogic"
 
 dependencies {
     compileOnly(libs.plugins.kotlin.serialization.toDep())
@@ -27,15 +27,15 @@ tasks {
 gradlePlugin {
     plugins {
         register("kotlinMultiplatform") {
-            id = "app.net2software.rampcheck.kotlinMultiplatform"
+            id = "com.nf.test.kotlinMultiplatform"
             implementationClass = "KotlinMultiplatformConventionPlugin"
         }
         register("shared") {
-            id = "app.net2software.rampcheck.shared"
+            id = "com.nf.test.shared"
             implementationClass = "SharedConventionPlugin"
         }
         register("androidApp") {
-            id = "app.net2software.rampcheck.androidApp"
+            id = "com.nf.test.androidApp"
             implementationClass = "AndroidAppConventionPlugin"
         }
     }

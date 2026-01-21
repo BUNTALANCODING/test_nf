@@ -179,6 +179,6 @@ build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "b-konfig" }
 
 
 # Plugins defined by this project
-rampcheck-shared = { id = "app.net2software.rampcheck.shared", version = "unspecified" }
-rampcheck-kotlinMultiplatform = { id = "app.net2software.rampcheck.kotlinMultiplatform", version = "unspecified" }
-rampcheck-androidApp = { id = "app.net2software.rampcheck.androidApp", version = "unspecified" }
+rampcheck-shared = { id = "com.nf.test.shared", version = "unspecified" }
+rampcheck-kotlinMultiplatform = { id = "com.nf.test.kotlinMultiplatform", version = "unspecified" }
+rampcheck-androidApp = { id = "com.nf.test.androidApp", version = "unspecified" }

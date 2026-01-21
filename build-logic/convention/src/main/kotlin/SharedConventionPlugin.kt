@@ -8,6 +8,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import app.net2software.rampcheck.configureKotlinAndroid
 import com.android.build.api.dsl.LibraryExtension
 
+
+
 class SharedConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
@@ -87,8 +89,7 @@ class SharedConventionPlugin : Plugin<Project> {
                         implementation("io.coil-kt.coil3:coil-compose:3.0.0")
                         implementation("io.coil-kt.coil3:coil:3.0.0")
                         implementation("org.jetbrains.compose.ui:ui-graphics:1.6.10") // atau versi Compose kamu
-//                        implementation("io.github.davidepianca98:kmqtt-common:1.0.0")
-//                        implementation("io.github.davidepianca98:kmqtt-client:1.0.0")
+
 
                     }
                 }

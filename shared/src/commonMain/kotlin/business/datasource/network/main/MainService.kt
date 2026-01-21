@@ -1,18 +1,6 @@
 package business.datasource.network.main
 
-import business.datasource.network.common.MainGenericResponse
-import business.datasource.network.main.dto.request.GoogleLoginRequest
-import business.datasource.network.main.dto.request.MapsRouteRequest
-import business.datasource.network.main.dto.request.NearestHalteRequest
-import business.datasource.network.main.dto.request.RouteDetailRequest
-import business.datasource.network.main.dto.request.RouteListRequest
-import business.datasource.network.main.dto.request.TripRequest
-import business.datasource.network.main.dto.response.GoogleLoginResponse
-import business.datasource.network.main.dto.response.MapsRouteResponse
-import business.datasource.network.main.dto.response.NearestHalteResponse
-import business.datasource.network.main.dto.response.RouteDetailResponse
-import business.datasource.network.main.dto.response.RouteListResponse
-import business.datasource.network.main.dto.response.TripResponse
+import business.domain.model.Student
 
 
 interface MainService {
@@ -44,26 +32,7 @@ interface MainService {
 
 
     }
-    suspend fun loginWithGoogle(request: GoogleLoginRequest): MainGenericResponse<GoogleLoginResponse>
 
-    suspend fun nearestHalte(
-        request: NearestHalteRequest
-    ): MainGenericResponse<NearestHalteResponse>
-
-    suspend fun routeList(
-        request: RouteListRequest
-    ): MainGenericResponse<List<RouteListResponse>>
-
-    suspend fun routeDetail(
-        request: RouteDetailRequest
-    ): MainGenericResponse<RouteDetailResponse>
-
-    suspend fun trip(
-        request: TripRequest
-    ): MainGenericResponse<TripResponse>
-
-    suspend fun mapsRoute(
-        request: MapsRouteRequest
-    ): MainGenericResponse<MapsRouteResponse>
-
+    suspend fun login(username: String, password: String): Boolean
+    suspend fun submitStudent(student: Student)
 }

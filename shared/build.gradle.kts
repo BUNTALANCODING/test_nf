@@ -43,6 +43,8 @@ kotlin {
         pod("FirebaseCore", "~> 10.23.0")
         pod("FirebaseAuth", "~> 10.23.0")
         pod("GoogleSignIn", "~> 7.0.0")
+//        pod("CocoaMQTT", "~> 2.1.0")
+
 
     }
 

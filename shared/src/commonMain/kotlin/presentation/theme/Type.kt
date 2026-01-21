@@ -5,22 +5,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import navbuss.shared.generated.resources.Res
-import navbuss.shared.generated.resources.plus_jakarta_sans_extra_light
-import navbuss.shared.generated.resources.plus_jakarta_sans_extra_light_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_light
-import navbuss.shared.generated.resources.plus_jakarta_sans_light_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_regular
-import navbuss.shared.generated.resources.plus_jakarta_sans_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_medium
-import navbuss.shared.generated.resources.plus_jakarta_sans_medium_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_semi_bold
-import navbuss.shared.generated.resources.plus_jakarta_sans_semi_bold_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_bold
-import navbuss.shared.generated.resources.plus_jakarta_sans_bold_italic
-import navbuss.shared.generated.resources.plus_jakarta_sans_extra_bold
-import navbuss.shared.generated.resources.plus_jakarta_sans_extra_bold_italic
+
 import org.jetbrains.compose.resources.Font
+import testcasenf.shared.generated.resources.Res
+import testcasenf.shared.generated.resources.plus_jakarta_sans_extra_light
+import testcasenf.shared.generated.resources.plus_jakarta_sans_extra_light_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_light
+import testcasenf.shared.generated.resources.plus_jakarta_sans_light_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_regular
+import testcasenf.shared.generated.resources.plus_jakarta_sans_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_medium
+import testcasenf.shared.generated.resources.plus_jakarta_sans_medium_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_semi_bold
+import testcasenf.shared.generated.resources.plus_jakarta_sans_semi_bold_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_bold
+import testcasenf.shared.generated.resources.plus_jakarta_sans_bold_italic
+import testcasenf.shared.generated.resources.plus_jakarta_sans_extra_bold
+import testcasenf.shared.generated.resources.plus_jakarta_sans_extra_bold_italic
+
 
 @Composable
 fun AppTypography(): Typography {

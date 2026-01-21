@@ -32,6 +32,6 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-rootProject.name = "NavBuss"
+rootProject.name = "TestCaseNF"
 include(":androidApp")
 include(":shared")
